@@ -1,0 +1,24 @@
+<nav class="navbar navbar-expand-lg bg-light">
+  <div class="container">
+    <a class="navbar-brand" href="#">
+      <img src="/assets/img/logo.svg" alt="" width="30" height="30" />
+    </a>
+    <div class="flex-grow-1">
+      <ul class="navbar-nav">
+        <li class="nav-item">
+          <a class="nav-link active" aria-current="page" href="#">Home</a>
+        </li>
+      </ul>
+    </div>
+    <div ngbDropdown>
+      <a href (click)="(false)" class="nav-link" ngbDropdownToggle>
+        <app-currency [currency]="mainCurrency"></app-currency>
+      </a>
+      <div ngbDropdownMenu>
+        <button ngbDropdownItem *ngFor="let currency of currencies">
+          <app-currency [currency]="currency"></app-currency>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
