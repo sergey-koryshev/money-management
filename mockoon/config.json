@@ -1,0 +1,104 @@
+{
+  "uuid": "5a9d25a9-7115-4c3f-9371-bae1f0bab2b4",
+  "lastMigration": 22,
+  "name": "Config",
+  "endpointPrefix": "",
+  "latency": 0,
+  "port": 3000,
+  "hostname": "0.0.0.0",
+  "routes": [
+    {
+      "uuid": "f8ad3236-1033-4761-8207-371950c0fda3",
+      "documentation": "Retrieves all available currencies",
+      "method": "get",
+      "endpoint": "currency",
+      "responses": [
+        {
+          "uuid": "7c5c919a-af45-4d91-aff1-fa9796dd0c34",
+          "body": "{\n  \"data\": [\n    {\n      \"id\": 0,\n      \"name\": \"RUB\",\n      \"friendlyName\": \"Russian ruble\",\n      \"flagCode\": \"ru\"\n    },\n    {\n      \"id\": 1,\n      \"name\": \"RSD\",\n      \"friendlyName\": \"Serbian dinar\",\n      \"flagCode\": \"rs\"\n    },\n    {\n      \"id\": 2,\n      \"name\": \"USD\",\n      \"friendlyName\": \"American dollar\",\n      \"flagCode\": \"us\"\n    },\n    {\n      \"id\": 3,\n      \"name\": \"EUR\",\n      \"friendlyName\": \"Euro\",\n      \"flagCode\": \"eu\"\n    }\n  ]\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "filePath": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
+    },
+    {
+      "uuid": "9f650bff-2b9c-4a7c-84d7-a7bf5f29bbcd",
+      "documentation": "Retrieves main currency",
+      "method": "get",
+      "endpoint": "currency/main",
+      "responses": [
+        {
+          "uuid": "afea266b-3f8c-4ca5-afa2-a9bc816f5220",
+          "body": "{\n  \"data\": {\n    \"id\": 1,\n    \"name\": \"RSD\",\n    \"friendlyName\": \"Serbian dinar\",\n    \"flagCode\": \"rs\"\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "filePath": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
+    }
+  ],
+  "proxyMode": false,
+  "proxyHost": "",
+  "proxyRemovePrefix": false,
+  "tlsOptions": {
+    "enabled": false,
+    "type": "CERT",
+    "pfxPath": "",
+    "certPath": "",
+    "keyPath": "",
+    "caPath": "",
+    "passphrase": ""
+  },
+  "cors": true,
+  "headers": [
+    {
+      "key": "Content-Type",
+      "value": "application/json"
+    },
+    {
+      "key": "Access-Control-Allow-Origin",
+      "value": "*"
+    },
+    {
+      "key": "Access-Control-Allow-Methods",
+      "value": "GET,POST,PUT,PATCH,DELETE,HEAD,OPTIONS"
+    },
+    {
+      "key": "Access-Control-Allow-Headers",
+      "value": "Content-Type, Origin, Accept, Authorization, Content-Length, X-Requested-With"
+    }
+  ],
+  "proxyReqHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ],
+  "proxyResHeaders": [
+    {
+      "key": "",
+      "value": ""
+    }
+  ]
+}
