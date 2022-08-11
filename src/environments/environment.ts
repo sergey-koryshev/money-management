@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  baseApiUri: 'http://localhost:3000'
+  baseApiUri: 'https://tiredgoose.local:8080/proxy/3000'
 };
 
 /*

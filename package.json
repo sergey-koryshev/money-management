@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "start-code-server": "ng serve --disable-host-check",
+    "start-code-server": "ng serve --disable-host-check --serve-path /absproxy/4200",
     "start-mockoon": "mockoon-cli start --data ./mockoon/config.json --daemon-off",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
