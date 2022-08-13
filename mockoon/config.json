@@ -56,6 +56,31 @@
       ],
       "enabled": true,
       "responseMode": null
+    },
+    {
+      "uuid": "8395c9c1-d5fe-4166-b7af-de2a16e98c1a",
+      "documentation": "Changes main currency",
+      "method": "post",
+      "endpoint": "currency/main",
+      "responses": [
+        {
+          "uuid": "1dbb6621-7940-4ee7-a8be-615769dfd6d9",
+          "body": "{\n  \"data\": {\n    \"id\": \"{{ body 'id' }}\",\n    \"name\": \"{{ body 'name' }}\",\n    \"friendlyName\": \"{{ body 'friendlyName' }}\",\n    \"flagCode\": \"{{ body 'flagCode' }}\"\n  }\n}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "filePath": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
     }
   ],
   "proxyMode": false,
