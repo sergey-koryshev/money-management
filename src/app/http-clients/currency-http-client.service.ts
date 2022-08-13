@@ -14,6 +14,10 @@ export class CurrencyHttpClientService {
   }
 
   getMainCurrency() {
-    return this.baseHttpClient.get<Currency>('currency/main')
+    return this.baseHttpClient.get<Currency>('currency/main');
+  }
+
+  setMainCurrency(currency: Currency) {
+    return this.baseHttpClient.post<Currency>('currency/main', currency);
   }
 }
