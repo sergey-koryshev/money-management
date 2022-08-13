@@ -20,4 +20,8 @@ export class CurrencyHttpClientService {
   setMainCurrency(currency: Currency) {
     return this.baseHttpClient.post<Currency>('currency/main', currency);
   }
+
+  removeMainCurrency() {
+    return this.baseHttpClient.delete('currency/main');
+  }
 }
