@@ -2,6 +2,7 @@ import { CurrencyService } from '@services/currency.service';
 import { Component } from '@angular/core';
 import { Currency } from '@models/currency.model';
 import { User } from '@models/user.model';
+import { emptyMainCurrency } from 'src/app/constants';
 
 @Component({
   selector: 'app-navbar',
@@ -13,6 +14,7 @@ export class NavbarComponent {
   currencies: Currency[];
   mainCurrency: Currency | null;
   user: User;
+  emptyMainCurrency = emptyMainCurrency;
 
   constructor(private currencyService: CurrencyService) {
     this.currencies = this.currencyService.currencies;
@@ -27,5 +29,9 @@ export class NavbarComponent {
 
   setMainCurrency(currency: Currency) {
     this.currencyService.setMainCurrency(currency);
+  }
+
+  removeMainCurrency() {
+    this.currencyService.removeMainCurrency();
   }
 }
