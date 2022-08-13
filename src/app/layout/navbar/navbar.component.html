@@ -23,5 +23,19 @@
         </button>
       </div>
     </div>
+    <div ngbDropdown>
+      <a href (click)="(false)" class="nav-link" ngbDropdownToggle>
+        <app-user-avatar class="d-inline-block" [user]="user"></app-user-avatar>
+      </a>
+      <div ngbDropdownMenu>
+        <button ngbDropdownItem>
+          Change password
+        </button>
+        <div class="dropdown-divider"></div>
+        <button ngbDropdownItem>
+          Logout
+        </button>
+      </div>
+    </div>
   </div>
 </nav>
