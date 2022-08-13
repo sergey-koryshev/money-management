@@ -15,12 +15,15 @@
     </div>
     <div ngbDropdown>
       <a href (click)="(false)" class="nav-link" ngbDropdownToggle>
-        <app-currency *ngIf="mainCurrency" [currency]="mainCurrency"></app-currency>
-        <span *ngIf="!mainCurrency">Select main currency</span>
+        <app-currency *ngIf="mainCurrency" [currency]="mainCurrency" [title]="mainCurrency.friendlyName"></app-currency>
+        <app-currency *ngIf="!mainCurrency" [currency]="emptyMainCurrency" [title]="emptyMainCurrency.friendlyName"></app-currency>
       </a>
       <div ngbDropdownMenu>
+        <button ngbDropdownItem (click)="removeMainCurrency()">
+          ---
+        </button>
         <button ngbDropdownItem *ngFor="let currency of currencies" (click)="setMainCurrency(currency)">
-          <app-currency [currency]="currency"></app-currency>
+          <app-currency [currency]="currency" [title]="currency.friendlyName"></app-currency>
         </button>
       </div>
     </div>
