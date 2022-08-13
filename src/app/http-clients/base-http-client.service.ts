@@ -41,4 +41,31 @@ export class BaseHttpClientService {
       })
       .pipe(map((response: BaseApiResponse) => response.data));
   }
+
+  post<T>(
+    endpointPath: string,
+    body?: any,
+    params?:
+      | HttpParams
+      | {
+          [param: string]:
+            | string
+            | number
+            | boolean
+            | ReadonlyArray<string | number | boolean>;
+        },
+    headers?: {
+          [header: string]: string | string[];
+      }
+  ): Observable<T> {
+    const fullUrl = `${this.baseUrl}/${endpointPath}`;
+    const fullHeaders = headers ? {...this.defaultHeaders, ...headers} : this.defaultHeaders
+    
+    return this.httpClient
+      .post<BaseApiResponse>(fullUrl, body, {
+        headers: fullHeaders,
+        params,
+      })
+      .pipe(map((response: BaseApiResponse) => response.data));
+  }
 }
