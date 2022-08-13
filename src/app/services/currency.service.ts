@@ -36,4 +36,9 @@ export class CurrencyService {
     this.currencyHttpClient.setMainCurrency(currency)
       .subscribe((currency) => this.mainCurrency$.next(currency));
   }
+
+  removeMainCurrency() {
+    this.currencyHttpClient.removeMainCurrency()
+      .subscribe(() => this.mainCurrency$.next(null));
+  }
 }
