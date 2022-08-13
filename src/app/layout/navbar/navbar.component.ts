@@ -1,5 +1,5 @@
-import { CurrencyService } from './../../services/currency.service';
-import { Component, OnInit } from '@angular/core';
+import { CurrencyService } from '@services/currency.service';
+import { Component } from '@angular/core';
 import { Currency } from '@models/currency.model';
 import { User } from '@models/user.model';
 
@@ -8,15 +8,15 @@ import { User } from '@models/user.model';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
-export class NavbarComponent implements OnInit {
+export class NavbarComponent {
 
   currencies: Currency[];
-  mainCurrency: Currency;
+  mainCurrency: Currency | null;
   user: User;
 
-  constructor(currencyService: CurrencyService) {
-    this.currencies = currencyService.currencies;
-    this.mainCurrency = currencyService.mainCurrency;
+  constructor(private currencyService: CurrencyService) {
+    this.currencies = this.currencyService.currencies;
+    this.currencyService.mainCurrency$.subscribe((currency) => this.mainCurrency = currency)
     // TODO: need to remove this hardoced user once we implemented login process
     this.user = {
       id: '8eeb9d4b-d246-4075-a53a-fa31184f71ec',
@@ -25,5 +25,7 @@ export class NavbarComponent implements OnInit {
     };
    }
 
-  ngOnInit(): void { }
+  setMainCurrency(currency: Currency) {
+    this.currencyService.setMainCurrency(currency);
+  }
 }
