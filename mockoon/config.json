@@ -81,6 +81,31 @@
       ],
       "enabled": true,
       "responseMode": null
+    },
+    {
+      "uuid": "b6a5e08d-0f6e-4e9c-bccd-3104ebcea9a7",
+      "documentation": "Deletes main currency",
+      "method": "delete",
+      "endpoint": "currency/main",
+      "responses": [
+        {
+          "uuid": "f5953c07-6d44-4d75-ba1a-d0c84c328fab",
+          "body": "{}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "filePath": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
     }
   ],
   "proxyMode": false,
