@@ -68,4 +68,31 @@ export class BaseHttpClientService {
       })
       .pipe(map((response: BaseApiResponse) => response.data));
   }
+
+  delete<T>(
+    endpointPath: string,
+    body?: any,
+    params?:
+      | HttpParams
+      | {
+          [param: string]:
+            | string
+            | number
+            | boolean
+            | ReadonlyArray<string | number | boolean>;
+        },
+    headers?: {
+          [header: string]: string | string[];
+      }
+  ): Observable<T> {
+    const fullUrl = `${this.baseUrl}/${endpointPath}`;
+    const fullHeaders = headers ? {...this.defaultHeaders, ...headers} : this.defaultHeaders
+    
+    return this.httpClient
+      .delete<BaseApiResponse>(fullUrl, {
+        headers: fullHeaders,
+        params,
+      })
+      .pipe(map((response: BaseApiResponse) => response.data));
+  }
 }
