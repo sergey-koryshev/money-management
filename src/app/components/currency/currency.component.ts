@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Currency } from '@models/currency.model';
 
 @Component({
@@ -6,13 +6,14 @@ import { Currency } from '@models/currency.model';
   templateUrl: './currency.component.html',
   styleUrls: ['./currency.component.scss']
 })
-export class CurrencyComponent implements OnInit {
+export class CurrencyComponent implements OnChanges {
   @Input()
   currency: Currency;
-
   countryFlagClass: string;
 
-  ngOnInit() {
-    this.countryFlagClass = `fi-${this.currency.flagCode}`;
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.currency) {
+      this.countryFlagClass = `fi-${this.currency.flagCode}`;
+    }
   }
 }
