@@ -1,0 +1,22 @@
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col" *ngFor="let column of columns">{{ column.displayName }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let row of data">
+            <td *ngFor="let column of columns" [ngSwitch]="getColumnType(column)">
+                <span *ngSwitchCase="columnTypes.function">
+                    {{ column.function?.(row) ?? emptyTableData}}
+                </span>
+                <ng-container *ngSwitchCase="columnTypes.template">
+                    <ng-container [ngTemplateOutlet]="column.template?.() ?? null" [ngTemplateOutletContext]="{ $implicit: row }"></ng-container>
+                </ng-container>
+                <span *ngSwitchDefault>
+                    {{ extractProperty(row, column.name) ?? emptyTableData }}
+                </span>
+            </td>
+        </tr>
+    </tbody>
+</table>
