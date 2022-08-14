@@ -5,11 +5,15 @@ import { ExpansesPageComponent } from './pages/expanses-page/expanses-page.compo
 import { Routes, RouterModule } from '@angular/router';
 import { ExpansesTableComponent } from './components/expenses-table/expenses-table.component';
 import { ComponentsModule } from '@app/components/components.module';
+import { ExpensesResolver } from './expenses.resolver';
 
 const routes: Routes = [
   {
     path: '',
     component: ExpansesPageComponent,
+    resolve: {
+      expenses: ExpensesResolver,
+    }
   },
 ];
 
