@@ -3,3 +3,5 @@ export interface BaseApiResponse {
     message: string,
     data: any
 }
+
+export type ObjectKey = keyof typeof Object;
