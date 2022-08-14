@@ -34,7 +34,7 @@
     },
     {
       "uuid": "9f650bff-2b9c-4a7c-84d7-a7bf5f29bbcd",
-      "documentation": "Retrieves main currency",
+      "documentation": "Retrieves main currency for user",
       "method": "get",
       "endpoint": "currency/main",
       "responses": [
@@ -59,7 +59,7 @@
     },
     {
       "uuid": "8395c9c1-d5fe-4166-b7af-de2a16e98c1a",
-      "documentation": "Changes main currency",
+      "documentation": "Changes main currency for user",
       "method": "post",
       "endpoint": "currency/main",
       "responses": [
@@ -84,13 +84,38 @@
     },
     {
       "uuid": "b6a5e08d-0f6e-4e9c-bccd-3104ebcea9a7",
-      "documentation": "Deletes main currency",
+      "documentation": "Deletes main currency for user",
       "method": "delete",
       "endpoint": "currency/main",
       "responses": [
         {
           "uuid": "f5953c07-6d44-4d75-ba1a-d0c84c328fab",
           "body": "{}",
+          "latency": 0,
+          "statusCode": 200,
+          "label": "",
+          "headers": [],
+          "filePath": "",
+          "sendFileAsBody": false,
+          "rules": [],
+          "rulesOperator": "OR",
+          "disableTemplating": false,
+          "fallbackTo404": false,
+          "default": true
+        }
+      ],
+      "enabled": true,
+      "responseMode": null
+    },
+    {
+      "uuid": "3dcdbee8-5c04-4473-879a-b637b10f49a4",
+      "documentation": "Retrieves all expenses for user",
+      "method": "get",
+      "endpoint": "expenses",
+      "responses": [
+        {
+          "uuid": "90d2cec0-6143-41fb-b2f9-6c5e834b2901",
+          "body": "{\n  \"data\": [\n    {\n      \"id\": 0,\n      \"date\": \"2022-08-01\",\n      \"item\": \"Something I bought in Serbia\",\n      \"price\": {\n        \"amount\": 134,\n        \"currency\": {\n          \"id\": 1,\n          \"name\": \"RSD\",\n          \"friendlyName\": \"Serbian dinar\",\n          \"flagCode\": \"rs\"\n        }\n      }\n    },\n    {\n      \"id\": 1,\n      \"date\": \"2022-08-02\",\n      \"item\": \"Something I bought in Russia\",\n      \"price\": {\n        \"amount\": 1056,\n        \"currency\": {\n          \"id\": 0,\n          \"name\": \"RUB\",\n          \"friendlyName\": \"Russian ruble\",\n          \"flagCode\": \"ru\"\n        }\n      }\n    },\n    {\n      \"id\": 2,\n      \"date\": \"2022-08-05\",\n      \"item\": \"Something I bought in Italy\",\n      \"price\": {\n        \"amount\": 700,\n        \"currency\": {\n          \"id\": 3,\n          \"name\": \"EUR\",\n          \"friendlyName\": \"Euro\",\n          \"flagCode\": \"eu\"\n        }\n      }\n    },\n    {\n      \"id\": 3,\n      \"date\": \"2022-08-06\",\n      \"item\": \"Something I bought in Austria\",\n      \"price\": {\n        \"amount\": 34,\n        \"currency\": {\n          \"id\": 3,\n          \"name\": \"EUR\",\n          \"friendlyName\": \"Euro\",\n          \"flagCode\": \"eu\"\n        }\n      }\n    }\n  ]\n}",
           "latency": 0,
           "statusCode": 200,
           "label": "",
