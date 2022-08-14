@@ -3,7 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 
 const routes: Routes = [{
   path: 'expenses',
-  loadChildren: () => import('./modules/expenses/expenses.module').then((module) => module.ExpansesModule)
+  loadChildren: () => import('./modules/expenses/expenses.module').then((module) => module.ExpensesModule)
 }];
 
 @NgModule({
