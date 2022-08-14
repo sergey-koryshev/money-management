@@ -10,7 +10,7 @@ import { isInstanceOfExchangedPrice } from '@app/helpers/interfaces.helper';
 })
 export class PriceComponent implements OnInit {
   @Input()
-  price: Price | ExchangedPrice;
+  price: Price;
   
   exchangedPrice: ExchangedPrice;
 
