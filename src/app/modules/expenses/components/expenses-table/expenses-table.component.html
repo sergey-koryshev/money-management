@@ -1,0 +1,10 @@
+<app-table [columns]="columns" [data]="data"></app-table>
+
+<ng-template #price let-row>
+    <div [title]="row.price.currency.friendlyName">
+        <app-currency [currency]="row.price.currency" appearance="omitName"></app-currency>
+        <span>
+            {{ row.price.amount }}
+        </span>
+    </div>
+</ng-template>
