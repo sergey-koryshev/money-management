@@ -1,10 +1,10 @@
 <app-table [columns]="columns" [data]="data"></app-table>
 
 <ng-template #price let-row>
-    <div [title]="row.price.currency.friendlyName">
-        <app-currency [currency]="row.price.currency" appearance="omitName"></app-currency>
+    <div [title]="row.exchangedPrice ? row.exchangedPrice.currency.friendlyName : row.price.currency.friendlyName">
+        <app-currency [currency]="row.exchangedPrice ? row.exchangedPrice.currency : row.price.currency" appearance="omitName"></app-currency>
         <span>
-            {{ row.price.amount }}
+            {{ row.exchangedPrice ? row.exchangedPrice.amount : row.price.amount }}
         </span>
     </div>
 </ng-template>
