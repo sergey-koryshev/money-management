@@ -1,0 +1,23 @@
+<div [ngbPopover]="exchangedPrice ? popoverContent : null" triggers="mouseenter:mouseleave">
+    <span>
+        {{ price.amount }}
+    </span>
+    <app-currency 
+        class="currency-name"
+        [currency]="price.currency" 
+        appearance="omitFlag">
+    </app-currency>
+</div>
+
+<ng-template #popoverContent>
+    <div>
+        <span>Original price:</span>
+        <span>
+            {{ exchangedPrice.originalAmount }}
+        </span>
+        <app-currency 
+            [currency]="exchangedPrice.originalCurrency" 
+            appearance="omitFlag">
+        </app-currency>
+    </div>
+</ng-template>
