@@ -9,6 +9,10 @@ import { Currency } from '@models/currency.model';
 export class CurrencyComponent implements OnChanges {
   @Input()
   currency: Currency;
+
+  @Input()
+  appearance: 'full' | 'omitFlag' | 'omitName' = 'full';
+
   countryFlagClass: string;
 
   ngOnChanges(changes: SimpleChanges): void {
