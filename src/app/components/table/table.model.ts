@@ -12,3 +12,10 @@ export enum TableColumnType {
     function,
     template
 }
+
+export type SortDirection = 'asc' | 'desc' | '';
+
+export interface SortEvent {
+    column: string;
+    direction: SortDirection;
+}
