@@ -1,5 +1,5 @@
-import { TableColumn } from '@app/components/table/table.model';
-import { Component, Input, OnInit, TemplateRef, ViewChild } from '@angular/core';
+import { SortEvent, TableColumn } from '@components/table/table.model';
+import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
 import { Expense } from '@app/models/expense.model';
 
 @Component({
@@ -7,7 +7,7 @@ import { Expense } from '@app/models/expense.model';
   templateUrl: './expenses-table.component.html',
   styleUrls: ['./expenses-table.component.scss']
 })
-export class ExpansesTableComponent implements OnInit {
+export class ExpansesTableComponent {
 
   @Input()
   data: Expense[];
@@ -27,15 +27,13 @@ export class ExpansesTableComponent implements OnInit {
       displayName: 'Price',
       template: () => this.price
     }
-  ]
+  ];
+
+  defaultSorting: SortEvent = {
+    column: 'date',
+    direction: 'asc'
+  }
 
   @ViewChild('price', { read: TemplateRef, static: true })
   price: TemplateRef<unknown>;
-  
-  constructor() { }
-
-  ngOnInit(): void {
-    console.log(this.data);
-  }
-
 }
