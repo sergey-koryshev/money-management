@@ -68,9 +68,13 @@ export class TableComponent<T> implements OnInit {
     if (direction === '' || column === '') {
       this.sortedData = this.data;
     } else {
+      const columnDefinition = this.getColumnDefinition(column);
+      const compareFunc = columnDefinition?.sortFunc ;
       this.sortedData = [...this.data].sort((a, b) => {
-        const res = this.compareProperties(this.extractProperty(a, column), this.extractProperty(b, column));
-        return direction === 'asc' ? res : -res;
+        const result = compareFunc 
+          ? compareFunc(a, b) 
+          : this.compareProperties(this.extractProperty(a, column), this.extractProperty(b, column));
+        return direction === 'asc' ? result : -result;
       });
     }
   }
@@ -82,6 +86,10 @@ export class TableComponent<T> implements OnInit {
     }
 
     return 0;
+  }
+
+  private getColumnDefinition(columnName: string) {
+    return this.columns?.find((column) => column.name === columnName);
   }
 }
 

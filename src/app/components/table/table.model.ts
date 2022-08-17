@@ -5,6 +5,7 @@ export interface TableColumn<T> {
     displayName: string,
     function?: (row: T) => string,
     template?: () => TemplateRef<unknown>;
+    sortFunc?: (first: T, second: T) => number;
 }
 
 export enum TableColumnType {
