@@ -1,3 +1,4 @@
+import { TableModule } from './table/table.module';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CurrencyComponent } from './currency/currency.component';
@@ -10,18 +11,18 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
   declarations: [
     CurrencyComponent,
     UserAvatarComponent,
-    TableComponent,
-    PriceComponent
+    PriceComponent,
   ],
   imports: [
     CommonModule,
-    NgbModule
+    NgbModule,
+    TableModule
   ],
   exports: [
     UserAvatarComponent,
     CurrencyComponent,
-    TableComponent,
-    PriceComponent
+    PriceComponent,
+    TableComponent
   ],
 })
 export class ComponentsModule { }
