@@ -6,5 +6,5 @@ export interface Expense {
     date: Date;
     item: string;
     price: Price;
-    exchangedPrice: ExchangedPrice;
+    exchangedPrice?: ExchangedPrice;
 }
