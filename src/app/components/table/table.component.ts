@@ -1,5 +1,5 @@
 import { SortEvent, TableColumn, TableColumnType } from './table.model';
-import { Component, Input, QueryList, ViewChildren, OnInit } from '@angular/core';
+import { Component, Input, QueryList, ViewChildren, OnInit, OnChanges, SimpleChanges, DoCheck } from '@angular/core';
 import { emptyTableData } from '@app/constants';
 import { ObjectKey } from '@app/models/base.model';
 import { SortableHeaderDirective } from './sortable-header.directive';
@@ -9,7 +9,9 @@ import { SortableHeaderDirective } from './sortable-header.directive';
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss']
 })
-export class TableComponent<T> implements OnInit {
+export class TableComponent<T> implements OnInit, DoCheck {
+  private lastSorting: SortEvent;
+
   @Input()
   columns: TableColumn<T>[];
 
@@ -33,10 +35,12 @@ export class TableComponent<T> implements OnInit {
     this.setDefaultSorting();
   }
 
+  ngDoCheck(): void {
+    this.sortedData = this.data;
+    this.onSort(this.lastSorting, true);
+  }
+
   setDefaultSorting() {
-    if (!this.defaultSorting) {
-      return;
-    }
     this.onSort(this.defaultSorting, true);
   }
 
@@ -57,7 +61,15 @@ export class TableComponent<T> implements OnInit {
     return object[propertyKey];
   }
 
-  onSort({column, direction}: SortEvent, skipHeaders: boolean = false) {
+  onSort(event: SortEvent, skipHeaders: boolean = false) {
+    if (!event) {
+      return;
+    }
+
+    this.lastSorting = event;
+
+    const {column, direction} = event;
+
     if (!skipHeaders) {
       this.headers.forEach((header: SortableHeaderDirective) => {
         if (header.sortable !== column) {
