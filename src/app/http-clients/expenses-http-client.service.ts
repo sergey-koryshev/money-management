@@ -12,4 +12,8 @@ export class ExpensesHttpClientService {
   getAllExpenses() {
     return this.baseHttpClient.get<Expense[]>('expenses');
   }
+
+  addNewExpense(expense: Expense) {
+    return this.baseHttpClient.post<Expense>('expenses', expense);
+  }
 }
