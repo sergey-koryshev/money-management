@@ -31,17 +31,12 @@ export class TableComponent<T> implements OnInit, DoCheck {
   headers: QueryList<SortableHeaderDirective>;
 
   ngOnInit(): void {
-    this.sortedData = this.data;
-    this.setDefaultSorting();
+    this.sortedData = this.data
+    this.lastSorting = this.defaultSorting;
   }
 
   ngDoCheck(): void {
-    this.sortedData = this.data;
     this.onSort(this.lastSorting, true);
-  }
-
-  setDefaultSorting() {
-    this.onSort(this.defaultSorting, true);
   }
 
   getColumnType(column: TableColumn<T>): TableColumnType {
@@ -71,12 +66,14 @@ export class TableComponent<T> implements OnInit, DoCheck {
     const {column, direction} = event;
 
     if (!skipHeaders) {
+      // remove sorting direction in another columns
       this.headers.forEach((header: SortableHeaderDirective) => {
         if (header.sortable !== column) {
           header.direction = '';
         }
       });
     }
+
     if (direction === '' || column === '') {
       this.sortedData = this.data;
     } else {
