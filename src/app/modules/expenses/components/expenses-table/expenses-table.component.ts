@@ -26,16 +26,7 @@ export class ExpansesTableComponent {
       name: 'price',
       displayName: 'Price',
       template: () => this.price,
-      sortFunc: (first: Expense, second: Expense) => {
-        const firstPrice = first.exchangedPrice ?? first.price;
-        const secondPrice = second.exchangedPrice ?? second.price;
-
-        return firstPrice.amount < secondPrice.amount 
-          ? -1 
-          : firstPrice.amount > secondPrice.amount 
-            ? 1 
-            : 0;
-      }
+      sortFunc: priceComparer
     }
   ];
 
