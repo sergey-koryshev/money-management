@@ -1,6 +1,7 @@
 import { SortEvent, TableColumn } from '@components/table/table.model';
 import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
 import { Expense } from '@app/models/expense.model';
+import { priceComparer } from '@app/helpers/comparers.helper';
 
 @Component({
   selector: 'app-expenses-table',
