@@ -23,6 +23,7 @@ export class ExpansesPageComponent implements OnInit {
     this.route.data.subscribe((data) => this.expenses = data.expenses ?? []);
     this.currencyService.mainCurrency$
       .pipe(
+        //we need to skip first item emitted by BehaviorSubject because we already get initial data from route resolver 
         skip(1),
         switchMap(() => this.expensesHttpClient.getAllExpenses()))
       .subscribe((expenses) => this.expenses = expenses);
