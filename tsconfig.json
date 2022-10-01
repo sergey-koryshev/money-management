@@ -22,11 +22,12 @@
       "dom"
     ],
     "paths": {
+      "@app/*": ["src/app/*"],
       "@http-clients/*": ["src/app/http-clients/*"],
       "@services/*": ["src/app/services/*"],
       "@models/*": ["src/app/models/*"],
       "@environments/*": ["src/environments/*"],
-      "@components/*": ["src/components/*"]
+      "@components/*": ["src/app/components/*"]
     }
   },
   "angularCompilerOptions": {

@@ -35,11 +35,11 @@ export class BaseHttpClientService {
     const fullHeaders = headers ? {...this.defaultHeaders, ...headers} : this.defaultHeaders
     
     return this.httpClient
-      .get<BaseApiResponse>(fullUrl, {
+      .get<BaseApiResponse<T>>(fullUrl, {
         headers: fullHeaders,
         params,
       })
-      .pipe(map((response: BaseApiResponse) => response.data));
+      .pipe(map((response: BaseApiResponse<T>) => response.data));
   }
 
   post<T>(
@@ -62,11 +62,11 @@ export class BaseHttpClientService {
     const fullHeaders = headers ? {...this.defaultHeaders, ...headers} : this.defaultHeaders
     
     return this.httpClient
-      .post<BaseApiResponse>(fullUrl, body, {
+      .post<BaseApiResponse<T>>(fullUrl, body, {
         headers: fullHeaders,
         params,
       })
-      .pipe(map((response: BaseApiResponse) => response.data));
+      .pipe(map((response: BaseApiResponse<T>) => response.data));
   }
 
   delete<T>(
@@ -89,10 +89,10 @@ export class BaseHttpClientService {
     const fullHeaders = headers ? {...this.defaultHeaders, ...headers} : this.defaultHeaders
     
     return this.httpClient
-      .delete<BaseApiResponse>(fullUrl, {
+      .delete<BaseApiResponse<T>>(fullUrl, {
         headers: fullHeaders,
         params,
       })
-      .pipe(map((response: BaseApiResponse) => response.data));
+      .pipe(map((response: BaseApiResponse<T>) => response.data));
   }
 }

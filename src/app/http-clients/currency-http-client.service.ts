@@ -10,18 +10,18 @@ export class CurrencyHttpClientService {
   constructor(private baseHttpClient: BaseHttpClientService) { }
 
   getAllCurrencies() {
-    return this.baseHttpClient.get<Currency[]>('currency');
+    return this.baseHttpClient.get<Currency[]>('currencies');
   }
 
   getMainCurrency() {
-    return this.baseHttpClient.get<Currency>('currency/main');
+    return this.baseHttpClient.get<Currency>('currencies/main');
   }
 
   setMainCurrency(currency: Currency) {
-    return this.baseHttpClient.post<Currency>('currency/main', currency);
+    return this.baseHttpClient.post<Currency>('currencies/main', currency);
   }
 
   removeMainCurrency() {
-    return this.baseHttpClient.delete('currency/main');
+    return this.baseHttpClient.delete('currencies/main');
   }
 }

@@ -1,0 +1,33 @@
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th 
+                scope="col" 
+                [sortable]="column.name" 
+                [direction]="defaultSorting.column === column.name ? defaultSorting.direction : ''" 
+                (sort)="onSort($event)" 
+                *ngFor="let column of columns"
+            >
+                <span>{{ column.displayName }}</span>
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let row of sortedData">
+            <td *ngFor="let column of columns" [ngSwitch]="getColumnType(column)">
+                <span *ngSwitchCase="columnTypes.function">
+                    {{ column.function?.(row) ?? emptyTableData}}
+                </span>
+                <ng-container *ngSwitchCase="columnTypes.template">
+                    <ng-container [ngTemplateOutlet]="column.template?.() ?? null" [ngTemplateOutletContext]="{ $implicit: row }"></ng-container>
+                </ng-container>
+                <span *ngSwitchDefault>
+                    {{ extractProperty(row, column.name) ?? emptyTableData }}
+                </span>
+            </td>
+        </tr>
+        <tr *ngIf="!sortedData || sortedData?.length === 0">
+            <td [attr.colspan]="columns.length" class="no-data-column">No data</td>
+        </tr>
+    </tbody>
+</table>

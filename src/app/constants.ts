@@ -6,3 +6,5 @@ export const emptyMainCurrency: Currency = {
     friendlyName: "Main currency is not selected",
     flagCode: "xx"
 }
+
+export const emptyTableData: string = "-";

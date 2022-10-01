@@ -1,0 +1,5 @@
+<app-table [columns]="columns" [data]="data" [defaultSorting]="defaultSorting"></app-table>
+
+<ng-template #price let-row>
+    <app-price [price]="row.exchangedPrice ?? row.price" class="d-inline-block"></app-price>
+</ng-template>
