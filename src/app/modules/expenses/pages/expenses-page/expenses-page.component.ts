@@ -6,11 +6,11 @@ import { ActivatedRoute } from '@angular/router';
 import { switchMap, skip } from 'rxjs/operators';
 
 @Component({
-  selector: 'app-expanses-page',
-  templateUrl: './expanses-page.component.html',
-  styleUrls: ['./expanses-page.component.scss']
+  selector: 'app-expenses-page',
+  templateUrl: './expenses-page.component.html',
+  styleUrls: ['./expenses-page.component.scss']
 })
-export class ExpansesPageComponent implements OnInit {
+export class ExpensesPageComponent implements OnInit {
 
   expenses: Expense[];
 
