@@ -1,2 +1,16 @@
-<button type="button" class="btn btn-primary" (click)="onNewExpenseButtonClick()">Add new expense</button>
+<button type="button" class="btn btn-primary" (click)="open(addNewExpenses)">Add new expense</button>
 <app-expenses-table [data]="expenses"></app-expenses-table>
+
+<ng-template #addNewExpenses let-modal>
+    <div class="modal-header">
+        <h4 class="modal-title" id="modal-basic-title">Add new expense</h4>
+        <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+        <app-add-new-expense-form #addNewExpensesForm></app-add-new-expense-form>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss()">Cancel</button>
+        <button type="button" class="btn btn-success" [disabled]="addNewExpensesForm.form.invalid" (click)="modal.close(addNewExpensesForm.form.value)">Save</button>
+    </div>
+</ng-template>

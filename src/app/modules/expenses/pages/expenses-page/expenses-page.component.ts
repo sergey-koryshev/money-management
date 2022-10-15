@@ -4,11 +4,12 @@ import { Expense } from '@app/models/expense.model';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { switchMap, skip } from 'rxjs/operators';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { AddExpenseParams } from '@app/http-clients/expenses-http-client.model';
 
 @Component({
   selector: 'app-expenses-page',
-  templateUrl: './expenses-page.component.html',
-  styleUrls: ['./expenses-page.component.scss']
+  templateUrl: './expenses-page.component.html'
 })
 export class ExpensesPageComponent implements OnInit {
 
@@ -17,7 +18,8 @@ export class ExpensesPageComponent implements OnInit {
   constructor(
     private route: ActivatedRoute, 
     private currencyService: CurrencyService, 
-    private expensesHttpClient: ExpensesHttpClientService) { }
+    private expensesHttpClient: ExpensesHttpClientService,
+    private modalService: NgbModal) { }
 
   ngOnInit(): void {
     this.route.data.subscribe((data) => this.expenses = data.expenses ?? []);
@@ -29,29 +31,20 @@ export class ExpensesPageComponent implements OnInit {
       .subscribe((expenses) => this.expenses = expenses);
   }
 
-  onNewExpenseButtonClick() {
-    // replace with real implementation
-    const newExpense: Expense = {
-      id: 100,
-      date: new Date('2022-08-17'),
-      item: 'New item',
-      price: {
-        amount: 90,
-        currency: {
-          id: 1,
-          name: 'RSD',
-          friendlyName: 'Serbian dinar',
-          flagCode: 'rs'
-        }
-      }
-    };
-    this.addNewExpense(newExpense);
-  }
-
-   addNewExpense(expense: Expense) {
+  addNewExpense(expense: AddExpenseParams) {
     this.expensesHttpClient.addNewExpense(expense)
       .subscribe((addedExpanse) => {
         this.expenses.push(addedExpanse);
       });
+  }
+
+  open(content: any) {
+    const modalRef = this.modalService.open(content);
+    modalRef.closed.subscribe(({date, ...restParams}) => {
+      this.addNewExpense({
+        date: new Date(date.year, date.month - 1, date.day),
+        ...restParams
+      });
+    });
   }
 }
