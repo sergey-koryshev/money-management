@@ -9,6 +9,7 @@ import { NavbarComponent } from './layout/navbar/navbar.component';
 import { APP_INITIALIZER } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { ComponentsModule } from './components/components.module';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -21,6 +22,7 @@ import { ComponentsModule } from './components/components.module';
     NgbModule,
     HttpClientModule,
     ComponentsModule,
+    ReactiveFormsModule
   ],
   providers: [
     {
