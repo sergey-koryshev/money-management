@@ -140,7 +140,7 @@
       "responses": [
         {
           "uuid": "a04bf9f5-d33b-482c-943f-323058c43894",
-          "body": "{\n  \"data\": {{ body }}\n}",
+          "body": "{\n  \"data\": {\n    \"id\": {{ int 100 1000 }},\n    \"date\": \"{{ body 'date' }}\",\n    \"item\": \"{{ body 'item' }}\",\n    \"price\": {\n      \"amount\": \"{{ body 'priceAmount' }}\",\n      \"currency\": {{#switch (body 'currencyId')}}\n        {{#case '0'}}\n          {\n            \"id\": 0,\n            \"name\": \"RUB\",\n            \"friendlyName\": \"Russian ruble\",\n            \"flagCode\": \"ru\"\n          }\n        {{/case}}\n        {{#case '1'}}\n          {\n            \"id\": 1,\n            \"name\": \"RSD\",\n            \"friendlyName\": \"Serbian dinar\",\n            \"flagCode\": \"rs\"\n          }\n        {{/case}}\n        {{#case '2'}}\n          {\n            \"id\": 2,\n            \"name\": \"USD\",\n            \"friendlyName\": \"American dollar\",\n            \"flagCode\": \"us\"\n          }\n        {{/case}}\n        {{#case '3'}}\n          {\n            \"id\": 3,\n            \"name\": \"EUR\",\n            \"friendlyName\": \"Euro\",\n            \"flagCode\": \"eu\"\n          }\n        {{/case}}\n      {{/switch}}\n    }\n  }\n}",
           "latency": 0,
           "statusCode": 200,
           "label": "",

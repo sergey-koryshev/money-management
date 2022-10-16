@@ -1,0 +1,28 @@
+<form [formGroup]="form">
+    <div class="row">
+        <div class="col">
+            <label for="date">Date:</label>
+            <div class="input-group">
+                <input ngbDatepicker id="date" class="form-control" placeholder="yyyy-mm-dd" formControlName="date" 
+                    #dp="ngbDatepicker">
+                <button class="btn btn-outline-secondary calendar-icon" (click)="dp.toggle()" type="button"></button>
+            </div>
+        </div>
+        <div class="col">
+            <label for="item">Item:</label>
+            <input id="item" class="form-control" formControlName="item" />
+        </div>
+    </div>
+    <div class="row mt-3">
+        <div class="col">
+            <label for="price">Price:</label>
+            <input id="price" class="form-control" formControlName="priceAmount" />
+        </div>
+        <div class="col">
+            <label for="currency">Currency:</label>
+            <select id="currency" class="form-control" formControlName="currencyId">
+                <option *ngFor="let currency of currencies" [value]="currency.id">{{ currency.name }}</option>
+            </select>
+        </div>
+    </div>
+</form>

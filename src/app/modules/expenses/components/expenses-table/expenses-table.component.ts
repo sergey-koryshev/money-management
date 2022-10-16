@@ -8,7 +8,7 @@ import { priceComparer } from '@app/helpers/comparers.helper';
   templateUrl: './expenses-table.component.html',
   styleUrls: ['./expenses-table.component.scss']
 })
-export class ExpansesTableComponent {
+export class ExpensesTableComponent {
 
   @Input()
   data: Expense[];
