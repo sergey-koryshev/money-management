@@ -1,2 +1,2 @@
 <span *ngIf="appearance != 'omitFlag'" class="fi me-2" [ngClass]="countryFlagClass"></span>
-<span *ngIf="appearance != 'omitName'">{{ currency.name }}</span>
+<span *ngIf="appearance != 'omitName'">{{ currency.sign ?? currency.name }}</span>
