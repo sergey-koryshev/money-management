@@ -6,7 +6,8 @@
   "scripts": {
     "build": "rimraf ./build && tsc",
     "start": "npm run build && node build/index.js",
-    "start:dev": "npx nodemon"
+    "start:dev": "npx nodemon",
+    "lint": "eslint . --ext .ts"
   },
   "author": "Sergey Koryshev",
   "dependencies": {
@@ -16,6 +17,9 @@
   "devDependencies": {
     "@types/express": "^4.17.17",
     "@types/node": "^20.2.5",
+    "@typescript-eslint/eslint-plugin": "^5.59.11",
+    "@typescript-eslint/parser": "^5.59.11",
+    "eslint": "^8.42.0",
     "nodemon": "^2.0.22",
     "rimraf": "^5.0.1",
     "ts-node": "^10.9.1",
