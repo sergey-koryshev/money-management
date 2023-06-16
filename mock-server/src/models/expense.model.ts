@@ -1,5 +1,5 @@
-import { ExchangedPrice } from "./exchanged-price.model";
-import { Price } from "./prise.model";
+import { ExchangedPrice } from './exchanged-price.model';
+import { Price } from './prise.model';
 
 export interface Expense {
   id?: number;

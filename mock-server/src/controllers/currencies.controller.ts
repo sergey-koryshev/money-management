@@ -1,7 +1,6 @@
-import { Response, Request } from 'express';
-import { DataContext } from '../data/data-context';
-import { Currency } from '../models/currency.model';
+import { Request, Response } from 'express';
 import { ControllerBase } from './controller-base';
+import { Currency } from '../models/currency.model';
 
 export class CurrenciesController extends ControllerBase {
   public getCurrencies = (_: Request, res: Response) => {

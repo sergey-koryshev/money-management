@@ -1,5 +1,5 @@
-import { Expense } from "../models/expense.model";
-import { currencies } from "./currencies.data";
+import { Expense } from '../models/expense.model';
+import { currencies } from './currencies.data';
 
 export const expenses: Expense[] = [
   {

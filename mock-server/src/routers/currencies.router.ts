@@ -1,7 +1,5 @@
-import { Router } from 'express';
-import { DataContext } from "../data/data-context";
-import { RouterBase } from "./router-base";
 import { CurrenciesController } from '../controllers/currencies.controller';
+import { RouterBase } from './router-base';
 
 export class CurrenciesRouter extends RouterBase<CurrenciesController> {
   initialize(): void {

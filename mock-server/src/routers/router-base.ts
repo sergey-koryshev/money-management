@@ -1,5 +1,5 @@
-import { Router } from "express";
-import { DataContext } from "../data/data-context";
+import { DataContext } from '../data/data-context';
+import { Router } from 'express';
 
 export abstract class RouterBase<T> {
   protected controller: T;
