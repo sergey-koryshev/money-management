@@ -1,10 +1,8 @@
 import { Response, Request } from 'express';
-import { DataContext } from '../data/data-context';
-import { AddExpenseParams } from '../models/add-expense-params';
+import { AddExpenseParams } from '../models/add-expense-params.model';
+import { ControllerBase } from './controller-base';
 
-export class ExpensesController {
-  constructor(private dataContext: DataContext) {}
-
+export class ExpensesController extends ControllerBase {
   public getExpenses = (_: Request, res: Response) => {
     res.send(this.wrapData(this.dataContext.exchangedExpenses));
   }
@@ -30,11 +28,5 @@ export class ExpensesController {
     this.dataContext.expenses.push(newExpense);
     this.dataContext.recalculateExchangedExpenses();
     res.send(this.wrapData(this.dataContext.exchangedExpenses.find((e) => e.id === maxId + 1)));
-  }
-
-  private wrapData(data: any) {
-    return {
-      data
-    }
   }
 }

@@ -1,6 +1,8 @@
 import { Config } from './models/config.model';
+import { CurrenciesController } from './controllers/currencies.controller';
 import { CurrenciesRouter as CurrenciesRouter } from './routers/currencies.router';
 import { DataContext } from './data/data-context';
+import { ExpensesController } from './controllers/expenses.controller';
 import { ExpensesRouter } from './routers/expenses.router';
 import { join } from 'path';
 import { readFileSync } from 'fs';
@@ -11,8 +13,8 @@ const config: Config = JSON.parse(readFileSync(join(__dirname, 'config.json'), '
 const server: Express = express();
 const dataContext = new DataContext();
 
-const currenciesRouter = new CurrenciesRouter(dataContext);
-const expensesRouter = new ExpensesRouter(dataContext);
+const currenciesRouter = new CurrenciesRouter(CurrenciesController, dataContext);
+const expensesRouter = new ExpensesRouter(ExpensesController, dataContext);
 
 server.use(cors());
 server.use(express.json());

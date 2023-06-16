@@ -1,23 +1,14 @@
 import { Router } from 'express';
 import { DataContext } from "../data/data-context";
-import { RouterBase } from "../models/router-base.model";
+import { RouterBase } from "./router-base";
 import { CurrenciesController } from '../controllers/currencies.controller';
 
-export class CurrenciesRouter implements RouterBase {
-  private currencyController: CurrenciesController;
-  router: Router;
-
-  constructor(dataContext: DataContext) {
-    this.currencyController = new CurrenciesController(dataContext)
-    this.router = Router();
-    this.initialize();
-  }
-
-  private initialize() {
-    this.router.get('/', this.currencyController.getCurrencies);
-    this.router.get('/main', this.currencyController.getMainCurrency);
-    this.router.post('/main', this.currencyController.setMainCurrency);
-    this.router.delete('/main', this.currencyController.removeMainCurrency);
+export class CurrenciesRouter extends RouterBase<CurrenciesController> {
+  initialize(): void {
+    this.router.get('/', this.controller.getCurrencies);
+    this.router.get('/main', this.controller.getMainCurrency);
+    this.router.post('/main', this.controller.setMainCurrency);
+    this.router.delete('/main', this.controller.removeMainCurrency);
   }
 }
 

@@ -1,10 +1,9 @@
 import { Response, Request } from 'express';
 import { DataContext } from '../data/data-context';
 import { Currency } from '../models/currency.model';
+import { ControllerBase } from './controller-base';
 
-export class CurrenciesController {
-  constructor(private dataContext: DataContext) {}
-
+export class CurrenciesController extends ControllerBase {
   public getCurrencies = (_: Request, res: Response) => {
     res.send(this.wrapData(this.dataContext.currencies));
   }
@@ -27,11 +26,5 @@ export class CurrenciesController {
     this.dataContext.mainCurrency = null;
     this.dataContext.recalculateExchangedExpenses();
     res.send(this.wrapData({}));
-  }
-
-  private wrapData(data: any) {
-    return {
-      data
-    }
   }
 }
