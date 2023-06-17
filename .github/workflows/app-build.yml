@@ -17,3 +17,4 @@ jobs:
     with:
       node-version: 16.x
       dist-path: dist/money-management
+      artifact-prefix: dist

@@ -11,6 +11,9 @@ on:
       dist-path:
         required: true
         type: string
+      artifact-prefix:
+        required: true
+        type: string
 
 jobs:
   build:
@@ -38,5 +41,5 @@ jobs:
       - name: Publish Artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: 'dist-${{ env.version }}-node-${{ env.nodeVersion }}'
+          name: '${{ inputs.artifact-prefix }}-${{ env.version }}-node-${{ env.nodeVersion }}'
           path: ${{ inputs.root-path }}/${{ inputs.dist-path }}

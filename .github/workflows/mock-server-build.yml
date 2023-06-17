@@ -18,3 +18,4 @@ jobs:
       node-version: 16.x
       root-path: mock-server
       dist-path: build
+      artifact-prefix: mock-server
