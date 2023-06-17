@@ -4,16 +4,20 @@ on:
       node-version:
         required: true
         type: string
-      root-path:
-        required: false
-        type: string
-        default: .
       dist-path:
         required: true
         type: string
       artifact-prefix:
         required: true
         type: string
+      root-path:
+        required: false
+        type: string
+        default: .
+      run-lint:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -30,6 +34,9 @@ jobs:
           node-version: ${{ inputs.node-version }}
       - name: Install packages
         run: npm ci
+      - name: Run lint
+        if: ${{ inputs.run-lint == 'true' }}
+        run: npm run lint
       - name: Build project
         run: npm run build
       - name: Get current version

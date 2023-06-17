@@ -19,3 +19,4 @@ jobs:
       root-path: mock-server
       dist-path: build
       artifact-prefix: mock-server
+      run-lint: true
