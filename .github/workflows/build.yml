@@ -30,14 +30,12 @@ jobs:
       - name: Build project
         run: npm run build
       - name: Get current version
-        if: ${{ github.event_name != 'pull_request' }}
         run: |
           version=$(npm pkg get version --workspaces=false | tr -d \")
           echo "version=$version" >> "$GITHUB_ENV"
           nodeVersion=$(node -v)
           echo "nodeVersion=$nodeVersion" >> "$GITHUB_ENV"
       - name: Publish Artifacts
-        if: ${{ github.event_name != 'pull_request' }}
         uses: actions/upload-artifact@v2
         with:
           name: 'dist-${{ env.version }}-node-${{ env.nodeVersion }}'
