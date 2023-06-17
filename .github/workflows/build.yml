@@ -35,7 +35,7 @@ jobs:
       - name: Install packages
         run: npm ci
       - name: Run lint
-        if: ${{ inputs.run-lint == 'true' }}
+        if: ${{ inputs.run-lint == true }}
         run: npm run lint
       - name: Build project
         run: npm run build
