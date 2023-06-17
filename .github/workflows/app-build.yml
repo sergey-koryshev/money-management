@@ -1,0 +1,19 @@
+name: App Build
+
+run-name: App Build @${{ github.sha }}
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: App Build
+    uses: ./.github/workflows/build.yml
+    with:
+      node-version: 16.x
+      dist-path: dist/money-management
