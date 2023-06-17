@@ -1,0 +1,20 @@
+name: Mock Server Build
+
+run-name: Mock Server Build @${{ github.sha }}
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    name: Mock Server Build
+    uses: ./.github/workflows/build.yml
+    with:
+      node-version: 16.x
+      root-path: mock-server
+      dist-path: build
