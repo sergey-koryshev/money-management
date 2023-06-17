@@ -26,9 +26,9 @@ jobs:
         run: npm run build
       - name: Get current version
         run: |
-          version = $(npm pkg get version --workspaces=false | tr -d \")
+          version=$(npm pkg get version --workspaces=false | tr -d \")
           echo "version=$version" >> "$GITHUB_ENV"
-          nodeVersion = $(node -v)
+          nodeVersion=$(node -v)
           echo "nodeVersion=$nodeVersion" >> "$GITHUB_ENV"
       - name: Publish Artifacts
         uses: actions/upload-artifact@v2
