@@ -21,7 +21,9 @@ jobs:
       - uses: actions/checkout@v3
       - name: Set root
         if: ${{ inputs.root-path != '' }}
-        run: cd $ROOT_PATH
+        run: |
+          cd $ROOT_PATH
+          echo Root directory set to $(pwd)
         env:
           ROOT_PATH: ${{ inputs.root-path }}
       - name: Use Node.js ${{ inputs.node-version }}
