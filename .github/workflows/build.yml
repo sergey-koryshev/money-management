@@ -7,6 +7,7 @@ on:
       root-path:
         required: false
         type: string
+        default: .
       dist-path:
         required: true
         type: string
@@ -15,29 +16,19 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    env:
-      node-version: 16.x
+    defaults:
+      run:
+        working-directory: ${{ inputs.root-path }}
     steps:
       - uses: actions/checkout@v3
-      - name: Set root
-        if: ${{ inputs.root-path != '' }}
-        run: |
-          cd $ROOT_PATH
-          echo Root directory set to $(pwd)
-        env:
-          ROOT_PATH: ${{ inputs.root-path }}
       - name: Use Node.js ${{ inputs.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ inputs.node-version }}
       - name: Install packages
-        run: |
-          pwd
-          npm ci
+        run: npm ci
       - name: Build project
-        run:
-          pwd
-          npm run build
+        run: npm run build
       - name: Get current version
         if: ${{ github.event_name != 'pull_request' }}
         run: |
@@ -50,4 +41,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: 'dist-${{ env.version }}-node-${{ env.nodeVersion }}'
-          path: ${{ inputs.dist-path }}
+          path: ${{ inputs.root-path }}/${{ inputs.dist-path }}
