@@ -1,27 +1,42 @@
-name: Build
-
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+  workflow_call:
+    inputs:
+      node-version:
+        required: true
+        type: string
+      dist-path:
+        required: true
+        type: string
+      artifact-prefix:
+        required: true
+        type: string
+      root-path:
+        required: false
+        type: string
+        default: .
+      run-lint:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    env:
-      node-version: 16.x
+    defaults:
+      run:
+        working-directory: ${{ inputs.root-path }}
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js ${{ env.node-version }}
+      - name: Use Node.js ${{ inputs.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ env.node-version }}
+          node-version: ${{ inputs.node-version }}
       - name: Install packages
         run: npm ci
+      - name: Run lint
+        if: ${{ inputs.run-lint == true }}
+        run: npm run lint
       - name: Build project
         run: npm run build
       - name: Get current version
@@ -32,8 +47,8 @@ jobs:
           nodeVersion=$(node -v)
           echo "nodeVersion=$nodeVersion" >> "$GITHUB_ENV"
       - name: Publish Artifacts
+        uses: actions/upload-artifact@v3
         if: ${{ github.event_name != 'pull_request' }}
-        uses: actions/upload-artifact@v2
         with:
-          name: 'dist-${{ env.version }}-node-${{ env.nodeVersion }}'
-          path: dist/money-management
+          name: '${{ inputs.artifact-prefix }}-${{ env.version }}-node-${{ env.nodeVersion }}'
+          path: ${{ inputs.root-path }}/${{ inputs.dist-path }}
