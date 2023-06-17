@@ -1,12 +1,15 @@
-name: Build
-
 on:
-  push:
-    branches:
-      - master
-  pull_request:
-    branches:
-      - master
+  workflow_call:
+    inputs:
+      node-version:
+        required: true
+        type: string
+      root-path:
+        required: false
+        type: string
+      dist-path:
+        required: true
+        type: string
 
 jobs:
   build:
@@ -16,10 +19,15 @@ jobs:
       node-version: 16.x
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js ${{ env.node-version }}
+      - name: Set root
+        if: ${{ github.event.inputs.root-path != '' }}
+        run: cd $ROOT_PATH
+        env:
+          ROOT_PATH: ${{ inputs.root-path }}
+      - name: Use Node.js ${{ inputs.node-version }}
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ env.node-version }}
+          node-version: ${{ inputs.node-version }}
       - name: Install packages
         run: npm ci
       - name: Build project
@@ -36,4 +44,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: 'dist-${{ env.version }}-node-${{ env.nodeVersion }}'
-          path: dist/money-management
+          path: ${{ inputs.dist-path }}
