@@ -39,7 +39,7 @@ jobs:
           nodeVersion=$(node -v)
           echo "nodeVersion=$nodeVersion" >> "$GITHUB_ENV"
       - name: Publish Artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: '${{ inputs.artifact-prefix }}-${{ env.version }}-node-${{ env.nodeVersion }}'
           path: ${{ inputs.root-path }}/${{ inputs.dist-path }}
