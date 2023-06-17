@@ -31,9 +31,13 @@ jobs:
         with:
           node-version: ${{ inputs.node-version }}
       - name: Install packages
-        run: npm ci
+        run: |
+          pwd
+          npm ci
       - name: Build project
-        run: npm run build
+        run:
+          pwd
+          npm run build
       - name: Get current version
         if: ${{ github.event_name != 'pull_request' }}
         run: |
