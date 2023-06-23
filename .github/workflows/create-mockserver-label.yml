@@ -14,4 +14,5 @@ jobs:
     uses: ./.github/workflows/create-label.yml
     with:
       app-name: mock-server
+      repo-token: ${{ secrets.REPO_PAT }}
       root-path: mock-server
