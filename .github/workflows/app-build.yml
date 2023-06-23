@@ -3,7 +3,10 @@ name: App Build
 run-name: App Build @${{ github.sha }}
 
 on:
-  push:
+  workflow_run:
+    workflows: [Create App Version Label]
+    types:
+      - completed
     branches:
       - master
   pull_request:
