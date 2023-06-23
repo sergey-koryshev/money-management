@@ -1,0 +1,17 @@
+name: Create App Version Label
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - master
+    paths-ignore:
+      - .github/**
+      - mock-server/**
+
+jobs:
+  create_label:
+    name: Create App Version Label
+    uses: ./.github/workflows/create-label.yml
+    with:
+      app-name: application
