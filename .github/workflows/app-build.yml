@@ -13,9 +13,9 @@ on:
     branches:
       - master
     paths-ignore:
-      - .github/**
-      - mock-server/**
-      - readme.md
+      - '.github/**'
+      - 'mock-server/**'
+      - '**/readme.md'
 
 jobs:
   build:
