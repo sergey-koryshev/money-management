@@ -2,6 +2,10 @@ name: Create Version Label
 
 on:
   workflow_call:
+    secrets:
+      REPO_TOKEN:
+        description: 'Token to access to repository'
+        required: true
     inputs:
       app-name:
         required: true

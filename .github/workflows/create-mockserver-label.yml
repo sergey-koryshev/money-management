@@ -12,6 +12,8 @@ jobs:
   create_label:
     name: Create App Version Label
     uses: ./.github/workflows/create-label.yml
+    secrets:
+      REPO_TOKEN: ${{ secrets.REPO_PAT }}
     with:
       app-name: mock-server
       repo-token: ${{ secrets.REPO_PAT }}
