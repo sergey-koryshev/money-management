@@ -8,6 +8,7 @@ on:
     paths-ignore:
       - .github/**
       - mock-server/**
+      - readme.md
 
 jobs:
   create_label:
