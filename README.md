@@ -1,27 +1,84 @@
-# MoneyManagement
+# Money Management
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 12.2.8.
+Money Management is a web application which helps to manage personal finances. The project is in `POC` state
 
-## Development server
+## Main Features of POC
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+- managing incomes/outcomes: adding, editing, deleting
+- displaying incomes/outcomes for selected month
+- specifying expenses with any currency
+- ability to convert all expenses in one currency automatically
 
-## Code scaffolding
+## POC structure
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+Frontend of `POC` version is developed on `Angular 14` framework relying on `Bootstrap`. To emulate backend, simple server based on `Express.js` is used.
 
-## Build
+Folders description:
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+- `build` - contains infrastructure scripts and tools
+- `mock-server` - contains source of mock server
+- `src` - contains source of the `Money Management` web-application
 
-## Running unit tests
+## Development
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+### Versioning
 
-## Running end-to-end tests
+Semantic versioning is used in both `MM` application and `Mock Server`. Follow rules are applied for both projects:
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+- Major version is always `0` for `POC`
+- Any non-infrastructure pull request increases `patch` number
+- Release process increases `minor` number and zeroes `patch` version
 
-## Further help
+Changing version directly in code is not allowed. It happens automatically during `CI` based on label set in related `PR`.
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+### Contribution
+
+All changes must be submitted via `PR` with all checks passed. Every `PR` must contains at least one label from following:
+
+- `breaking changes` - increments major number
+- `enchantment` - increments patch number
+- `minor enchantment` - increments patch number
+- `bug` - increments patch number
+- `misc` - increments patch number
+
+### Build
+
+#### Money Management app
+
+To build `Money Management` app, follow commands must be run:
+
+```bash
+npm ci
+npm run build
+```
+
+Result build can be found under `dist/money-management`
+
+#### Mock Server
+
+To build `Mock Server`, follow commands must be run:
+
+```bash
+cd mock-server
+npm ci
+npm run build
+```
+
+Result build can be found under `mock-server/build`
+
+### Local Deployment
+
+To serve the application locally you need to start `Mock Server` firstly
+
+```bash
+cd mock-server
+npm run start
+```
+
+And then start `Money Management` application
+
+```bash
+npm run start
+```
+
+Application will be available under `http://localhost:4200/`
