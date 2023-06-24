@@ -16,4 +16,5 @@ jobs:
       REPO_TOKEN: ${{ secrets.REPO_PAT }}
     with:
       app-name: mock-server
+      repo-token: ${{ secrets.REPO_PAT }}
       root-path: mock-server

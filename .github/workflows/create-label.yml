@@ -10,6 +10,9 @@ on:
       app-name:
         required: true
         type: string
+      repo-token:
+        required: true
+        type: string
       root-path:
         required: false
         type: string
