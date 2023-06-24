@@ -17,4 +17,3 @@ jobs:
       REPO_TOKEN: ${{ secrets.REPO_PAT }}
     with:
       app-name: application
-      repo-token: ${{ secrets.REPO_PAT }}
