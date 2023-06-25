@@ -9,15 +9,16 @@ import { AddExpenseParams } from '@app/http-clients/expenses-http-client.model';
 
 @Component({
   selector: 'app-expenses-page',
-  templateUrl: './expenses-page.component.html'
+  templateUrl: './expenses-page.component.html',
+  styleUrls: ['./expenses-page.component.scss']
 })
 export class ExpensesPageComponent implements OnInit {
 
   expenses: Expense[];
 
   constructor(
-    private route: ActivatedRoute, 
-    private currencyService: CurrencyService, 
+    private route: ActivatedRoute,
+    private currencyService: CurrencyService,
     private expensesHttpClient: ExpensesHttpClientService,
     private modalService: NgbModal) { }
 
@@ -25,7 +26,7 @@ export class ExpensesPageComponent implements OnInit {
     this.route.data.subscribe((data) => this.expenses = data.expenses ?? []);
     this.currencyService.mainCurrency$
       .pipe(
-        //we need to skip first item emitted by BehaviorSubject because we already get initial data from route resolver 
+        //we need to skip first item emitted by BehaviorSubject because we already get initial data from route resolver
         skip(1),
         switchMap(() => this.expensesHttpClient.getAllExpenses()))
       .subscribe((expenses) => this.expenses = expenses);

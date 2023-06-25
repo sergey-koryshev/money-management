@@ -1,4 +1,11 @@
-<button type="button" class="btn btn-primary" (click)="open(addNewExpenses)">Add new expense</button>
+<div class="d-flex justify-content-between">
+  <ngb-datepicker class="datepicker">
+    <ng-template ngbDatepickerContent>
+      <div class="bg-light datepicker-align-fix"></div>
+    </ng-template>
+  </ngb-datepicker>
+  <button type="button" class="btn btn-primary" (click)="open(addNewExpenses)">Add new expense</button>
+</div>
 <app-expenses-table [data]="expenses"></app-expenses-table>
 
 <ng-template #addNewExpenses let-modal>
@@ -13,4 +20,8 @@
         <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss()">Cancel</button>
         <button type="button" class="btn btn-success" [disabled]="addNewExpensesForm.form.invalid" (click)="modal.close(addNewExpensesForm.form.value)">Save</button>
     </div>
+</ng-template>
+
+<ng-template #month let-dp>
+
 </ng-template>
