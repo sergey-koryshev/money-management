@@ -1,5 +1,5 @@
 <div class="d-flex justify-content-between">
-  <ngb-datepicker class="datepicker">
+  <ngb-datepicker class="datepicker" [startDate]="selectedMonth" (navigate)="onMonthChange($event)">
     <ng-template ngbDatepickerContent>
       <div class="bg-light datepicker-content"></div>
     </ng-template>
