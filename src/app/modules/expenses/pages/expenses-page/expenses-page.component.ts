@@ -41,13 +41,16 @@ export class ExpensesPageComponent implements OnInit {
         skip(1),
         switchMap(() => this.expensesHttpClient.getAllExpenses(this.expensesMonthService.month)))
       .subscribe((expenses) => this.expenses = expenses);
-
   }
 
   addNewExpense(expense: AddExpenseParams) {
     this.expensesHttpClient.addNewExpense(expense)
       .subscribe((addedExpanse) => {
-        this.expenses.push(addedExpanse);
+        const date = new Date(addedExpanse.date)
+        if (this.expensesMonthService.month.month == date.getMonth() + 1
+          && this.expensesMonthService.month.year == date.getFullYear()) {
+            this.expenses.push(addedExpanse);
+          }
       });
   }
 
