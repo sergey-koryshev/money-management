@@ -1,4 +1,11 @@
-<button type="button" class="btn btn-primary" (click)="open(addNewExpenses)">Add new expense</button>
+<div class="d-flex justify-content-between">
+  <ngb-datepicker class="datepicker" [startDate]="selectedMonth" (navigate)="onMonthChange($event)">
+    <ng-template ngbDatepickerContent>
+      <div class="bg-light datepicker-content"></div>
+    </ng-template>
+  </ngb-datepicker>
+  <button type="button" class="btn btn-primary" (click)="open(addNewExpenses)">Add new expense</button>
+</div>
 <app-expenses-table [data]="expenses"></app-expenses-table>
 
 <ng-template #addNewExpenses let-modal>
