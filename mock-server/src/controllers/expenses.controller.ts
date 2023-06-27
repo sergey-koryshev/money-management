@@ -3,8 +3,16 @@ import { AddExpenseParams } from '../models/add-expense-params.model';
 import { ControllerBase } from './controller-base';
 
 export class ExpensesController extends ControllerBase {
-  public getExpenses = (_: Request, res: Response) => {
-    res.send(this.wrapData(this.dataContext.exchangedExpenses));
+  public getExpenses = (req: Request, res: Response) => {
+    const month = req.query['month'];
+    const year = req.query['year'];
+    if (month && year) {
+      res.send(this.wrapData(this.dataContext.exchangedExpenses.filter((e) =>
+        e.date.getMonth() + 1 == Number(month) && e.date.getFullYear() == Number(year)
+      )));
+    } else {
+      res.sendStatus(500);
+    }
   }
 
   public addNewExpense = (req: Request<AddExpenseParams>, res: Response) => {
@@ -18,7 +26,7 @@ export class ExpensesController extends ControllerBase {
     );
     const newExpense = {
       id: maxId + 1,
-      date: req.body.date,
+      date: new Date(req.body.date),
       item: req.body.item,
       price: {
         amount: req.body.priceAmount,
