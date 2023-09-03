@@ -1,4 +1,4 @@
-<div [ngbPopover]="exchangedPrice ? popoverContent : null" triggers="mouseenter:mouseleave">
+<div [ngbPopover]="exchangedPrice ? popoverContent : null" triggers="mouseenter:mouseleave" class="price-container">
     <span>
         {{ price.amount | number : '1.0-2' }}
     </span>
