@@ -28,6 +28,7 @@ export class ExpensesController extends ControllerBase {
       id: maxId + 1,
       date: new Date(req.body.date),
       item: req.body.item,
+      category: this.dataContext.categories.find(c => c.id == req.body.categoryId),
       price: {
         amount: req.body.priceAmount,
         currency: this.dataContext.currencies.find((c) => c.id === req.body.currencyId) ?? this.dataContext.currencies[0]
