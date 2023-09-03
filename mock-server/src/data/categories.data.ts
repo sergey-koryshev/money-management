@@ -7,10 +7,10 @@ export const categories: Category[] = [
   },
   {
     id: 1,
-    name: 'Grocery'
+    name: 'Groceries'
   },
   {
     id: 2,
-    name: 'Electronics'
+    name: 'Web Shops'
   }
 ]
