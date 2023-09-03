@@ -1,10 +1,12 @@
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { CurrencyService } from '@services/currency.service';
+import { CategoryHttpClient } from '@http-clients/category-http-client.service';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Currency } from '@app/models/currency.model';
 import { ExpensesMonthService } from '@app/services/expenses-month.service';
 import { Month } from '@app/models/month.model';
+import { Category } from '@app/models/category.model';
 
 @Component({
   selector: 'app-add-new-expense-form',
@@ -14,6 +16,7 @@ import { Month } from '@app/models/month.model';
 export class AddNewExpenseComponent implements OnInit {
   private defaultCurrencyIdStorageName = 'default-currency';
   currencies: Currency[];
+  categories: Category[];
   form: FormGroup;
 
   get defaultCurrency(): number {
@@ -24,14 +27,18 @@ export class AddNewExpenseComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     currency: CurrencyService,
-    expensesMonthService: ExpensesMonthService) {
+    expensesMonthService: ExpensesMonthService,
+    private categoriesHttpClient: CategoryHttpClient) {
     this.currencies = currency.currencies;
+    this.categoriesHttpClient.getAllCategories()
+      .subscribe((categories) => this.categories = categories)
 
     this.form = this.fb.group({
       'date': [this.getCurrentDate(expensesMonthService.month), Validators.required],
       'item': [null, Validators.required],
       'priceAmount': [null, Validators.required],
-      'currencyId': [this.defaultCurrency, Validators.required]
+      'currencyId': [this.defaultCurrency, Validators.required],
+      'categoryId': [null]
     });
   }
 
