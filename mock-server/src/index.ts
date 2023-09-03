@@ -8,6 +8,8 @@ import { ExpensesRouter } from './routers/expenses.router';
 import cors from 'cors';
 import { join } from 'path';
 import { readFileSync } from 'fs';
+import { CategoriesRouter } from './routers/categories.router';
+import { CategoriesController } from './controllers/categories.controller';
 
 const config: Config = JSON.parse(readFileSync(join(__dirname, 'config.json'), 'utf8'))
 const server: Express = express();
@@ -15,6 +17,7 @@ const dataContext = new DataContext();
 
 const currenciesRouter = new CurrenciesRouter(CurrenciesController, dataContext);
 const expensesRouter = new ExpensesRouter(ExpensesController, dataContext);
+const categoriesRouter = new CategoriesRouter(CategoriesController, dataContext);
 
 server.use(cors());
 server.use(express.json());
@@ -22,6 +25,7 @@ server.disable('etag');
 
 server.use('/currencies', currenciesRouter.router);
 server.use('/expenses', expensesRouter.router);
+server.use('/categories', categoriesRouter.router);
 
 server.listen(config.port, () => {
   console.log(`⚡️ Server is running at http://localhost:${config.port}`);

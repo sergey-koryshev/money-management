@@ -1,6 +1,8 @@
+import { Category } from '../models/category.model';
 import { Currency } from '../models/currency.model';
 import { ExchangedPrice } from '../models/exchanged-price.model';
 import { Expense } from '../models/expense.model';
+import { categories } from './categories.data';
 import { currencies } from './currencies.data';
 import { expenses } from './expenses.data';
 import { mainCurrency } from './main-currency.data';
@@ -15,7 +17,8 @@ export class DataContext {
   public currencies: Currency[];
   public mainCurrency: Currency | null;
   public expenses: Expense[];
-  public exchangedExpenses:Expense[];
+  public exchangedExpenses: Expense[];
+  public categories: Category[];
 
   private exchangeRates: ExchangeRate[] = [
     {
@@ -85,6 +88,7 @@ export class DataContext {
     this.mainCurrency = mainCurrency;
     this.expenses = expenses;
     this.exchangedExpenses = [];
+    this.categories = categories;
     this.recalculateExchangedExpenses();
   }
 
