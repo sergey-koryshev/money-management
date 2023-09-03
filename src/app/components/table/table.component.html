@@ -1,13 +1,13 @@
 <table class="table table-striped">
     <thead>
         <tr>
-            <th 
-                scope="col" 
-                [sortable]="column.name" 
-                [direction]="defaultSorting.column === column.name ? defaultSorting.direction : ''" 
-                (sort)="onSort($event)" 
+            <th
+                scope="col"
+                [sortable]="column.name"
+                [direction]="defaultSorting.column === column.name ? defaultSorting.direction : ''"
+                (sort)="onSort($event)"
                 *ngFor="let column of columns"
-            >
+                [ngStyle]="{ 'min-width': column.minWidth, 'width': column.stretch ? '100%' : null }">
                 <span>{{ column.displayName }}</span>
             </th>
         </tr>

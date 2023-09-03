@@ -3,6 +3,8 @@ import { TemplateRef } from "@angular/core";
 export interface TableColumn<T> {
     name: string,
     displayName: string,
+    minWidth?: string,
+    stretch?: boolean,
     function?: (row: T) => string,
     template?: () => TemplateRef<unknown>;
     sortFunc?: (first: T, second: T) => number;
