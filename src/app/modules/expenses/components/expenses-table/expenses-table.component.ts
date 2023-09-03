@@ -21,11 +21,13 @@ export class ExpensesTableComponent {
     },
     {
       name: 'item',
-      displayName: 'Item(s)'
+      displayName: 'Item(s)',
+      stretch: true
     },
     {
       name: 'price',
       displayName: 'Price',
+      minWidth: '100px',
       template: () => this.price,
       sortFunc: priceComparer
     }
