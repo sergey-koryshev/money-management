@@ -15,7 +15,7 @@ export class ExpensesController extends ControllerBase {
     }
   }
 
-  public addNewExpense = (req: Request<AddExpenseParams>, res: Response) => {
+  public addNewExpense = (req: Request<any, any, AddExpenseParams>, res: Response) => {
     const maxId = this.dataContext.expenses.reduce(
       (max, e) => (e.id
         ? e.id > max

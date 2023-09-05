@@ -3,4 +3,5 @@ export interface AddExpenseParams {
   item: string;
   priceAmount: number;
   currencyId: number;
+  categoryId?: number;
 }
