@@ -21,4 +21,10 @@ export class ExpensesHttpClientService {
   addNewExpense(expense: AddExpenseParams) {
     return this.baseHttpClient.post<Expense>('expenses', expense);
   }
+
+  getExistingItems(searchEntry: string) {
+    return this.baseHttpClient.post<string[]>('expenses/items', searchEntry, undefined, {
+      'Content-Type': 'text/plain'
+    })
+  }
 }

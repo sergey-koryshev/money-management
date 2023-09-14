@@ -1,4 +1,6 @@
 import express, { Express } from 'express';
+import { CategoriesController } from './controllers/categories.controller';
+import { CategoriesRouter } from './routers/categories.router';
 import { Config } from './models/config.model';
 import { CurrenciesController } from './controllers/currencies.controller';
 import { CurrenciesRouter as CurrenciesRouter } from './routers/currencies.router';
@@ -8,8 +10,6 @@ import { ExpensesRouter } from './routers/expenses.router';
 import cors from 'cors';
 import { join } from 'path';
 import { readFileSync } from 'fs';
-import { CategoriesRouter } from './routers/categories.router';
-import { CategoriesController } from './controllers/categories.controller';
 
 const config: Config = JSON.parse(readFileSync(join(__dirname, 'config.json'), 'utf8'))
 const server: Express = express();
@@ -21,6 +21,7 @@ const categoriesRouter = new CategoriesRouter(CategoriesController, dataContext)
 
 server.use(cors());
 server.use(express.json());
+server.use(express.text());
 server.disable('etag');
 
 server.use('/currencies', currenciesRouter.router);

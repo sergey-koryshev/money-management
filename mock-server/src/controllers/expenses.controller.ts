@@ -1,8 +1,19 @@
 import { Request, Response } from 'express';
 import { AddExpenseParams } from '../models/add-expense-params.model';
 import { ControllerBase } from './controller-base';
+import { DataContext } from '../data/data-context';
+import { Expense } from '../models/expense.model';
+import FuzzySearch from 'fuzzy-search';
 
 export class ExpensesController extends ControllerBase {
+
+  itemsSearcher: FuzzySearch<Expense>;
+
+  constructor(dataContext: DataContext) {
+    super(dataContext);
+    this.itemsSearcher = new FuzzySearch<Expense>(dataContext.expenses, ['item'])
+  }
+
   public getExpenses = (req: Request, res: Response) => {
     const month = req.query['month'];
     const year = req.query['year'];
@@ -15,7 +26,7 @@ export class ExpensesController extends ControllerBase {
     }
   }
 
-  public addNewExpense = (req: Request<any, any, AddExpenseParams>, res: Response) => {
+  public addNewExpense = (req: Request<unknown, unknown, AddExpenseParams>, res: Response) => {
     const maxId = this.dataContext.expenses.reduce(
       (max, e) => (e.id
         ? e.id > max
@@ -37,5 +48,9 @@ export class ExpensesController extends ControllerBase {
     this.dataContext.expenses.push(newExpense);
     this.dataContext.recalculateExchangedExpenses();
     res.send(this.wrapData(this.dataContext.exchangedExpenses.find((e) => e.id === maxId + 1)));
+  }
+
+  public getExistingItems = (req: Request<unknown, unknown, string>, res: Response) => {
+    res.send(this.wrapData([... new Set(this.itemsSearcher.search(req.body).map((e) => e.item))]));
   }
 }
