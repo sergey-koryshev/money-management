@@ -4,4 +4,7 @@
 @import '~bootstrap/scss/bootstrap';
 
 /* Importing flag icons */
-@import '~flag-icons/sass/flag-icons'
+@import '~flag-icons/sass/flag-icons';
+
+/* Importing ng-select theme */
+@import '~@ng-select/ng-select/themes/default.theme.css';

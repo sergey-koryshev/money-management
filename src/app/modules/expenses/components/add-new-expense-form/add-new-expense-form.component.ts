@@ -1,3 +1,4 @@
+import { ExpensesHttpClientService } from '@http-clients/expenses-http-client.service';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { CurrencyService } from '@services/currency.service';
 import { CategoryHttpClient } from '@http-clients/category-http-client.service';
@@ -7,6 +8,7 @@ import { Currency } from '@app/models/currency.model';
 import { ExpensesMonthService } from '@app/services/expenses-month.service';
 import { Month } from '@app/models/month.model';
 import { Category } from '@app/models/category.model';
+import { Observable, Subject, catchError, of, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-add-new-expense-form',
@@ -18,6 +20,9 @@ export class AddNewExpenseComponent implements OnInit {
   currencies: Currency[];
   categories: Category[];
   form: FormGroup;
+  items$: Observable<string[]>;
+  searchEntry$ = new Subject<string>();
+  loading: boolean;
 
   get defaultCurrency(): number {
     const currencyId = localStorage.getItem(this.defaultCurrencyIdStorageName);
@@ -28,10 +33,17 @@ export class AddNewExpenseComponent implements OnInit {
     private fb: FormBuilder,
     currency: CurrencyService,
     expensesMonthService: ExpensesMonthService,
-    private categoriesHttpClient: CategoryHttpClient) {
+    private categoriesHttpClient: CategoryHttpClient,
+    private expensesHttpClient: ExpensesHttpClientService) {
     this.currencies = currency.currencies;
     this.categoriesHttpClient.getAllCategories()
       .subscribe((categories) => this.categories = categories)
+    this.items$ = this.searchEntry$.pipe(
+      tap(() => this.loading = true),
+      switchMap(searchEntry => this.expensesHttpClient.getExistingItems(searchEntry).pipe(
+        catchError(() => of([])),
+        tap(() => this.loading = false)
+    )));
 
     this.form = this.fb.group({
       'date': [this.getCurrentDate(expensesMonthService.month), Validators.required],
