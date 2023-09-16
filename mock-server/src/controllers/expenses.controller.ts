@@ -47,8 +47,8 @@ export class ExpensesController extends ControllerBase {
 
     let category: Category | undefined;
 
-    if (req.body.category !== undefined) {
-      if (req.body.category.id !== undefined) {
+    if (req.body.category != null) {
+      if (req.body.category.id != null) {
         category = this.dataContext.categories.find(c => c.id == req.body.category?.id);
       } else {
         const newCategoryArrayId = this.dataContext.categories.push({
