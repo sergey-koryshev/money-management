@@ -50,7 +50,7 @@ export class AddNewExpenseComponent implements OnInit {
       'item': [null, Validators.required],
       'priceAmount': [null, Validators.required],
       'currencyId': [this.defaultCurrency, Validators.required],
-      'categoryId': [null]
+      'category': [null]
     });
   }
 

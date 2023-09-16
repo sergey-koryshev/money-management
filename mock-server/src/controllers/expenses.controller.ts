@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { AddExpenseParams } from '../models/add-expense-params.model';
+import { Category } from '../models/category.model';
 import { ControllerBase } from './controller-base';
 import { DataContext } from '../data/data-context';
 import { Expense } from '../models/expense.model';
@@ -35,11 +36,34 @@ export class ExpensesController extends ControllerBase {
         : 0),
       0
     );
+    const maxCategoryId = this.dataContext.categories.reduce(
+      (max, e) => (e.id
+        ? e.id > max
+          ? e.id
+          : max
+        : 0),
+      0
+    );
+
+    let category: Category | undefined;
+
+    if (req.body.category) {
+      if (req.body.category.id) {
+        category = this.dataContext.categories.find(c => c.id == req.body.category?.id);
+      } else {
+        const newCategoryArrayId = this.dataContext.categories.push({
+          id: maxCategoryId + 1,
+          name: req.body.category.name
+        });
+        category = this.dataContext.categories[newCategoryArrayId - 1];
+      }
+    }
+
     const newExpense = {
       id: maxId + 1,
       date: new Date(req.body.date),
       item: req.body.item,
-      category: this.dataContext.categories.find(c => c.id == req.body.categoryId),
+      category: category,
       price: {
         amount: req.body.priceAmount,
         currency: this.dataContext.currencies.find((c) => c.id === req.body.currencyId) ?? this.dataContext.currencies[0]

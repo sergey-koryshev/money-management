@@ -16,10 +16,7 @@
     <div class="row mt-3">
       <div class="col">
         <label for="category">Category:</label>
-        <select id="category" class="form-control form-select" formControlName="categoryId">
-            <option [ngValue]="null">---</option>
-            <option *ngFor="let category of categories" [ngValue]="category.id">{{ category.name }}</option>
-        </select>
+        <ng-select id="category" formControlName="category" [items]="categories" bindLabel="name" [addTag]="true"></ng-select>
       </div>
       <div class="col">
         <label for="price">Price:</label>
@@ -31,5 +28,4 @@
         </div>
         </div>
     </div>
-    <code>{{ form.value | json }}</code>
 </form>
