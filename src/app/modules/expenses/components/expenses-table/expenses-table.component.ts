@@ -17,11 +17,23 @@ export class ExpensesTableComponent {
     {
       name: 'date',
       displayName: 'Date',
-      function: (row: Expense) => new Date(row.date).toLocaleDateString()
+      function: (row) => new Date(row.date).toLocaleDateString()
+    },
+    {
+      name: 'category',
+      displayName: 'Category',
+      function: (row) => row.category ? row.category.name : '-',
+      sortFunc: (f, s) => {
+        return (f.category
+          ? f.category.name
+          : '').localeCompare(s.category
+            ? s.category.name
+            : '');
+      }
     },
     {
       name: 'item',
-      displayName: 'Item(s)',
+      displayName: 'Item',
       stretch: true
     },
     {
