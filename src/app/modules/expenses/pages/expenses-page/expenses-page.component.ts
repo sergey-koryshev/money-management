@@ -56,9 +56,10 @@ export class ExpensesPageComponent implements OnInit {
 
   open(content: any) {
     const modalRef = this.modalService.open(content);
-    modalRef.closed.subscribe(({date, ...restParams}) => {
+    modalRef.closed.subscribe(({date, priceAmount, ...restParams}) => {
       this.addNewExpense({
         date: new Date(date.year, date.month - 1, date.day),
+        priceAmount: Number(priceAmount),
         ...restParams
       });
     });

@@ -9,6 +9,7 @@ import { ComponentsModule } from '@app/components/components.module';
 import { ExpensesResolver } from './expenses.resolver';
 import { AddNewExpenseComponent } from './components/add-new-expense-form/add-new-expense-form.component';
 import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgSelectModule } from '@ng-select/ng-select';
 
 const routes: Routes = [
   {
@@ -22,6 +23,6 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [ExpensesPageComponent, ExpensesTableComponent, AddNewExpenseComponent],
-  imports: [CommonModule, RouterModule.forChild(routes), ComponentsModule, ReactiveFormsModule, NgbDatepickerModule]
+  imports: [CommonModule, RouterModule.forChild(routes), ComponentsModule, ReactiveFormsModule, NgbDatepickerModule, NgSelectModule]
 })
 export class ExpensesModule {}

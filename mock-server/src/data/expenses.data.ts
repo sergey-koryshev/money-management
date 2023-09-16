@@ -1,20 +1,23 @@
 import { Expense } from '../models/expense.model';
+import { categories } from './categories.data';
 import { currencies } from './currencies.data';
 
 export const expenses: Expense[] = [
   {
     id: 0,
     date: new Date('2022-08-01'),
-    item: 'Something I bought in Serbia',
+    item: 'Zavičaj',
+    category: categories[0],
     price: {
-      amount: 134,
+      amount: 750,
       currency: currencies[1],
     }
   },
   {
     id: 1,
     date: new Date('2022-08-02'),
-    item: 'Something I bought in Russia',
+    item: 'Ozon',
+    category: categories[2],
     price: {
       amount: 1056,
       currency: currencies[0],
@@ -23,16 +26,18 @@ export const expenses: Expense[] = [
   {
     id: 2,
     date: new Date('2022-08-05'),
-    item: 'Something I bought in Italy',
+    item: 'Trapizzino',
+    category: categories[0],
     price: {
-      amount: 700,
+      amount: 29.30,
       currency: currencies[3],
     }
   },
   {
     id: 3,
     date: new Date('2022-08-01'),
-    item: 'Something I bought in Austria',
+    item: 'Konzum',
+    category: categories[1],
     price: {
       amount: 31,
       currency: currencies[3],

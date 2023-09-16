@@ -3,26 +3,29 @@
         <div class="col">
             <label for="date">Date:</label>
             <div class="input-group">
-                <input ngbDatepicker id="date" class="form-control" placeholder="yyyy-mm-dd" formControlName="date" 
+                <input ngbDatepicker id="date" class="form-control" placeholder="yyyy-mm-dd" formControlName="date"
                     #dp="ngbDatepicker">
                 <button class="btn btn-outline-secondary calendar-icon" (click)="dp.toggle()" type="button"></button>
             </div>
         </div>
         <div class="col">
             <label for="item">Item:</label>
-            <input id="item" class="form-control" formControlName="item" />
+            <ng-select id="item" formControlName="item" [items]="items$ | async" [addTag]="addItem.bind(this)" [loading]="loading" [typeahead]="searchEntry$" [hideSelected]="true" [minTermLength]="1" bindLabel="item" bindValue="item" (change)="itemChanged($event)"></ng-select>
         </div>
     </div>
     <div class="row mt-3">
-        <div class="col">
-            <label for="price">Price:</label>
-            <input id="price" class="form-control" formControlName="priceAmount" />
+      <div class="col">
+        <label for="category">Category:</label>
+        <ng-select id="category" formControlName="category" [items]="categories" bindLabel="name" [addTag]="true" [hideSelected]="true"></ng-select>
+      </div>
+      <div class="col">
+        <label for="price">Price:</label>
+        <div class="input-group">
+          <input id="price" class="form-control" formControlName="priceAmount" />
+          <select class="form-select input-group-text" formControlName="currencyId">
+            <option *ngFor="let currency of currencies" [ngValue]="currency.id">{{ currency.name }}</option>
+          </select>
         </div>
-        <div class="col">
-            <label for="currency">Currency:</label>
-            <select id="currency" class="form-control" formControlName="currencyId">
-                <option *ngFor="let currency of currencies" [value]="currency.id">{{ currency.name }}</option>
-            </select>
         </div>
     </div>
 </form>
