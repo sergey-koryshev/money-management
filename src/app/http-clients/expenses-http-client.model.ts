@@ -7,3 +7,8 @@ export interface AddExpenseParams {
     currencyId: number;
     category: Category;
 }
+
+export interface ItemWithCategory {
+  item: string,
+  categoryId?: number
+}

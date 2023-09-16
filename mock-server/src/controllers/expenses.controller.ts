@@ -75,6 +75,10 @@ export class ExpensesController extends ControllerBase {
   }
 
   public getExistingItems = (req: Request<unknown, unknown, string>, res: Response) => {
-    res.send(this.wrapData([... new Set(this.itemsSearcher.search(req.body).map((e) => e.item))]));
+    res.send(this.wrapData(
+      this.itemsSearcher
+        .search(req.body)
+        .filter((v, i, s) => s.findIndex(o => o.item === v.item) === i)
+        .map((e) => ({ item: e.item, categoryId: e.category?.id}))));
   }
 }

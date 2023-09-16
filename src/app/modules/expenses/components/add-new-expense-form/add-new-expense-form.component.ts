@@ -9,6 +9,7 @@ import { ExpensesMonthService } from '@app/services/expenses-month.service';
 import { Month } from '@app/models/month.model';
 import { Category } from '@app/models/category.model';
 import { Observable, Subject, catchError, of, switchMap, tap } from 'rxjs';
+import { ItemWithCategory } from '@app/http-clients/expenses-http-client.model';
 
 @Component({
   selector: 'app-add-new-expense-form',
@@ -20,7 +21,7 @@ export class AddNewExpenseComponent implements OnInit {
   currencies: Currency[];
   categories: Category[];
   form: FormGroup;
-  items$: Observable<string[]>;
+  items$: Observable<ItemWithCategory[]>;
   searchEntry$ = new Subject<string>();
   loading: boolean;
 
@@ -66,5 +67,19 @@ export class AddNewExpenseComponent implements OnInit {
     const currentDay = new Date().getDate();
     const daysInMonth = new Date(month.year, month.month, 0).getDate();
     return new NgbDate(month.year, month.month, currentDay > daysInMonth ? daysInMonth : currentDay);
+  }
+
+  itemChanged(data: ItemWithCategory){
+    let category: Category | undefined;
+
+    if (data) {
+      category = this.categories.find((c) => c.id === data.categoryId);
+    } else {
+      category = undefined;
+    }
+
+    this.form.patchValue({
+      category: category
+    });
   }
 }
