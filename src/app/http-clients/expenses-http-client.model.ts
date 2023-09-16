@@ -9,6 +9,7 @@ export interface AddExpenseParams {
 }
 
 export interface ItemWithCategory {
-  item: string,
-  categoryId?: number
+  item: string;
+  categoryId?: number;
+  isNew?: boolean;
 }

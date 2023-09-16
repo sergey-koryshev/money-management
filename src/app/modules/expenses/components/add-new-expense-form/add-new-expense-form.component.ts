@@ -24,6 +24,7 @@ export class AddNewExpenseComponent implements OnInit {
   items$: Observable<ItemWithCategory[]>;
   searchEntry$ = new Subject<string>();
   loading: boolean;
+  addItem: (item: string) => any;
 
   get defaultCurrency(): number {
     const currencyId = localStorage.getItem(this.defaultCurrencyIdStorageName);
@@ -45,6 +46,7 @@ export class AddNewExpenseComponent implements OnInit {
         catchError(() => of([])),
         tap(() => this.loading = false)
     )));
+    this.addItem = (item) =>  ({ item, isNew: true });
 
     this.form = this.fb.group({
       'date': [this.getCurrentDate(expensesMonthService.month), Validators.required],
@@ -69,10 +71,13 @@ export class AddNewExpenseComponent implements OnInit {
     return new NgbDate(month.year, month.month, currentDay > daysInMonth ? daysInMonth : currentDay);
   }
 
-  itemChanged(data: ItemWithCategory){
+  itemChanged(data: ItemWithCategory) {
     let category: Category | undefined;
 
-    if (data) {
+    if (data !== undefined) {
+      if (data.isNew) {
+        return;
+      }
       category = this.categories.find((c) => c.id === data.categoryId);
     } else {
       category = undefined;

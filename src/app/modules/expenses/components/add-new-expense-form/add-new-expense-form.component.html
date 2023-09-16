@@ -10,13 +10,13 @@
         </div>
         <div class="col">
             <label for="item">Item:</label>
-            <ng-select id="item" formControlName="item" [items]="items$ | async" [addTag]="true" [loading]="loading" [typeahead]="searchEntry$" [hideSelected]="true" [minTermLength]="1" bindLabel="item" bindValue="item" (change)="itemChanged($event)"></ng-select>
+            <ng-select id="item" formControlName="item" [items]="items$ | async" [addTag]="addItem.bind(this)" [loading]="loading" [typeahead]="searchEntry$" [hideSelected]="true" [minTermLength]="1" bindLabel="item" bindValue="item" (change)="itemChanged($event)"></ng-select>
         </div>
     </div>
     <div class="row mt-3">
       <div class="col">
         <label for="category">Category:</label>
-        <ng-select id="category" formControlName="category" [items]="categories" bindLabel="name" [addTag]="true"></ng-select>
+        <ng-select id="category" formControlName="category" [items]="categories" bindLabel="name" [addTag]="true" [hideSelected]="true"></ng-select>
       </div>
       <div class="col">
         <label for="price">Price:</label>
