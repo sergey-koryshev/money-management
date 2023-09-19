@@ -81,4 +81,12 @@ export class ExpensesController extends ControllerBase {
         .filter((v, i, s) => s.findIndex(o => o.item === v.item) === i)
         .map((e) => ({ item: e.item, categoryId: e.category?.id}))));
   }
+
+  public removeExpense = (req: Request, res: Response) => {
+    const index = this.dataContext.expenses.findIndex(e => e.id === Number(req.params['id']));
+    const deletingItem = this.dataContext.expenses[index];
+    this.dataContext.expenses.splice(index, 1);
+    this.dataContext.recalculateExchangedExpenses();
+    res.send(this.wrapData(deletingItem));
+  }
 }
