@@ -3,6 +3,7 @@ import { SortEvent, TableColumn } from '@components/table/table.model';
 import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
 import { Expense } from '@app/models/expense.model';
 import { priceComparer } from '@app/helpers/comparers.helper';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'app-expenses-table',
@@ -62,21 +63,28 @@ export class ExpensesTableComponent {
   @ViewChild('actions', { read: TemplateRef, static: true })
   actions: TemplateRef<unknown>;
 
-  constructor(private expensesHttpClient: ExpensesHttpClientService) {}
+  @ViewChild('confirmationDialog', { read: TemplateRef, static: true })
+  confirmationDialog: TemplateRef<unknown>;
+
+  constructor(private expensesHttpClient: ExpensesHttpClientService, private modalService: NgbModal) {}
 
   removeItem(item: Expense) {
-    const indexOfItem = this.data.indexOf(item);
+    this.modalService.open(this.confirmationDialog).closed.subscribe((res: boolean) => {
+      if (res) {
+        const indexOfItem = this.data.indexOf(item);
 
-    if (item.id != null) {
-      this.expensesHttpClient.removeExpense(item.id).subscribe({
-        complete: () => {
+        if (item.id != null) {
+          this.expensesHttpClient.removeExpense(item.id).subscribe({
+            complete: () => {
+              this.data.splice(indexOfItem, 1);
+            },
+            error: (ex) => {
+              console.log(`Error has occurred while deleting item: ${ex.message}`)
+            }});
+        } else {
           this.data.splice(indexOfItem, 1);
-        },
-        error: (ex) => {
-          console.log(`Error has occurred while deleting item: ${ex.message}`)
-        }});
-    } else {
-      this.data.splice(indexOfItem, 1);
-    }
+        }
+      }
+    });
   }
 }

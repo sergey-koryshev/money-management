@@ -11,3 +11,17 @@
       </svg>
     </a>
 </ng-template>
+
+<ng-template #confirmationDialog let-modal>
+  <div class="modal-header">
+      <h4 class="modal-title" id="modal-basic-title">Deleting item</h4>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+  </div>
+  <div class="modal-body">
+      Are you sure you want to delete the item?
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="modal.dismiss()">Cancel</button>
+    <button type="button" class="btn btn-success" (click)="modal.close(true)">Delete</button>
+  </div>
+</ng-template>
