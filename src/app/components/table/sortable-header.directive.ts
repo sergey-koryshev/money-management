@@ -6,10 +6,10 @@ import { SortDirection, SortEvent } from './table.model';
   template: `<ng-content></ng-content>`,
   styleUrls: ['./sortable-header.directive.scss'],
   host: {
-    '[class.hand-cursor]': 'disable === false',
-    '[class.asc]': 'direction === "asc"',
-    '[class.desc]': 'direction === "desc"',
-    '(click)': 'disable === false ? rotate() : null'
+    '[class.hand-cursor]': 'disableSorting === false',
+    '[class.asc]': 'direction === "asc" && disableSorting === false',
+    '[class.desc]': 'direction === "desc" && disableSorting === false',
+    '(click)': 'disableSorting === false ? rotate() : null'
   },
   encapsulation: ViewEncapsulation.Emulated,
   changeDetection: ChangeDetectionStrategy.OnPush,
