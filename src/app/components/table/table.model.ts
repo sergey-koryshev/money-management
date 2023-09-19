@@ -2,9 +2,10 @@ import { TemplateRef } from "@angular/core";
 
 export interface TableColumn<T> {
     name: string,
-    displayName: string,
+    displayName?: string,
     minWidth?: string,
     stretch?: boolean,
+    ignorePadding?: boolean,
     function?: (row: T) => string,
     template?: () => TemplateRef<unknown>;
     sortFunc?: (first: T, second: T) => number;

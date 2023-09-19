@@ -8,13 +8,13 @@
                 (sort)="onSort($event)"
                 *ngFor="let column of columns"
                 [ngStyle]="{ 'min-width': column.minWidth, 'width': column.stretch ? '100%' : null, 'white-space': 'nowrap' }">
-                <span>{{ column.displayName }}</span>
+                <span>{{ column.displayName ?? "" }}</span>
             </th>
         </tr>
     </thead>
     <tbody>
         <tr *ngFor="let row of sortedData">
-            <td *ngFor="let column of columns" [ngSwitch]="getColumnType(column)">
+            <td *ngFor="let column of columns" [ngSwitch]="getColumnType(column)" [ngClass]="{ 'p-0': column.ignorePadding }" [ngStyle]="{ 'vertical-align': 'middle' }">
                 <span *ngSwitchCase="columnTypes.function">
                     {{ column.function?.(row) ?? emptyTableData}}
                 </span>
