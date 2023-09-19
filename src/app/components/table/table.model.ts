@@ -6,6 +6,7 @@ export interface TableColumn<T> {
     minWidth?: string,
     stretch?: boolean,
     ignorePadding?: boolean,
+    disableSorting?: boolean,
     function?: (row: T) => string,
     template?: () => TemplateRef<unknown>;
     sortFunc?: (first: T, second: T) => number;

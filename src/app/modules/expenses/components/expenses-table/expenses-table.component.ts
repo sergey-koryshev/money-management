@@ -46,6 +46,7 @@ export class ExpensesTableComponent {
     {
       name: 'actions',
       ignorePadding: true,
+      disableSorting: true,
       template: () => this.actions
     }
   ];

@@ -5,6 +5,7 @@
                 scope="col"
                 [sortable]="column.name"
                 [direction]="defaultSorting.column === column.name ? defaultSorting.direction : ''"
+                [disableSorting]="column.disableSorting ?? false"
                 (sort)="onSort($event)"
                 *ngFor="let column of columns"
                 [ngStyle]="{ 'min-width': column.minWidth, 'width': column.stretch ? '100%' : null, 'white-space': 'nowrap' }">
