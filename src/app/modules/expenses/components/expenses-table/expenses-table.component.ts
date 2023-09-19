@@ -1,3 +1,4 @@
+import { ExpensesHttpClientService } from '@http-clients/expenses-http-client.service';
 import { SortEvent, TableColumn } from '@components/table/table.model';
 import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
 import { Expense } from '@app/models/expense.model';
@@ -39,9 +40,13 @@ export class ExpensesTableComponent {
     {
       name: 'price',
       displayName: 'Price',
-      minWidth: '100px',
       template: () => this.price,
       sortFunc: priceComparer
+    },
+    {
+      name: 'actions',
+      ignorePadding: true,
+      template: () => this.actions
     }
   ];
 
@@ -52,4 +57,25 @@ export class ExpensesTableComponent {
 
   @ViewChild('price', { read: TemplateRef, static: true })
   price: TemplateRef<unknown>;
+
+  @ViewChild('actions', { read: TemplateRef, static: true })
+  actions: TemplateRef<unknown>;
+
+  constructor(private expensesHttpClient: ExpensesHttpClientService) {}
+
+  removeItem(item: Expense) {
+    const indexOfItem = this.data.indexOf(item);
+
+    if (item.id != null) {
+      this.expensesHttpClient.removeExpense(item.id).subscribe({
+        complete: () => {
+          this.data.splice(indexOfItem, 1);
+        },
+        error: (ex) => {
+          console.log(`Error has occurred while deleting item: ${ex.message}`)
+        }});
+    } else {
+      this.data.splice(indexOfItem, 1);
+    }
+  }
 }
