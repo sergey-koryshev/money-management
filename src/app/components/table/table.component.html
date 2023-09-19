@@ -15,7 +15,7 @@
     </thead>
     <tbody>
         <tr *ngFor="let row of sortedData">
-            <td *ngFor="let column of columns" [ngSwitch]="getColumnType(column)" [ngClass]="{ 'p-0': column.ignorePadding }" [ngStyle]="{ 'vertical-align': 'middle' }">
+            <td *ngFor="let column of columns" [ngSwitch]="getColumnType(column)" [ngClass]="{ 'p-0': column.ignorePadding }" [ngStyle]="{ 'vertical-align': 'middle', 'white-space': column.stretch ? 'normal' : 'nowrap' }">
                 <span *ngSwitchCase="columnTypes.function">
                     {{ column.function?.(row) ?? emptyTableData}}
                 </span>
