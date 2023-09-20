@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { BaseHttpClientService } from './base-http-client.service';
 import { AddExpenseParams, ItemWithCategory } from './expenses-http-client.model';
 import { Month } from '@app/models/month.model';
+import { of } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -23,6 +24,10 @@ export class ExpensesHttpClientService {
   }
 
   getExistingItems(searchEntry: string) {
+    if (searchEntry == null || searchEntry.length === 0) {
+      return of([]);
+    }
+
     return this.baseHttpClient.post<ItemWithCategory[]>('expenses/items', searchEntry, undefined, {
       'Content-Type': 'text/plain'
     })
