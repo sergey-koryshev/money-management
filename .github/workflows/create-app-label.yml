@@ -1,5 +1,7 @@
 name: Create App Version Label
 
+concurrency: versioning
+
 on:
   workflow_dispatch:
   push:
