@@ -5,6 +5,7 @@ import { ControllerBase } from './controller-base';
 import { DataContext } from '../data/data-context';
 import { Expense } from '../models/expense.model';
 import FuzzySearch from 'fuzzy-search';
+import { ItemWithCategory } from '../models/item-with-category.model';
 
 export class ExpensesController extends ControllerBase {
 
@@ -75,11 +76,16 @@ export class ExpensesController extends ControllerBase {
   }
 
   public getExistingItems = (req: Request<unknown, unknown, string>, res: Response) => {
-    res.send(this.wrapData(
-      this.itemsSearcher
-        .search(req.body)
-        .filter((v, i, s) => s.findIndex(o => o.item === v.item) === i)
-        .map((e) => ({ item: e.item, categoryId: e.category?.id}))));
+    let result: ItemWithCategory[] = [];
+
+    if (req.body != null && req.body.length > 0) {
+      result = this.itemsSearcher
+      .search(req.body)
+      .filter((v, i, s) => s.findIndex(o => o.item === v.item) === i)
+      .map((e) => ({ item: e.item, categoryId: e.category?.id}));
+    }
+
+    res.send(this.wrapData(result));
   }
 
   public removeExpense = (req: Request, res: Response) => {
