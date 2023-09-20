@@ -1,5 +1,7 @@
 name: Create MockServer Version Label
 
+concurrency: versioning
+
 on:
   workflow_dispatch:
   push:
