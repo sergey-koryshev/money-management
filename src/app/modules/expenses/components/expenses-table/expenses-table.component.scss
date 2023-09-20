@@ -1,0 +1,35 @@
+$btnColor: #e74c3c;
+
+.icon-button {
+  text-decoration: none;
+  border: none;
+  font-family: inherit;
+  cursor: pointer;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 1.5rem;
+  background-color: $btnColor;
+  color: #fff;
+  border-radius: 8px;
+
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  padding: 0.30em;
+
+  transition: 220ms all ease-in-out;
+
+  &:hover,
+  &:active {
+    background-color: scale-color($btnColor, $lightness: -20%);
+  }
+
+  & > svg {
+    width: 100%;
+    height: 100%;
+    fill: currentColor;
+  }
+}

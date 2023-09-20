@@ -6,9 +6,10 @@ import { SortDirection, SortEvent } from './table.model';
   template: `<ng-content></ng-content>`,
   styleUrls: ['./sortable-header.directive.scss'],
   host: {
-    '[class.asc]': 'direction === "asc"',
-    '[class.desc]': 'direction === "desc"',
-    '(click)': 'rotate()'
+    '[class.hand-cursor]': 'disableSorting === false',
+    '[class.asc]': 'direction === "asc" && disableSorting === false',
+    '[class.desc]': 'direction === "desc" && disableSorting === false',
+    '(click)': 'disableSorting === false ? rotate() : null'
   },
   encapsulation: ViewEncapsulation.Emulated,
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -17,6 +18,7 @@ export class SortableHeaderDirective {
 
   @Input() sortable: string = '';
   @Input() direction: SortDirection = '';
+  @Input() disableSorting: boolean = false;
   @Output() sort = new EventEmitter<SortEvent>();
 
   rotateSortDirection: {[key: string]: SortDirection} = { 'asc': 'desc', 'desc': '', '': 'asc' };

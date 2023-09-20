@@ -27,4 +27,8 @@ export class ExpensesHttpClientService {
       'Content-Type': 'text/plain'
     })
   }
+
+  removeExpense(id: number) {
+    return this.baseHttpClient.delete(`expenses/${id}`);
+  }
 }
