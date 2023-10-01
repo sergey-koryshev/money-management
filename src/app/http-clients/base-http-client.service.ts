@@ -33,7 +33,7 @@ export class BaseHttpClientService {
   ): Observable<T> {
     const fullUrl = `${this.baseUrl}/${endpointPath}`;
     const fullHeaders = headers ? {...this.defaultHeaders, ...headers} : this.defaultHeaders
-    
+
     return this.httpClient
       .get<BaseApiResponse<T>>(fullUrl, {
         headers: fullHeaders,
@@ -60,7 +60,7 @@ export class BaseHttpClientService {
   ): Observable<T> {
     const fullUrl = `${this.baseUrl}/${endpointPath}`;
     const fullHeaders = headers ? {...this.defaultHeaders, ...headers} : this.defaultHeaders
-    
+
     return this.httpClient
       .post<BaseApiResponse<T>>(fullUrl, body, {
         headers: fullHeaders,
@@ -70,6 +70,32 @@ export class BaseHttpClientService {
   }
 
   delete<T>(
+    endpointPath: string,
+    params?:
+      | HttpParams
+      | {
+          [param: string]:
+            | string
+            | number
+            | boolean
+            | ReadonlyArray<string | number | boolean>;
+        },
+    headers?: {
+          [header: string]: string | string[];
+      }
+  ): Observable<T> {
+    const fullUrl = `${this.baseUrl}/${endpointPath}`;
+    const fullHeaders = headers ? {...this.defaultHeaders, ...headers} : this.defaultHeaders
+
+    return this.httpClient
+      .delete<BaseApiResponse<T>>(fullUrl, {
+        headers: fullHeaders,
+        params,
+      })
+      .pipe(map((response: BaseApiResponse<T>) => response.data));
+  }
+
+  put<T>(
     endpointPath: string,
     body?: any,
     params?:
@@ -87,9 +113,9 @@ export class BaseHttpClientService {
   ): Observable<T> {
     const fullUrl = `${this.baseUrl}/${endpointPath}`;
     const fullHeaders = headers ? {...this.defaultHeaders, ...headers} : this.defaultHeaders
-    
+
     return this.httpClient
-      .delete<BaseApiResponse<T>>(fullUrl, {
+      .put<BaseApiResponse<T>>(fullUrl, body, {
         headers: fullHeaders,
         params,
       })
