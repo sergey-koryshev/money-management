@@ -6,12 +6,16 @@ import { UserAvatarComponent } from './user-avatar/user-avatar.component';
 import { TableComponent } from './table/table.component';
 import { PriceComponent } from './price/price.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { RoundButtonComponent } from './round-button/round-button.component';
+import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
 
 @NgModule({
   declarations: [
     CurrencyComponent,
     UserAvatarComponent,
     PriceComponent,
+    RoundButtonComponent,
+    ModalDialogComponent,
   ],
   imports: [
     CommonModule,
@@ -22,7 +26,9 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
     UserAvatarComponent,
     CurrencyComponent,
     PriceComponent,
-    TableComponent
+    TableComponent,
+    RoundButtonComponent,
+    ModalDialogComponent
   ],
 })
 export class ComponentsModule { }
