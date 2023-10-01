@@ -2,7 +2,7 @@ import { ExpensesHttpClientService } from '@http-clients/expenses-http-client.se
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { CurrencyService } from '@services/currency.service';
 import { CategoryHttpClient } from '@http-clients/category-http-client.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Currency } from '@app/models/currency.model';
 import { ExpensesMonthService } from '@app/services/expenses-month.service';
@@ -10,6 +10,7 @@ import { Month } from '@app/models/month.model';
 import { Category } from '@app/models/category.model';
 import { Observable, Subject, catchError, of, switchMap, tap } from 'rxjs';
 import { ItemWithCategory } from '@app/http-clients/expenses-http-client.model';
+import { Expense } from '@app/models/expense.model';
 
 @Component({
   selector: 'app-add-new-expense-form',
@@ -17,6 +18,9 @@ import { ItemWithCategory } from '@app/http-clients/expenses-http-client.model';
   styleUrls: ['./add-new-expense-form.component.scss']
 })
 export class AddNewExpenseComponent implements OnInit {
+  @Input()
+  item?: Expense;
+
   private defaultCurrencyIdStorageName = 'default-currency';
   currencies: Currency[];
   categories: Category[];
@@ -49,6 +53,7 @@ export class AddNewExpenseComponent implements OnInit {
     this.addItem = (item) =>  ({ item, isNew: true });
 
     this.form = this.fb.group({
+      'id': [null],
       'date': [this.getCurrentDate(expensesMonthService.month), Validators.required],
       'item': [null, Validators.required],
       'priceAmount': [null, Validators.required],
@@ -63,6 +68,8 @@ export class AddNewExpenseComponent implements OnInit {
         localStorage.setItem(this.defaultCurrencyIdStorageName, String(value));
       }
     });
+
+    this.populateValues(this.item);
   }
 
   getCurrentDate(month: Month): NgbDate {
@@ -85,6 +92,21 @@ export class AddNewExpenseComponent implements OnInit {
 
     this.form.patchValue({
       category: category
+    });
+  }
+
+  populateValues(item?: Expense) {
+    if (item == null) {
+      return;
+    }
+
+    this.form.patchValue({
+      id: item.id,
+      date: new NgbDate(item.date.getFullYear(), item.date.getMonth() + 1, item.date.getDay()),
+      item: item.item,
+      priceAmount: item.price.amount,
+      currencyId: item.price.currency.id,
+      category: item.category
     });
   }
 }
