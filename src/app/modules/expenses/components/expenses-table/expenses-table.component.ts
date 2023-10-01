@@ -4,6 +4,8 @@ import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
 import { Expense } from '@app/models/expense.model';
 import { priceComparer } from '@app/helpers/comparers.helper';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { EditExpenseDialogComponent } from '../edit-expense-dialog/edit-expense-dialog.component';
+import { ExpensesMonthService } from '@app/services/expenses-month.service';
 
 @Component({
   selector: 'app-expenses-table',
@@ -66,7 +68,7 @@ export class ExpensesTableComponent {
   @ViewChild('confirmationDialog', { read: TemplateRef, static: true })
   confirmationDialog: TemplateRef<unknown>;
 
-  constructor(private expensesHttpClient: ExpensesHttpClientService, private modalService: NgbModal) {}
+  constructor(private expensesHttpClient: ExpensesHttpClientService, private modalService: NgbModal, private expensesMonthService: ExpensesMonthService) {}
 
   removeItem(item: Expense) {
     this.modalService.open(this.confirmationDialog).closed.subscribe((res: boolean) => {
@@ -85,6 +87,30 @@ export class ExpensesTableComponent {
           this.data.splice(indexOfItem, 1);
         }
       }
+    });
+  }
+
+  editItem(item: Expense) {
+    const modalRef = this.modalService.open(EditExpenseDialogComponent);
+    modalRef.componentInstance.item = {...item, date: new Date(item.date)};
+    modalRef.closed.subscribe(({date, priceAmount, ...restParams}) => {
+      const indexOfItem = this.data.indexOf(item);
+      this.expensesHttpClient.editExpense({
+        date: new Date(date.year, date.month - 1, date.day),
+        priceAmount: Number(priceAmount),
+        ...restParams
+      }).subscribe({
+        next: (updatedItem: Expense) => {
+          if (this.expensesMonthService.month.month == date.month
+          && this.expensesMonthService.month.year == date.year) {
+            this.data[indexOfItem] = updatedItem;
+          } else {
+            this.data.splice(indexOfItem, 1);
+          }
+        },
+        error: (ex) => {
+          console.log(`Error has occurred while updating item: ${ex.message}`)
+        }});
     });
   }
 }
