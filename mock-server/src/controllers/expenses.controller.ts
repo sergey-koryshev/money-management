@@ -95,4 +95,47 @@ export class ExpensesController extends ControllerBase {
     this.dataContext.recalculateExchangedExpenses();
     res.send(this.wrapData(deletingItem));
   }
+
+  public editExpense = (req: Request, res: Response) => {
+    const index = this.dataContext.expenses.findIndex(e => e.id === Number(req.body.id));
+
+    const maxCategoryId = this.dataContext.categories.reduce(
+      (max, e) => (e.id
+        ? e.id > max
+          ? e.id
+          : max
+        : 0),
+      0
+    );
+
+    let category: Category | undefined;
+
+    if (req.body.category != null) {
+      if (req.body.category.id != null) {
+        category = this.dataContext.categories.find(c => c.id == req.body.category?.id);
+      } else {
+        const newCategoryArrayId = this.dataContext.categories.push({
+          id: maxCategoryId + 1,
+          name: req.body.category.name
+        });
+        category = this.dataContext.categories[newCategoryArrayId - 1];
+      }
+    }
+
+    const editedExpense = {
+      id: req.body.id,
+      date: new Date(req.body.date),
+      item: req.body.item,
+      category: category,
+      price: {
+        amount: req.body.priceAmount,
+        currency: this.dataContext.currencies.find((c) => c.id === req.body.currencyId) ?? this.dataContext.currencies[0]
+      }
+    };
+
+    this.dataContext.expenses[index] = editedExpense;
+    this.dataContext.recalculateExchangedExpenses();
+    const exchangedIndex = this.dataContext.exchangedExpenses.findIndex(e => e.id === Number(req.body.id));
+    res.send(this.wrapData(this.dataContext.exchangedExpenses[exchangedIndex]));
+  }
 }
