@@ -1,0 +1,3 @@
+<app-modal-dialog name="Add new expense" buttonSaveName="Save" buttonCancelName="Cancel" [modalRef]="modalRef" [disableSubmitButton]="editExpenseForm.form.invalid" [returnValue]="editExpenseForm.form.value">
+  <app-add-new-expense-form #editExpenseForm [item]="item"></app-add-new-expense-form>
+</app-modal-dialog>
