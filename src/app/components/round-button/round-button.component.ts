@@ -16,7 +16,7 @@ export class RoundButtonComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.currentBackgroundColor = this.backgroundColor;
-    this.lighterBackgroundColor = Shade(this.backgroundColor, -10);
+    this.lighterBackgroundColor = Shade(this.backgroundColor, -20);
   }
 
   onMouseOver() {
