@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, EventEmitter, Input, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Shade } from '@app/helpers/colors.helper';
 
 @Component({
@@ -6,7 +6,7 @@ import { Shade } from '@app/helpers/colors.helper';
   templateUrl: './round-button.component.html',
   styleUrls: ['./round-button.component.scss']
 })
-export class RoundButtonComponent implements AfterViewInit {
+export class RoundButtonComponent implements OnInit {
 
   @Input()
   backgroundColor: string;
@@ -14,7 +14,7 @@ export class RoundButtonComponent implements AfterViewInit {
   currentBackgroundColor: string;
   lighterBackgroundColor: string;
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
     this.currentBackgroundColor = this.backgroundColor;
     this.lighterBackgroundColor = Shade(this.backgroundColor, -20);
   }
