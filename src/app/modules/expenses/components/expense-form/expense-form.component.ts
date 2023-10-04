@@ -13,11 +13,11 @@ import { ItemWithCategory } from '@app/http-clients/expenses-http-client.model';
 import { Expense } from '@app/models/expense.model';
 
 @Component({
-  selector: 'app-add-new-expense-form',
-  templateUrl: './add-new-expense-form.component.html',
-  styleUrls: ['./add-new-expense-form.component.scss']
+  selector: 'app-expense-form',
+  templateUrl: './expense-form.component.html',
+  styleUrls: ['./expense-form.component.scss']
 })
-export class AddNewExpenseComponent implements OnInit {
+export class ExpenseFormComponent implements OnInit {
   @Input()
   item?: Expense;
 
