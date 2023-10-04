@@ -8,6 +8,7 @@ import { switchMap, skip } from 'rxjs/operators';
 import { NgbDate, NgbDatepickerNavigateEvent, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddExpenseParams } from '@app/http-clients/expenses-http-client.model';
 import { Month } from '@app/models/month.model';
+import { AddNewExpenseDialogComponent } from '../../components/add-new-expense-dialog/add-new-expense-dialog.component';
 
 @Component({
   selector: 'app-expenses-page',
@@ -54,8 +55,8 @@ export class ExpensesPageComponent implements OnInit {
       });
   }
 
-  open(content: any) {
-    const modalRef = this.modalService.open(content);
+  open() {
+    const modalRef = this.modalService.open(AddNewExpenseDialogComponent);
     modalRef.closed.subscribe(({date, priceAmount, ...restParams}) => {
       this.addNewExpense({
         date: new Date(date.year, date.month - 1, date.day),

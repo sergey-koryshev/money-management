@@ -34,6 +34,10 @@ export class ExpensesHttpClientService {
   }
 
   removeExpense(id: number) {
-    return this.baseHttpClient.delete(`expenses/${id}`);
+    return this.baseHttpClient.delete<Expense>(`expenses/${id}`);
+  }
+
+  editExpense(item: Expense) {
+    return this.baseHttpClient.put<Expense>(`expenses`, item)
   }
 }

@@ -7,9 +7,11 @@ import { Routes, RouterModule } from '@angular/router';
 import { ExpensesTableComponent } from './components/expenses-table/expenses-table.component';
 import { ComponentsModule } from '@app/components/components.module';
 import { ExpensesResolver } from './expenses.resolver';
-import { AddNewExpenseComponent } from './components/add-new-expense-form/add-new-expense-form.component';
+import { ExpenseFormComponent } from './components/expense-form/expense-form.component';
 import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { AddNewExpenseDialogComponent } from './components/add-new-expense-dialog/add-new-expense-dialog.component';
+import { EditExpenseDialogComponent } from './components/edit-expense-dialog/edit-expense-dialog.component';
 
 const routes: Routes = [
   {
@@ -22,7 +24,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [ExpensesPageComponent, ExpensesTableComponent, AddNewExpenseComponent],
-  imports: [CommonModule, RouterModule.forChild(routes), ComponentsModule, ReactiveFormsModule, NgbDatepickerModule, NgSelectModule]
+  declarations: [ExpensesPageComponent, ExpensesTableComponent, ExpenseFormComponent, AddNewExpenseDialogComponent, EditExpenseDialogComponent],
+  imports: [CommonModule, RouterModule.forChild(routes), ComponentsModule, ReactiveFormsModule, NgbDatepickerModule, NgSelectModule],
 })
 export class ExpensesModule {}
