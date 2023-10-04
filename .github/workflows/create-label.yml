@@ -74,6 +74,5 @@ jobs:
           git config --global user.email "$env:GITHUB_ACTOR@users.noreply.github.com"
           git commit -am "[automated] Bumped ${{ inputs.app-name }} version to ${{ env.new-version }} [skip ci]"
           if ("${{ inputs.skip-tag }}" -eq "false") { git tag v${{ env.new-version }} }
-          git pull
           git push
           git push --tags
