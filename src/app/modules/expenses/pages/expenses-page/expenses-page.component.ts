@@ -5,7 +5,7 @@ import { Expense } from '@app/models/expense.model';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { switchMap, skip } from 'rxjs/operators';
-import { NgbDate, NgbDatepickerNavigateEvent, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDatepickerNavigateEvent, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddExpenseParams } from '@app/http-clients/expenses-http-client.model';
 import { Month } from '@app/models/month.model';
 import { AddNewExpenseDialogComponent } from '../../components/add-new-expense-dialog/add-new-expense-dialog.component';
