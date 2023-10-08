@@ -12,6 +12,8 @@ import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { AddNewExpenseDialogComponent } from './components/add-new-expense-dialog/add-new-expense-dialog.component';
 import { EditExpenseDialogComponent } from './components/edit-expense-dialog/edit-expense-dialog.component';
+import { SearchResultsComponent } from './pages/search-results/search-results.component';
+import { SearchResultsResolver } from './search-results.resolver';
 
 const routes: Routes = [
   {
@@ -21,10 +23,18 @@ const routes: Routes = [
       expenses: ExpensesResolver,
     }
   },
+  {
+    path: 'search',
+    runGuardsAndResolvers: 'always',
+    component: SearchResultsComponent,
+    resolve: {
+      expenses: SearchResultsResolver
+    }
+  }
 ];
 
 @NgModule({
-  declarations: [ExpensesPageComponent, ExpensesTableComponent, ExpenseFormComponent, AddNewExpenseDialogComponent, EditExpenseDialogComponent],
+  declarations: [ExpensesPageComponent, ExpensesTableComponent, ExpenseFormComponent, AddNewExpenseDialogComponent, EditExpenseDialogComponent, SearchResultsComponent],
   imports: [CommonModule, RouterModule.forChild(routes), ComponentsModule, ReactiveFormsModule, NgbDatepickerModule, NgSelectModule],
 })
 export class ExpensesModule {}

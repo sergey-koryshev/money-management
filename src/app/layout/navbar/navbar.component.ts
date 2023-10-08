@@ -3,6 +3,8 @@ import { Component } from '@angular/core';
 import { Currency } from '@models/currency.model';
 import { User } from '@models/user.model';
 import { emptyMainCurrency } from 'src/app/constants';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-navbar',
@@ -15,8 +17,9 @@ export class NavbarComponent {
   mainCurrency: Currency | null;
   user: User;
   emptyMainCurrency = emptyMainCurrency;
+  searchForm: FormGroup;
 
-  constructor(private currencyService: CurrencyService) {
+  constructor(private currencyService: CurrencyService, private router: Router, private fb: FormBuilder) {
     this.currencies = this.currencyService.currencies;
     this.currencyService.mainCurrency$.subscribe((currency) => this.mainCurrency = currency)
     // TODO: need to remove this hardoced user once we implemented login process
@@ -25,6 +28,9 @@ export class NavbarComponent {
       firstName: 'Sergey',
       secondName: 'Koryshev'
     };
+    this.searchForm = fb.group({
+      text: ['', Validators.required]
+    });
    }
 
   setMainCurrency(currency: Currency) {
@@ -33,5 +39,11 @@ export class NavbarComponent {
 
   removeMainCurrency() {
     this.currencyService.removeMainCurrency();
+  }
+
+  onSearchFormSubmit() {
+    this.router.navigate(['expenses/search'], {
+      queryParams: this.searchForm.value
+    });
   }
 }

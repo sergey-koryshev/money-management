@@ -40,4 +40,14 @@ export class ExpensesHttpClientService {
   editExpense(item: Expense) {
     return this.baseHttpClient.put<Expense>(`expenses`, item)
   }
+
+  searchExpenses(searchEntry: string) {
+    if (searchEntry == null || searchEntry.length === 0) {
+      return of([]);
+    }
+
+    return this.baseHttpClient.post<Expense[]>('expenses/search', searchEntry, undefined, {
+      'Content-Type': 'text/plain'
+    })
+  }
 }

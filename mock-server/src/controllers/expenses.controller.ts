@@ -138,4 +138,14 @@ export class ExpensesController extends ControllerBase {
     const exchangedIndex = this.dataContext.exchangedExpenses.findIndex(e => e.id === Number(req.body.id));
     res.send(this.wrapData(this.dataContext.exchangedExpenses[exchangedIndex]));
   }
+
+  public searchItems = (req: Request, res: Response) => {
+    let result: Expense[] = [];
+
+    if (req.body != null && req.body.length > 0) {
+      result = this.dataContext.exchangedExpenses.filter(e => e.item.toUpperCase() == req.body.toUpperCase())
+    }
+
+    res.send(this.wrapData(result));
+  }
 }

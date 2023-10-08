@@ -5,7 +5,7 @@ import { Expense } from '@app/models/expense.model';
 import { priceComparer } from '@app/helpers/comparers.helper';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { EditExpenseDialogComponent } from '../edit-expense-dialog/edit-expense-dialog.component';
-import { ExpensesMonthService } from '@app/services/expenses-month.service';
+import { Month } from '@app/models/month.model';
 
 @Component({
   selector: 'app-expenses-table',
@@ -13,6 +13,9 @@ import { ExpensesMonthService } from '@app/services/expenses-month.service';
   styleUrls: ['./expenses-table.component.scss']
 })
 export class ExpensesTableComponent {
+
+  @Input()
+  selectedMonth?: Month;
 
   @Input()
   data: Expense[];
@@ -68,7 +71,7 @@ export class ExpensesTableComponent {
   @ViewChild('confirmationDialog', { read: TemplateRef, static: true })
   confirmationDialog: TemplateRef<unknown>;
 
-  constructor(private expensesHttpClient: ExpensesHttpClientService, private modalService: NgbModal, private expensesMonthService: ExpensesMonthService) {}
+  constructor(private expensesHttpClient: ExpensesHttpClientService, private modalService: NgbModal) {}
 
   removeItem(item: Expense) {
     this.modalService.open(this.confirmationDialog).closed.subscribe((res: boolean) => {
@@ -101,8 +104,9 @@ export class ExpensesTableComponent {
         ...restParams
       }).subscribe({
         next: (updatedItem: Expense) => {
-          if (this.expensesMonthService.month.month == date.month
-          && this.expensesMonthService.month.year == date.year) {
+          if (this.selectedMonth == null
+            || (this.selectedMonth.month == date.month
+              && this.selectedMonth.year == date.year)) {
             this.data[indexOfItem] = updatedItem;
           } else {
             this.data.splice(indexOfItem, 1);

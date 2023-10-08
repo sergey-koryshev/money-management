@@ -8,6 +8,7 @@ export class ExpensesRouter extends RouterBase<ExpensesController> {
     this.router.post('/items', this.controller.getExistingItems);
     this.router.delete('/:id', this.controller.removeExpense);
     this.router.put('/', this.controller.editExpense);
+    this.router.post('/search', this.controller.searchItems);
   }
 }
 
