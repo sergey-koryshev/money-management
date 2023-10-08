@@ -102,7 +102,7 @@ export class ExpenseFormComponent implements OnInit {
 
     this.form.patchValue({
       id: item.id,
-      date: new NgbDate(item.date.getFullYear(), item.date.getMonth() + 1, item.date.getDay()),
+      date: new NgbDate(item.date.getFullYear(), item.date.getMonth() + 1, item.date.getDate()),
       item: item.item,
       priceAmount: item.price.amount,
       currencyId: item.price.currency.id,
