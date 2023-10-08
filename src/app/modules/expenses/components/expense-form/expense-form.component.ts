@@ -22,6 +22,7 @@ export class ExpenseFormComponent implements OnInit {
   item?: Expense;
 
   private defaultCurrencyIdStorageName = 'default-currency';
+  private lastUsedDateStorageName = 'last-date';
   currencies: Currency[];
   categories: Category[];
   form: FormGroup;
@@ -60,6 +61,9 @@ export class ExpenseFormComponent implements OnInit {
       'currencyId': [this.defaultCurrency, Validators.required],
       'category': [null]
     });
+
+    this.form.controls['date'].valueChanges
+      .subscribe(value => sessionStorage.setItem(this.lastUsedDateStorageName, JSON.stringify(value)));
   }
 
   ngOnInit(): void {
@@ -73,9 +77,18 @@ export class ExpenseFormComponent implements OnInit {
   }
 
   getCurrentDate(month: Month): NgbDate {
-    const currentDay = new Date().getDate();
-    const daysInMonth = new Date(month.year, month.month, 0).getDate();
-    return new NgbDate(month.year, month.month, currentDay > daysInMonth ? daysInMonth : currentDay);
+    const lastDate = sessionStorage.getItem(this.lastUsedDateStorageName);
+    let resultDate: NgbDate;
+
+    if (lastDate != null) {
+      resultDate = JSON.parse(lastDate) as NgbDate;
+    } else {
+      const currentDay = new Date().getDate();
+      const daysInMonth = new Date(month.year, month.month, 0).getDate();
+      resultDate = new NgbDate(month.year, month.month, currentDay > daysInMonth ? daysInMonth : currentDay);
+    }
+
+    return resultDate;
   }
 
   itemChanged(data: ItemWithCategory) {
