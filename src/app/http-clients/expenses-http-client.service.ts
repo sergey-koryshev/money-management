@@ -4,6 +4,7 @@ import { BaseHttpClientService } from './base-http-client.service';
 import { AddExpenseParams, ItemWithCategory } from './expenses-http-client.model';
 import { Month } from '@app/models/month.model';
 import { of } from 'rxjs';
+import { ExpensesView } from '@app/models/expenses-view.model';
 
 @Injectable({
   providedIn: 'root'
@@ -50,4 +51,10 @@ export class ExpensesHttpClientService {
       'Content-Type': 'text/plain'
     })
   }
-}
+
+  getExpensesView(selectedMonth: Month) {
+    return this.baseHttpClient.get<ExpensesView>('expenses/view', {
+      "month": selectedMonth.month,
+      "year": selectedMonth.year
+    });
+  }}
