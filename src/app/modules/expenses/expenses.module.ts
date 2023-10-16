@@ -20,7 +20,7 @@ const routes: Routes = [
     path: '',
     component: ExpensesPageComponent,
     resolve: {
-      expenses: ExpensesResolver,
+      expensesView: ExpensesResolver,
     }
   },
   {
