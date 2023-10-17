@@ -10,9 +10,7 @@ import { AddExpenseParams } from '@app/http-clients/expenses-http-client.model';
 import { Month } from '@app/models/month.model';
 import { AddNewExpenseDialogComponent } from '../../components/add-new-expense-dialog/add-new-expense-dialog.component';
 import { Price } from '@app/models/price.model';
-import { ExpensesView } from '@app/models/expenses-view.model';
 import { ItemChangedEventArgs } from '../../components/expenses-table/expenses-table.model';
-import { forkJoin, merge, zip } from 'rxjs';
 
 @Component({
   selector: 'app-expenses-page',
@@ -34,19 +32,19 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.selectedMonth = this.expensesMonthService.month;
-    this.route.data.subscribe(data => this.populateData(data.expensesView as ExpensesView));
+    this.route.data.subscribe(data => this.populateData(data.expenses as Expense[]));
   }
 
   ngAfterViewInit(): void {
     this.currencyService.mainCurrency$
       .pipe(
         skip(1),
-        switchMap(() => this.expensesHttpClient.getExpensesView(this.expensesMonthService.month)))
+        switchMap(() => this.expensesHttpClient.getAllExpenses(this.expensesMonthService.month)))
       .subscribe(data => this.populateData(data));
     this.expensesMonthService.month$
       .pipe(
         skip(1),
-        switchMap(() => this.expensesHttpClient.getExpensesView(this.expensesMonthService.month)))
+        switchMap(() => this.expensesHttpClient.getAllExpenses(this.expensesMonthService.month)))
       .subscribe(data => this.populateData(data));
   }
 
@@ -97,8 +95,16 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private populateData(view: ExpensesView) {
-    this.expenses = view.expenses ?? [];
-    this.totalAmount = view.total;
+  private populateData(expenses: Expense[]) {
+    this.expenses = expenses ?? [];
+    const mainCurrency = this.currencyService.mainCurrency;
+    if (mainCurrency) {
+      this.totalAmount = {
+        amount: expenses.reduce((sum, current) => sum + (current.exchangedPrice?.amount ?? current.price.amount), 0),
+        currency: mainCurrency
+      }
+    } else {
+      this.totalAmount = undefined;
+    }
   }
 }

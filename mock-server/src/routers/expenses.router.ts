@@ -9,7 +9,6 @@ export class ExpensesRouter extends RouterBase<ExpensesController> {
     this.router.delete('/:id', this.controller.removeExpense);
     this.router.put('/', this.controller.editExpense);
     this.router.post('/search', this.controller.searchItems);
-    this.router.get('/view', this.controller.getExpensesView);
   }
 }
 

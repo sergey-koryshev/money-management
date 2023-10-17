@@ -3,7 +3,6 @@ import { AddExpenseParams } from '../models/add-expense-params.model';
 import { ControllerBase } from './controller-base';
 import { DataContext } from '../data/data-context';
 import { Expense } from '../models/expense.model';
-import { ExpensesView } from '../models/expenses-view.model';
 import FuzzySearch from 'fuzzy-search';
 import { ItemWithCategory } from '../models/item-with-category.model';
 
@@ -109,34 +108,6 @@ export class ExpensesController extends ControllerBase {
     }
 
     res.send(this.wrapData(result));
-  }
-
-  public getExpensesView = (req: Request, res: Response) => {
-    const result: ExpensesView = {
-      expenses: [],
-      total: undefined
-    };
-
-    const month = req.query['month'];
-    const year = req.query['year'];
-
-    if (!month && !year) {
-      res.sendStatus(500);
-    }
-
-    const monthNumber = Number(month);
-    const yearNumber = Number(year);
-
-    result.expenses = this.getFilteredExpenses(monthNumber, yearNumber);
-
-    if (this.dataContext.mainCurrency) {
-      result.total = {
-        amount: this.getTotalSpent(monthNumber, yearNumber),
-        currency: this.dataContext.mainCurrency
-      }
-    }
-
-    res.send(this.wrapData(result))
   }
 
   private getFilteredExpenses(month: number, year: number) {
