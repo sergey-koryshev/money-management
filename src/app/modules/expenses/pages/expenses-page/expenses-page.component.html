@@ -4,6 +4,10 @@
       <div class="bg-light datepicker-content"></div>
     </ng-template>
   </ngb-datepicker>
+  <div class="total-counter" *ngIf="totalAmount">
+    <span class="me-2">Total:</span>
+    <app-price [price]="totalAmount"></app-price>
+  </div>
   <button type="button" class="btn btn-primary" (click)="open()">Add new expense</button>
 </div>
-<app-expenses-table [data]="expenses" [selectedMonth]="selectedMonth"></app-expenses-table>
+<app-expenses-table [data]="expenses" [selectedMonth]="selectedMonth" (itemChanged)="onItemChange($event)"></app-expenses-table>

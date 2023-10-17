@@ -1,11 +1,12 @@
 import { ExpensesHttpClientService } from '@http-clients/expenses-http-client.service';
 import { SortEvent, TableColumn } from '@components/table/table.model';
-import { Component, Input, TemplateRef, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
 import { Expense } from '@app/models/expense.model';
 import { priceComparer } from '@app/helpers/comparers.helper';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { EditExpenseDialogComponent } from '../edit-expense-dialog/edit-expense-dialog.component';
 import { Month } from '@app/models/month.model';
+import { ItemChangedEventArgs } from './expenses-table.model';
 
 @Component({
   selector: 'app-expenses-table',
@@ -19,6 +20,9 @@ export class ExpensesTableComponent {
 
   @Input()
   data: Expense[];
+
+  @Output()
+  itemChanged = new EventEmitter<ItemChangedEventArgs>()
 
   columns: TableColumn<Expense>[] = [
     {
@@ -82,6 +86,9 @@ export class ExpensesTableComponent {
           this.expensesHttpClient.removeExpense(item.id).subscribe({
             complete: () => {
               this.data.splice(indexOfItem, 1);
+              this.itemChanged.emit({
+                oldValue: item.exchangedPrice?.amount ?? item.price.amount
+              });
             },
             error: (ex) => {
               console.log(`Error has occurred while deleting item: ${ex.message}`)
@@ -108,8 +115,15 @@ export class ExpensesTableComponent {
             || (this.selectedMonth.month == date.month
               && this.selectedMonth.year == date.year)) {
             this.data[indexOfItem] = updatedItem;
+            this.itemChanged.emit({
+              oldValue: item.exchangedPrice?.amount ?? item.price.amount,
+              newValue: updatedItem.exchangedPrice?.amount ?? updatedItem.price.amount,
+            })
           } else {
             this.data.splice(indexOfItem, 1);
+            this.itemChanged.emit({
+              oldValue: item.exchangedPrice?.amount ?? item.price.amount
+            })
           }
         },
         error: (ex) => {

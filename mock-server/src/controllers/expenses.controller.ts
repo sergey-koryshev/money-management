@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { AddExpenseParams } from '../models/add-expense-params.model';
-import { Category } from '../models/category.model';
 import { ControllerBase } from './controller-base';
 import { DataContext } from '../data/data-context';
 import { Expense } from '../models/expense.model';
@@ -19,13 +18,12 @@ export class ExpensesController extends ControllerBase {
   public getExpenses = (req: Request, res: Response) => {
     const month = req.query['month'];
     const year = req.query['year'];
-    if (month && year) {
-      res.send(this.wrapData(this.dataContext.exchangedExpenses.filter((e) =>
-        e.date.getMonth() + 1 == Number(month) && e.date.getFullYear() == Number(year)
-      )));
-    } else {
+
+    if (!month && !year) {
       res.sendStatus(500);
     }
+
+    res.send(this.wrapData(this.getFilteredExpenses(Number(month), Number(year))));
   }
 
   public addNewExpense = (req: Request<unknown, unknown, AddExpenseParams>, res: Response) => {
@@ -37,28 +35,10 @@ export class ExpensesController extends ControllerBase {
         : 0),
       0
     );
-    const maxCategoryId = this.dataContext.categories.reduce(
-      (max, e) => (e.id
-        ? e.id > max
-          ? e.id
-          : max
-        : 0),
-      0
-    );
 
-    let category: Category | undefined;
-
-    if (req.body.category != null) {
-      if (req.body.category.id != null) {
-        category = this.dataContext.categories.find(c => c.id == req.body.category?.id);
-      } else {
-        const newCategoryArrayId = this.dataContext.categories.push({
-          id: maxCategoryId + 1,
-          name: req.body.category.name
-        });
-        category = this.dataContext.categories[newCategoryArrayId - 1];
-      }
-    }
+    const category = req.body.category
+      ? this.createOrGetCategory(req.body.category.id, req.body.category.name)
+      : undefined;
 
     const newExpense = {
       id: maxId + 1,
@@ -99,28 +79,9 @@ export class ExpensesController extends ControllerBase {
   public editExpense = (req: Request, res: Response) => {
     const index = this.dataContext.expenses.findIndex(e => e.id === Number(req.body.id));
 
-    const maxCategoryId = this.dataContext.categories.reduce(
-      (max, e) => (e.id
-        ? e.id > max
-          ? e.id
-          : max
-        : 0),
-      0
-    );
-
-    let category: Category | undefined;
-
-    if (req.body.category != null) {
-      if (req.body.category.id != null) {
-        category = this.dataContext.categories.find(c => c.id == req.body.category?.id);
-      } else {
-        const newCategoryArrayId = this.dataContext.categories.push({
-          id: maxCategoryId + 1,
-          name: req.body.category.name
-        });
-        category = this.dataContext.categories[newCategoryArrayId - 1];
-      }
-    }
+    const category = req.body.category
+      ? this.createOrGetCategory(req.body.category.id, req.body.category.name)
+      : undefined;
 
     const editedExpense = {
       id: req.body.id,
@@ -147,5 +108,39 @@ export class ExpensesController extends ControllerBase {
     }
 
     res.send(this.wrapData(result));
+  }
+
+  private getFilteredExpenses(month: number, year: number) {
+    return this.dataContext.exchangedExpenses.filter((e) =>
+      e.date.getMonth() + 1 == Number(month) && e.date.getFullYear() == Number(year)
+    );
+  }
+
+  private createOrGetCategory(categoryId: number | undefined, categoryName: string) {
+    const maxCategoryId = this.dataContext.categories.reduce(
+      (max, e) => (e.id
+        ? e.id > max
+          ? e.id
+          : max
+        : 0),
+      0
+    );
+
+    const category = this.dataContext.categories.find(c => c.id == categoryId);
+
+    if (category) {
+      return category;
+    }
+
+    if (!categoryName) {
+      throw new Error('Category name is not specified');
+    }
+
+    const newCategory = {
+      id: maxCategoryId + 1,
+      name: categoryName
+    };
+    this.dataContext.categories.push(newCategory);
+    return newCategory;
   }
 }

@@ -5,3 +5,12 @@
 .datepicker-content {
   height: 4px;
 }
+
+.total-counter {
+  font-size: 1.5rem;
+
+  & > * {
+    display: inline-block;
+    vertical-align: middle;
+  }
+}

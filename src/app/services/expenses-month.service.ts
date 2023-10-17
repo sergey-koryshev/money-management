@@ -17,7 +17,7 @@ export class ExpensesMonthService {
     this.month$.subscribe((value) => this.saveMonth(value));
   }
 
-  getMonth(): Month {
+  private getMonth(): Month {
     const selectedMonth = localStorage.getItem(this.selectedMonthStorageName);
     const currentDate = new Date();
     return selectedMonth ? JSON.parse(selectedMonth) : {
@@ -26,7 +26,7 @@ export class ExpensesMonthService {
     };
   }
 
-  saveMonth(selectedMonth: Month) {
+  private saveMonth(selectedMonth: Month) {
     localStorage.setItem(this.selectedMonthStorageName, JSON.stringify(selectedMonth));
   }
 }
