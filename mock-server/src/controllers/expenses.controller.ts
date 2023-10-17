@@ -116,10 +116,6 @@ export class ExpensesController extends ControllerBase {
     );
   }
 
-  private getTotalSpent(month: number, year: number) {
-    return this.getFilteredExpenses(month, year).reduce((sum, current) => sum + (current.exchangedPrice?.amount ?? current.price.amount), 0)
-  }
-
   private createOrGetCategory(categoryId: number | undefined, categoryName: string) {
     const maxCategoryId = this.dataContext.categories.reduce(
       (max, e) => (e.id
