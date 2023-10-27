@@ -1,8 +1,10 @@
 import { ExpensesController } from '../controllers/expenses.controller';
+import { auth } from '../middleware/auth.middleware';
 import { RouterBase } from './router-base';
 
 export class ExpensesRouter extends RouterBase<ExpensesController> {
   initialize(): void {
+    this.router.use(auth);
     this.router.get('/', this.controller.getExpenses);
     this.router.post('/', this.controller.addNewExpense);
     this.router.post('/items', this.controller.getExistingItems);
