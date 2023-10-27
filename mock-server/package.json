@@ -11,14 +11,21 @@
   },
   "author": "Sergey Koryshev",
   "dependencies": {
+    "bcrypt": "^5.1.1",
+    "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
-    "fuzzy-search": "^3.2.1"
+    "fuzzy-search": "^3.2.1",
+    "jsonwebtoken": "^9.0.2"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.1",
+    "@types/cookie-parser": "^1.4.5",
     "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
     "@types/fuzzy-search": "^2.1.2",
+    "@types/jsonwebtoken": "^9.0.4",
     "@types/node": "^20.2.5",
     "@typescript-eslint/eslint-plugin": "^5.59.11",
     "@typescript-eslint/parser": "^5.59.11",
