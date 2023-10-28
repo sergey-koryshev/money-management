@@ -1,12 +1,12 @@
 import { User } from '@models/user.model';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 
 @Component({
   selector: 'app-user-avatar',
   templateUrl: './user-avatar.component.html',
   styleUrls: ['./user-avatar.component.scss']
 })
-export class UserAvatarComponent implements OnInit {
+export class UserAvatarComponent implements OnChanges {
   @Input()
   user: User;
 
@@ -17,10 +17,10 @@ export class UserAvatarComponent implements OnInit {
   initials: string;
   avatarStyles: {[key: string]: string};
 
-  ngOnInit() {
-    this.initials = this.user.firstName[0] + this.user.secondName[0];
-    this.fullName = `${this.user.firstName} ${this.user.secondName}`;
-    const avatarBackgroundColor = this.getUniqueColor(this.user.id);
+  ngOnChanges(): void {
+    this.initials = this.user.firstName[0] + (this.user.secondName ? this.user.secondName[0] : '');
+    this.fullName = `${this.user.firstName} ${this.user.secondName ?? ''}`;
+    const avatarBackgroundColor = this.getUniqueColor(this.user.tenant);
     const avatarForegroundColor = this.getForegroundColor(avatarBackgroundColor);
     this.avatarStyles = {
       'background-color': `${avatarBackgroundColor}80`,
