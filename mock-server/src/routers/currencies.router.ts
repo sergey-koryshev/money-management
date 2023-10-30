@@ -1,6 +1,6 @@
 import { CurrenciesController } from '../controllers/currencies.controller';
-import { auth } from '../middleware/auth.middleware';
 import { RouterBase } from './router-base';
+import { auth } from '../middleware/auth.middleware';
 
 export class CurrenciesRouter extends RouterBase<CurrenciesController> {
   initialize(): void {

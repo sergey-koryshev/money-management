@@ -6,10 +6,11 @@ import { ControllerBase } from './controller-base';
 export class LoginController extends ControllerBase {
   public login = (req: Request, res: Response) => {
     const user = this.dataContext.users.find(u => u.email === req.body.email);
-    // need to remove it once registration is implemented
-    // if (user){
-    //   console.log(hashSync(req.body.password, 10))
-    // }
+    // exposes password to create new users,
+    // TODO: need to remove once registration process is implemented
+    if (user){
+      console.log(hashSync(req.body.password, 10))
+    }
 
     if (!user || !compareSync(req.body.password, user.password)) {
       return res.status(400).send(this.wrapData('Invalid credentials'));

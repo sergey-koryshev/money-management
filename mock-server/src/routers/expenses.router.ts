@@ -1,6 +1,6 @@
 import { ExpensesController } from '../controllers/expenses.controller';
-import { auth } from '../middleware/auth.middleware';
 import { RouterBase } from './router-base';
+import { auth } from '../middleware/auth.middleware';
 
 export class ExpensesRouter extends RouterBase<ExpensesController> {
   initialize(): void {
