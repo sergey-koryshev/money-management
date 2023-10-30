@@ -11,6 +11,7 @@ export function auth(req: Request, res: Response, next: NextFunction) {
   jwt.verify(accessToken, process.env.AUTH_TOKEN_SECRET as string, (err: unknown) => {
     if (err) {
       console.log(err);
+      res.clearCookie('access_token');
       return res.sendStatus(401);
     }
     next();
