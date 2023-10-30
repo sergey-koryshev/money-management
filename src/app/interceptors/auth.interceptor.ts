@@ -20,8 +20,6 @@ export class AuthInterceptor implements HttpInterceptor {
       withCredentials: true,
     });
 
-
-
     return next.handle(request).pipe(tap(
       () => {},
       (err) => {
