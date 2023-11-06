@@ -2,10 +2,12 @@ import { Category } from '../models/category.model';
 import { Currency } from '../models/currency.model';
 import { ExchangedPrice } from '../models/exchanged-price.model';
 import { Expense } from '../models/expense.model';
+import { User } from '../models/user.model';
 import { categories } from './categories.data';
 import { currencies } from './currencies.data';
 import { expenses } from './expenses.data';
 import { mainCurrency } from './main-currency.data';
+import { users } from './users.data';
 
 interface ExchangeRate {
   fromCurrencyId: number
@@ -19,6 +21,7 @@ export class DataContext {
   public expenses: Expense[];
   public exchangedExpenses: Expense[];
   public categories: Category[];
+  public users: User[];
 
   private exchangeRates: ExchangeRate[] = [
     {
@@ -89,6 +92,7 @@ export class DataContext {
     this.expenses = expenses;
     this.exchangedExpenses = [];
     this.categories = categories;
+    this.users = users;
     this.recalculateExchangedExpenses();
   }
 

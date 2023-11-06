@@ -5,6 +5,7 @@ import { User } from '@models/user.model';
 import { emptyMainCurrency } from 'src/app/constants';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '@app/services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -15,19 +16,21 @@ export class NavbarComponent {
 
   currencies: Currency[];
   mainCurrency: Currency | null;
-  user: User;
+  user: User | null;
   emptyMainCurrency = emptyMainCurrency;
   searchForm: FormGroup;
 
-  constructor(private currencyService: CurrencyService, private router: Router, private fb: FormBuilder) {
-    this.currencies = this.currencyService.currencies;
-    this.currencyService.mainCurrency$.subscribe((currency) => this.mainCurrency = currency)
-    // TODO: need to remove this hardoced user once we implemented login process
-    this.user = {
-      id: '8eeb9d4b-d246-4075-a53a-fa31184f71ec',
-      firstName: 'Sergey',
-      secondName: 'Koryshev'
+  get defaultUser(): User {
+    return {
+      tenant: '8eeb9d4b-d246-4075-a53a-fa31184f71ec',
+      firstName: 'Sign In'
     };
+  }
+
+  constructor(private currencyService: CurrencyService, private router: Router, fb: FormBuilder, authService: AuthService) {
+    this.currencyService.currencies$.subscribe((currencies) => this.currencies = currencies);
+    this.currencyService.mainCurrency$.subscribe((currency) => this.mainCurrency = currency)
+    authService.user$.subscribe((user) => this.user = user)
     this.searchForm = fb.group({
       text: ['', Validators.required]
     });
