@@ -3,6 +3,6 @@ export interface User {
   tenant: string;
   email: string;
   firstName: string;
-  secondName: string;
+  secondName?: string;
   password: string;
 }
