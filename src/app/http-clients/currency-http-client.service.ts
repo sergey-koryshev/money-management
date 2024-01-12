@@ -1,6 +1,7 @@
 import { Currency } from '@models/currency.model';
 import { Injectable } from '@angular/core';
 import { BaseHttpClientService } from './base-http-client.service';
+import { SetMainCurrencyParams } from './currency-http-client.model';
 
 @Injectable({
   providedIn: 'root'
@@ -17,8 +18,8 @@ export class CurrencyHttpClientService {
     return this.baseHttpClient.get<Currency>('currencies/main');
   }
 
-  setMainCurrency(currency: Currency) {
-    return this.baseHttpClient.post<Currency>('currencies/main', currency);
+  setMainCurrency(params: SetMainCurrencyParams) {
+    return this.baseHttpClient.post<Currency>('currencies/main', params);
   }
 
   removeMainCurrency() {

@@ -4,6 +4,7 @@ import { CurrencyHttpClientService } from './../http-clients/currency-http-clien
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, forkJoin } from 'rxjs';
 import { AuthService } from './auth.service';
+import { SetMainCurrencyParams } from '@app/http-clients/currency-http-client.model';
 
 @Injectable({
   providedIn: 'root'
@@ -41,8 +42,8 @@ export class CurrencyService {
     });
   }
 
-  setMainCurrency(currency: Currency) {
-    this.currencyHttpClient.setMainCurrency(currency)
+  setMainCurrency(params: SetMainCurrencyParams) {
+    this.currencyHttpClient.setMainCurrency(params)
       .subscribe((currency) => this.mainCurrency$.next(currency));
   }
 

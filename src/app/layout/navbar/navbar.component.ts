@@ -37,7 +37,7 @@ export class NavbarComponent {
    }
 
   setMainCurrency(currency: Currency) {
-    this.currencyService.setMainCurrency(currency);
+    this.currencyService.setMainCurrency({currencyId: currency.id});
   }
 
   removeMainCurrency() {
