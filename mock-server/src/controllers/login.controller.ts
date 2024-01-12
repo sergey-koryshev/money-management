@@ -5,7 +5,7 @@ import { ControllerBase } from './controller-base';
 
 export class LoginController extends ControllerBase {
   public login = (req: Request, res: Response) => {
-    const user = this.dataContext.users.find(u => u.email === req.body.email);
+    const user = this.dataContext.usersDbSet.find(u => u.email === req.body.email);
     // exposes password to create new users,
     // TODO: need to remove once registration process is implemented
     if (user){
