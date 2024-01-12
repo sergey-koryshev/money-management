@@ -10,10 +10,19 @@
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitAny": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "typeRoots" : ["./node_modules/@types", "./types"]
   },
+  "ts-node": {
+    "files": true
+  },
+  "files": [
+    "src/index.ts",
+    "types/global.d.ts"
+  ],
   "include": [
     "./package.json",
-    "src/**/*.ts"
-  ]
+    "src/**/*.ts",
+    "types/global.d.ts"
+]
 }
