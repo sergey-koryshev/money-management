@@ -1,6 +1,6 @@
 import { categories, categoryEntityToModel } from './categories.data';
 import { expenseEntityToModel, expenses } from './expenses.data';
-import { Identifier } from '../models/identified.model';
+import { Identifier } from '../models/identifier.model';
 import { currencies } from './currencies.data';
 import { mainCurrencies } from './main-currencies.data';
 import { users } from './users.data';
