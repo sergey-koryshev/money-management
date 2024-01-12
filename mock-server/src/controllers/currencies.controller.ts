@@ -11,7 +11,7 @@ export class CurrenciesController extends ControllerBase {
 
   public getMainCurrency = (req: Request, res: Response) => {
     const mainCurrency = this.dataContext.getMainCurrency(req.userTenant);
-    res.send(this.wrapData(mainCurrency ? this.getCurrencyById(mainCurrency.currencyId) : {}));
+    res.send(this.wrapData(mainCurrency ? this.getCurrencyById(mainCurrency.currencyId) : null));
   }
 
   public setMainCurrency = (req: Request<unknown, unknown, SetMainCurrencyParams>, res: Response) => {
@@ -38,7 +38,7 @@ export class CurrenciesController extends ControllerBase {
   public removeMainCurrency = (req: Request<Currency>, res: Response) => {
     const index = this.dataContext.mainCurrenciesDbSet.findIndex((m) => m.tenant === req.userTenant);
     this.dataContext.mainCurrenciesDbSet.splice(index, 1);
-    res.send(this.wrapData({}));
+    res.send(this.wrapData(null));
   }
 
   private getCurrencyById (id: number): Currency {
