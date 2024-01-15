@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoginHttpClient } from '@app/http-clients/login-http-client.service';
@@ -11,6 +11,9 @@ import { CurrencyService } from '@app/services/currency.service';
   styleUrls: ['./login-form.component.scss']
 })
 export class LoginFormComponent implements OnInit {
+
+  @Output()
+  signedIn = new EventEmitter();
 
   form: FormGroup;
   error: string | null;
@@ -30,6 +33,7 @@ export class LoginFormComponent implements OnInit {
       next: (user) => {
         this.error = null;
         this.authService.saveUser(user);
+        this.signedIn.emit();
         this.router.navigate(['expenses']);
       },
       error: (err) => this.error = err.error.data ?? err.error.message})

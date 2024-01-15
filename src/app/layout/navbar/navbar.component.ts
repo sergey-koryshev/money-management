@@ -6,6 +6,7 @@ import { emptyMainCurrency } from 'src/app/constants';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '@app/services/auth.service';
+import { LoginHttpClient } from '@app/http-clients/login-http-client.service';
 
 @Component({
   selector: 'app-navbar',
@@ -27,7 +28,7 @@ export class NavbarComponent {
     };
   }
 
-  constructor(private currencyService: CurrencyService, private router: Router, fb: FormBuilder, authService: AuthService) {
+  constructor(private currencyService: CurrencyService, private router: Router, fb: FormBuilder, private authService: AuthService, private loginHttpClient: LoginHttpClient) {
     this.currencyService.currencies$.subscribe((currencies) => this.currencies = currencies);
     this.currencyService.mainCurrency$.subscribe((currency) => this.mainCurrency = currency)
     authService.user$.subscribe((user) => this.user = user)
@@ -47,6 +48,13 @@ export class NavbarComponent {
   onSearchFormSubmit() {
     this.router.navigate(['expenses/search'], {
       queryParams: this.searchForm.value
+    });
+  }
+
+  onLogout() {
+    this.loginHttpClient.logout().subscribe(() => {
+      this.authService.removeUser();
+      this.router.navigate(['/']);
     });
   }
 }

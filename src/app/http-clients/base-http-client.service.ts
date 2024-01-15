@@ -39,7 +39,7 @@ export class BaseHttpClientService {
         headers: fullHeaders,
         params,
       })
-      .pipe(map((response: BaseApiResponse<T>) => response.data));
+      .pipe(map((response: BaseApiResponse<T>) => response?.data));
   }
 
   post<T>(
@@ -66,7 +66,7 @@ export class BaseHttpClientService {
         headers: fullHeaders,
         params,
       })
-      .pipe(map((response: BaseApiResponse<T>) => response.data));
+      .pipe(map((response: BaseApiResponse<T>) => response?.data));
   }
 
   delete<T>(
@@ -92,7 +92,7 @@ export class BaseHttpClientService {
         headers: fullHeaders,
         params,
       })
-      .pipe(map((response: BaseApiResponse<T>) => response.data));
+      .pipe(map((response: BaseApiResponse<T>) => response?.data));
   }
 
   put<T>(
@@ -119,6 +119,6 @@ export class BaseHttpClientService {
         headers: fullHeaders,
         params,
       })
-      .pipe(map((response: BaseApiResponse<T>) => response.data));
+      .pipe(map((response: BaseApiResponse<T>) => response?.data));
   }
 }

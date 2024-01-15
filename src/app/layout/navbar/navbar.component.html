@@ -33,7 +33,7 @@
         </button>
       </div>
     </div>
-    <div ngbDropdown class="ms-4" display="dynamic">
+    <div ngbDropdown #mainDropdown="ngbDropdown" class="ms-4" display="dynamic">
       <a href (click)="(false)" class="nav-link" ngbDropdownToggle>
         <app-user-avatar class="d-inline-block" [user]="user ?? defaultUser"></app-user-avatar>
       </a>
@@ -42,13 +42,13 @@
           Change password
         </button>
         <div class="dropdown-divider"></div>
-        <button ngbDropdownItem>
+        <button ngbDropdownItem (click)="onLogout()">
           Logout
         </button>
       </div>
       <ng-template #loginForm>
         <div ngbDropdownMenu class="login-form">
-          <app-login-form></app-login-form>
+          <app-login-form (signedIn)="mainDropdown.close()"></app-login-form>
         </div>
       </ng-template>
     </div>
