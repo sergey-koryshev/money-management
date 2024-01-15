@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import { AddExpenseParams } from '../models/add-expense-params.model';
-import { CategoryEntity } from '../data/entities/category.entity';
 import { ControllerBase } from './controller-base';
 import { Expense } from '../models/expense.model';
 import { ExpenseEntity } from '../data/entities/expense.entity';
@@ -53,7 +52,7 @@ export class ExpensesController extends ControllerBase {
   }
 
   public removeExpense = (req: Request, res: Response) => {
-    const expense = this.dataContext.getExpenses(req.userTenant).findIndex(e => e.id === Number(req.params['id']));
+    const expense = this.dataContext.getExpenses(req.userTenant).find(e => e.id === Number(req.params['id']));
 
     if (!expense) {
       throw new Error(`Expense with id ${req.params['id']} doesn't exist`)
@@ -103,7 +102,7 @@ export class ExpensesController extends ControllerBase {
 
   private getFilteredExpenses(month: number, year: number, tenant: string) {
     return this.dataContext.getExpenses(tenant).filter((e) =>
-      e.date.getMonth() + 1 == Number(month) && e.date.getFullYear() == Number(year)
+      e.date.getMonth() + 1 == month && e.date.getFullYear() == year
     );
   }
 
