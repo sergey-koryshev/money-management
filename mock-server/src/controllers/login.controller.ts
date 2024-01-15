@@ -30,5 +30,10 @@ export class LoginController extends ControllerBase {
       secondName: user.secondName
     }));
   }
+
+  public logout = (_: Request, res: Response) => {
+    res.clearCookie('access_token');
+    res.sendStatus(204);
+  }
 }
 

@@ -34,7 +34,7 @@ server.disable('etag');
 server.use('/currencies', currenciesRouter.router);
 server.use('/expenses', expensesRouter.router);
 server.use('/categories', categoriesRouter.router);
-server.use('/signin', loginRouter.router);
+server.use('/auth', loginRouter.router);
 
 server.listen(process.env.PORT, () => {
   console.log(`⚡️ Server is running at http://localhost:${process.env.PORT}`);
