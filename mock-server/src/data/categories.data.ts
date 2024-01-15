@@ -2,9 +2,10 @@ import { Category } from '../models/category.model';
 import { CategoryEntity } from './entities/category.entity';
 
 export function categoryEntityToModel(entity: CategoryEntity): Category {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const { tenant, ...rest } = entity;
-  return rest;
+  return {
+    id: entity.id,
+    name: entity.name
+  };
 }
 
 export const categories: CategoryEntity[] = [
