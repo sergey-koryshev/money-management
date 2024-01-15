@@ -1,6 +1,11 @@
 import { Currency } from '../models/currency.model';
+import { CurrencyEntity } from './entities/currency.entity';
 
-export const currencies: Currency[] = [
+export function currencyEntityToModel(entity: CurrencyEntity): Currency {
+  return entity;
+}
+
+export const currencies: CurrencyEntity[] = [
   {
     id: 0,
     name: 'RUB',

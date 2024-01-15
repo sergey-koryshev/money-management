@@ -1,20 +1,14 @@
 import { Request, Response } from 'express';
 import { AddExpenseParams } from '../models/add-expense-params.model';
 import { ControllerBase } from './controller-base';
-import { DataContext } from '../data/data-context';
 import { Expense } from '../models/expense.model';
+import { ExpenseEntity } from '../data/entities/expense.entity';
 import FuzzySearch from 'fuzzy-search';
 import { ItemWithCategory } from '../models/item-with-category.model';
+import { categoryEntityToModel } from '../data/categories.data';
+import { expenseEntityToModel } from '../data/expenses.data';
 
 export class ExpensesController extends ControllerBase {
-
-  itemsSearcher: FuzzySearch<Expense>;
-
-  constructor(dataContext: DataContext) {
-    super(dataContext);
-    this.itemsSearcher = new FuzzySearch<Expense>(dataContext.expenses, ['item'])
-  }
-
   public getExpenses = (req: Request, res: Response) => {
     const month = req.query['month'];
     const year = req.query['year'];
@@ -23,43 +17,32 @@ export class ExpensesController extends ControllerBase {
       res.sendStatus(500);
     }
 
-    res.send(this.wrapData(this.getFilteredExpenses(Number(month), Number(year))));
+    res.send(this.wrapData(this.getFilteredExpenses(Number(month), Number(year), req.userTenant)));
   }
 
   public addNewExpense = (req: Request<unknown, unknown, AddExpenseParams>, res: Response) => {
-    const maxId = this.dataContext.expenses.reduce(
-      (max, e) => (e.id
-        ? e.id > max
-          ? e.id
-          : max
-        : 0),
-      0
-    );
-
     const category = req.body.category
-      ? this.createOrGetCategory(req.body.category.id, req.body.category.name)
+      ? this.createOrGetCategory(req.body.category.id, req.body.category.name, req.userTenant)
       : undefined;
 
-    const newExpense = {
-      id: maxId + 1,
+    const newExpense = this.dataContext.addEntity({
       date: new Date(req.body.date),
       item: req.body.item,
-      category: category,
-      price: {
-        amount: req.body.priceAmount,
-        currency: this.dataContext.currencies.find((c) => c.id === req.body.currencyId) ?? this.dataContext.currencies[0]
-      }
-    };
-    this.dataContext.expenses.push(newExpense);
-    this.dataContext.recalculateExchangedExpenses();
-    res.send(this.wrapData(this.dataContext.exchangedExpenses.find((e) => e.id === maxId + 1)));
+      categoryId: category?.id,
+      priceAmount: req.body.priceAmount,
+      priceCurrencyId: req.body.currencyId,
+      tenant: req.userTenant
+    }, this.dataContext.expensesDbSet);
+
+    res.send(this.wrapData(expenseEntityToModel(newExpense)));
   }
 
   public getExistingItems = (req: Request<unknown, unknown, string>, res: Response) => {
     let result: ItemWithCategory[] = [];
+    const itemsSearcher = new FuzzySearch<Expense>(this.dataContext.getExpenses(req.userTenant), ['item'])
 
     if (req.body != null && req.body.length > 0) {
-      result = this.itemsSearcher
+      result = itemsSearcher
       .search(req.body)
       .filter((v, i, s) => s.findIndex(o => o.item === v.item) === i)
       .map((e) => ({ item: e.item, categoryId: e.category?.id}));
@@ -69,64 +52,62 @@ export class ExpensesController extends ControllerBase {
   }
 
   public removeExpense = (req: Request, res: Response) => {
-    const index = this.dataContext.expenses.findIndex(e => e.id === Number(req.params['id']));
-    const deletingItem = this.dataContext.expenses[index];
-    this.dataContext.expenses.splice(index, 1);
-    this.dataContext.recalculateExchangedExpenses();
-    res.send(this.wrapData(deletingItem));
+    const expense = this.dataContext.getExpenses(req.userTenant).find(e => e.id === Number(req.params['id']));
+
+    if (!expense) {
+      throw new Error(`Expense with id ${req.params['id']} doesn't exist`)
+    }
+
+    const index = this.dataContext.expensesDbSet.findIndex(e => e.id === Number(req.params['id']));
+    this.dataContext.expensesDbSet.splice(index, 1);
+    res.send(this.wrapData(expense));
   }
 
   public editExpense = (req: Request, res: Response) => {
-    const index = this.dataContext.expenses.findIndex(e => e.id === Number(req.body.id));
+    const expense = this.dataContext.getExpenses(req.userTenant).find(e => e.id === Number(req.body.id));
+
+    if (!expense) {
+      throw new Error(`Expense with id ${req.body.id} doesn't exist`)
+    }
+
+    const index = this.dataContext.expensesDbSet.findIndex(e => e.id === Number(req.body.id));
 
     const category = req.body.category
-      ? this.createOrGetCategory(req.body.category.id, req.body.category.name)
+      ? this.createOrGetCategory(req.body.category.id, req.body.category.name, req.userTenant)
       : undefined;
 
-    const editedExpense = {
+    const editedExpense: ExpenseEntity = {
       id: req.body.id,
       date: new Date(req.body.date),
       item: req.body.item,
-      category: category,
-      price: {
-        amount: req.body.priceAmount,
-        currency: this.dataContext.currencies.find((c) => c.id === req.body.currencyId) ?? this.dataContext.currencies[0]
-      }
+      categoryId: category?.id,
+      priceAmount: req.body.priceAmount,
+      priceCurrencyId: req.body.currencyId,
+      tenant: req.userTenant
     };
 
-    this.dataContext.expenses[index] = editedExpense;
-    this.dataContext.recalculateExchangedExpenses();
-    const exchangedIndex = this.dataContext.exchangedExpenses.findIndex(e => e.id === Number(req.body.id));
-    res.send(this.wrapData(this.dataContext.exchangedExpenses[exchangedIndex]));
+    this.dataContext.expensesDbSet[index] = editedExpense;
+    res.send(this.wrapData(expenseEntityToModel(editedExpense)));
   }
 
   public searchItems = (req: Request, res: Response) => {
     let result: Expense[] = [];
 
     if (req.body != null && req.body.length > 0) {
-      result = this.dataContext.exchangedExpenses.filter(e => e.item.toUpperCase() == req.body.toUpperCase())
+      result = this.dataContext.getExpenses(req.userTenant).filter(e => e.item.toUpperCase() == req.body.toUpperCase())
     }
 
     res.send(this.wrapData(result));
   }
 
-  private getFilteredExpenses(month: number, year: number) {
-    return this.dataContext.exchangedExpenses.filter((e) =>
-      e.date.getMonth() + 1 == Number(month) && e.date.getFullYear() == Number(year)
+  private getFilteredExpenses(month: number, year: number, tenant: string) {
+    return this.dataContext.getExpenses(tenant).filter((e) =>
+      e.date.getMonth() + 1 == month && e.date.getFullYear() == year
     );
   }
 
-  private createOrGetCategory(categoryId: number | undefined, categoryName: string) {
-    const maxCategoryId = this.dataContext.categories.reduce(
-      (max, e) => (e.id
-        ? e.id > max
-          ? e.id
-          : max
-        : 0),
-      0
-    );
-
-    const category = this.dataContext.categories.find(c => c.id == categoryId);
+  private createOrGetCategory(categoryId: number | undefined, categoryName: string, tenant: string) {
+    const category = this.dataContext.getCategories(tenant).find(c => c.id == categoryId);
 
     if (category) {
       return category;
@@ -136,11 +117,11 @@ export class ExpensesController extends ControllerBase {
       throw new Error('Category name is not specified');
     }
 
-    const newCategory = {
-      id: maxCategoryId + 1,
-      name: categoryName
-    };
-    this.dataContext.categories.push(newCategory);
-    return newCategory;
+    const newCategory = this.dataContext.addEntity({
+      name: categoryName,
+      tenant
+    }, this.dataContext.categoriesDbSet);
+
+    return categoryEntityToModel(newCategory);
   }
 }
