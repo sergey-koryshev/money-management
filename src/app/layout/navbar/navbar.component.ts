@@ -7,7 +7,8 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '@app/services/auth.service';
 import { LoginHttpClient } from '@app/http-clients/login-http-client.service';
-import { UserConnectionStatus } from '@app/models/enums/user-connection-status.enum';
+import { map, of, switchMap } from 'rxjs';
+import { UserConnectionHttpClient } from '@app/http-clients/user-connections-http-client.service';
 
 @Component({
   selector: 'app-navbar',
@@ -21,26 +22,32 @@ export class NavbarComponent {
   user: User | null;
   emptyMainCurrency = emptyMainCurrency;
   searchForm: FormGroup;
-  pendingConnections: number = 0;
+  pendingConnectionsCount = 0;
 
   get defaultUser(): User {
     return {
       id: 0,
       tenant: '8eeb9d4b-d246-4075-a53a-fa31184f71ec',
-      firstName: 'Sign In',
-      connections: []
+      firstName: 'Sign In'
     };
   }
 
-  constructor(private currencyService: CurrencyService, private router: Router, fb: FormBuilder, private authService: AuthService, private loginHttpClient: LoginHttpClient) {
+  constructor(private currencyService: CurrencyService,
+    private router: Router,
+    fb: FormBuilder,
+    private authService: AuthService,
+    private loginHttpClient: LoginHttpClient,
+    userConnectionsHttpClient: UserConnectionHttpClient) {
     this.currencyService.currencies$.subscribe((currencies) => this.currencies = currencies);
     this.currencyService.mainCurrency$.subscribe((currency) => this.mainCurrency = currency)
-    authService.user$.subscribe((user) => {
-      this.user = user;
-      if (user) {
-        this.pendingConnections = user.connections.filter((c) => c.status === UserConnectionStatus.pending).length;
-      }
-    });
+    this.authService.user$
+      .pipe(
+        map((user) => this.user = user),
+        switchMap((user) => user ? userConnectionsHttpClient.getPendingConnectionsCount() : of(0))
+      )
+      .subscribe({
+        next: (value) => this.pendingConnectionsCount = value
+      });
     this.searchForm = fb.group({
       text: ['', Validators.required]
     });

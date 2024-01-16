@@ -3,12 +3,14 @@ import { expenseEntityToModel, expenses } from './expenses.data';
 import { Identifier } from '../models/identifier.model';
 import { currencies } from './currencies.data';
 import { mainCurrencies } from './main-currencies.data';
+import { userConnections } from './user-connections.data';
 import { users } from './users.data';
 
 export class DataContext {
   public expensesDbSet = expenses;
   public categoriesDbSet = categories;
   public mainCurrenciesDbSet = mainCurrencies;
+  public userConnections = userConnections;
 
   public currenciesDbSet = currencies;
   public usersDbSet = users;
