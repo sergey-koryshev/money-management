@@ -1,5 +1,6 @@
 export interface User {
-    tenant: string,
-    firstName: string,
-    secondName?: string
+  id: number
+  tenant: string,
+  firstName: string,
+  secondName?: string
 }

@@ -25,6 +25,7 @@ export class LoginController extends ControllerBase {
     res.cookie('access_token', token, {
       httpOnly: true
     }).send(this.wrapData({
+      id: user.id,
       tenant: user.tenant,
       firstName: user.firstName,
       secondName: user.secondName

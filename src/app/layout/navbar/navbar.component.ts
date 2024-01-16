@@ -23,6 +23,7 @@ export class NavbarComponent {
 
   get defaultUser(): User {
     return {
+      id: 0,
       tenant: '8eeb9d4b-d246-4075-a53a-fa31184f71ec',
       firstName: 'Sign In'
     };

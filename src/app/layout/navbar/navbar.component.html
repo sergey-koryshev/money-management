@@ -38,6 +38,10 @@
         <app-user-avatar class="d-inline-block" [user]="user ?? defaultUser"></app-user-avatar>
       </a>
       <div *ngIf="user; else loginForm" ngbDropdownMenu>
+        <h6 class="dropdown-header">
+          <span>User ID: #</span>
+          <span>{{ user.id }}</span>
+        </h6>
         <button ngbDropdownItem>
           Change password
         </button>
