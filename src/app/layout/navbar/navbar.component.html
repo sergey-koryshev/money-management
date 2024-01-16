@@ -43,8 +43,11 @@
           <span>{{ user.id }}</span>
         </h6>
         <div class="dropdown-divider"></div>
-        <button ngbDropdownItem>
-          Change password
+        <button ngbDropdownItem class="d-flex flex-row align-items-center">
+          <div>Connections</div>
+          <div *ngIf="pendingConnections > 0" class="pending-connections">
+            <span>{{ pendingConnections }}</span>
+          </div>
         </button>
         <button ngbDropdownItem (click)="onLogout()">
           Logout
