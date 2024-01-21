@@ -1,0 +1,12 @@
+.pill-button {
+  cursor: pointer;
+  display: inline-flex;
+  padding: 2px 15px;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  font-size: small;
+  border: none;
+  border-radius: 999px;
+  transition: 220ms all ease-in-out;
+}
