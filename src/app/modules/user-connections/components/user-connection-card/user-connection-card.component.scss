@@ -1,0 +1,43 @@
+.user-connection-container {
+  background-color: #FBFBFB;
+  border-radius: 5px;
+  padding: 10px;
+  transition: 220ms all ease-in-out;
+  width: 400px;
+
+  .user-tile-container {
+    overflow: hidden;
+  }
+
+  &:hover {
+    background-color: #F5F5F5;
+  }
+}
+
+.status-pin {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.small-id {
+  color: #8E8E8E;
+  font-size: small;
+}
+
+.user-name-container {
+  line-height: 1em;
+  min-width: 0;
+
+  & .user-name {
+    div {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+}
+
+.buttons-container {
+  white-space: nowrap;
+}
