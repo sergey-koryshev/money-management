@@ -1,4 +1,3 @@
-import { User } from '@models/user.model';
 import { Component, Input, OnChanges } from '@angular/core';
 
 @Component({
@@ -8,19 +7,15 @@ import { Component, Input, OnChanges } from '@angular/core';
 })
 export class UserAvatarComponent implements OnChanges {
   @Input()
-  user: User;
+  tenant?: string
 
   @Input()
-  short: boolean;
-
-  fullName: string;
   initials: string;
+
   avatarStyles: {[key: string]: string};
 
   ngOnChanges(): void {
-    this.initials = this.user.firstName[0] + (this.user.secondName ? this.user.secondName[0] : '');
-    this.fullName = `${this.user.firstName} ${this.user.secondName ?? ''}`;
-    const avatarBackgroundColor = this.getUniqueColor(this.user.tenant);
+    const avatarBackgroundColor = this.getUniqueColor(this.tenant ?? '8eeb9d4b-d246-4075-a53a-fa31184f71ec');
     const avatarForegroundColor = this.getForegroundColor(avatarBackgroundColor);
     this.avatarStyles = {
       'background-color': `${avatarBackgroundColor}80`,

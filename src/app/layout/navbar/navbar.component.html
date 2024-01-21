@@ -35,7 +35,7 @@
     </div>
     <div ngbDropdown #mainDropdown="ngbDropdown" class="ms-4" display="dynamic">
       <a href (click)="(false)" class="nav-link" ngbDropdownToggle>
-        <app-user-avatar class="d-inline-block" [user]="user ?? defaultUser"></app-user-avatar>
+        <app-user-tile class="d-inline-block" [user]="user ?? defaultUser"></app-user-tile>
       </a>
       <div *ngIf="user; else loginForm" ngbDropdownMenu>
         <h6 class="dropdown-header">

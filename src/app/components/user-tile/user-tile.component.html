@@ -1,0 +1,4 @@
+<div class="user-tile-container">
+  <app-user-avatar [tenant]="user.tenant" [initials]="initials" class="me-2"></app-user-avatar>
+  <div *ngIf="!short && fullName">{{ fullName }}</div>
+</div>

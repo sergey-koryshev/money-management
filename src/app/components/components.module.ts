@@ -8,6 +8,8 @@ import { PriceComponent } from './price/price.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { RoundButtonComponent } from './round-button/round-button.component';
 import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
+import { UserTileComponent } from './user-tile/user-tile.component';
+import { PillButtonComponent } from './pill-button/pill-button.component';
 
 @NgModule({
   declarations: [
@@ -16,6 +18,8 @@ import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
     PriceComponent,
     RoundButtonComponent,
     ModalDialogComponent,
+    UserTileComponent,
+    PillButtonComponent,
   ],
   imports: [
     CommonModule,
@@ -24,11 +28,13 @@ import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
   ],
   exports: [
     UserAvatarComponent,
+    UserTileComponent,
     CurrencyComponent,
     PriceComponent,
     TableComponent,
     RoundButtonComponent,
-    ModalDialogComponent
+    ModalDialogComponent,
+    PillButtonComponent
   ],
 })
 export class ComponentsModule { }
