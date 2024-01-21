@@ -36,15 +36,14 @@ export class NavbarComponent {
     private router: Router,
     fb: FormBuilder,
     private authService: AuthService,
-    private loginHttpClient: LoginHttpClient,
-    userConnectionsHttpClient: UserConnectionHttpClient) {
+    private loginHttpClient: LoginHttpClient) {
     this.currencyService.currencies$.subscribe((currencies) => this.currencies = currencies);
     this.currencyService.mainCurrency$.subscribe((currency) => this.mainCurrency = currency)
     this.authService.user$
-      .pipe(
-        map((user) => this.user = user),
-        switchMap((user) => user ? userConnectionsHttpClient.getPendingConnectionsCount() : of(0))
-      )
+      .subscribe({
+        next: (user) => this.user = user
+      });
+    this.authService.pendingConnectionsCount$
       .subscribe({
         next: (value) => this.pendingConnectionsCount = value
       });

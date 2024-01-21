@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
+import { UserConnectionHttpClient } from '@app/http-clients/user-connections-http-client.service';
 import { User } from '@app/models/user.model';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, of, pipe, switchMap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -9,13 +10,24 @@ export class AuthService {
 
   storageName = "user-profile";
   user$: BehaviorSubject<User | null>
+  pendingConnectionsCount$: BehaviorSubject<number>
 
   get isLoggedIn() {
     return this.user$.value !== null;
   }
 
-  constructor() {
+  constructor(private userConnectionsHttpClient: UserConnectionHttpClient) {
     this.user$ = new BehaviorSubject<User | null>(null);
+    this.pendingConnectionsCount$ = new BehaviorSubject<number>(0);
+    this.user$.subscribe((user) => {
+      if (!user) {
+        this.pendingConnectionsCount$.next(0);
+        return;
+      }
+
+      this.fetchPendingConnectionsCount();
+    }
+    )
   }
 
   initialize() {
@@ -41,5 +53,11 @@ export class AuthService {
     this.removeUser();
     window.localStorage.setItem(this.storageName, JSON.stringify(user))
     this.user$.next(user);
+  }
+
+  public fetchPendingConnectionsCount() {
+    this.userConnectionsHttpClient
+      .getPendingConnectionsCount()
+      .subscribe((value) => this.pendingConnectionsCount$.next(value));
   }
 }
