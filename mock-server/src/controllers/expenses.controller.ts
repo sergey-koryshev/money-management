@@ -14,10 +14,10 @@ export class ExpensesController extends ControllerBase {
     const year = req.query['year'];
 
     if (!month && !year) {
-      res.sendStatus(500);
+      this.sendError(res, 500, 'Month and year must be specified');
     }
 
-    res.send(this.wrapData(this.getFilteredExpenses(Number(month), Number(year), req.userTenant)));
+    this.sendData(res, this.getFilteredExpenses(Number(month), Number(year), req.userTenant));
   }
 
   public addNewExpense = (req: Request<unknown, unknown, AddExpenseParams>, res: Response) => {
@@ -34,7 +34,7 @@ export class ExpensesController extends ControllerBase {
       tenant: req.userTenant
     }, this.dataContext.expensesDbSet);
 
-    res.send(this.wrapData(expenseEntityToModel(newExpense)));
+    this.sendData(res, expenseEntityToModel(newExpense));
   }
 
   public getExistingItems = (req: Request<unknown, unknown, string>, res: Response) => {
@@ -48,7 +48,7 @@ export class ExpensesController extends ControllerBase {
       .map((e) => ({ item: e.item, categoryId: e.category?.id}));
     }
 
-    res.send(this.wrapData(result));
+    this.sendData(res, result);
   }
 
   public removeExpense = (req: Request, res: Response) => {
@@ -60,7 +60,7 @@ export class ExpensesController extends ControllerBase {
 
     const index = this.dataContext.expensesDbSet.findIndex(e => e.id === Number(req.params['id']));
     this.dataContext.expensesDbSet.splice(index, 1);
-    res.send(this.wrapData(expense));
+    this.sendData(res, expense);
   }
 
   public editExpense = (req: Request, res: Response) => {
@@ -87,7 +87,7 @@ export class ExpensesController extends ControllerBase {
     };
 
     this.dataContext.expensesDbSet[index] = editedExpense;
-    res.send(this.wrapData(expenseEntityToModel(editedExpense)));
+    this.sendData(res, expenseEntityToModel(editedExpense));
   }
 
   public searchItems = (req: Request, res: Response) => {
@@ -97,7 +97,7 @@ export class ExpensesController extends ControllerBase {
       result = this.dataContext.getExpenses(req.userTenant).filter(e => e.item.toUpperCase() == req.body.toUpperCase())
     }
 
-    res.send(this.wrapData(result));
+    this.sendData(res, result);
   }
 
   private getFilteredExpenses(month: number, year: number, tenant: string) {

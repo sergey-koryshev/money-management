@@ -13,7 +13,7 @@ export class LoginController extends ControllerBase {
     }
 
     if (!user || !compareSync(req.body.password, user.password)) {
-      return res.status(400).send(this.wrapData('Invalid credentials'));
+      return this.sendError(res, 400, 'Invalid credentials');
     }
 
     const token = jwt.sign(
@@ -22,14 +22,14 @@ export class LoginController extends ControllerBase {
       { expiresIn: '1d' }
     );
 
-    res.cookie('access_token', token, {
+    this.sendData(res.cookie('access_token', token, {
       httpOnly: true
-    }).send(this.wrapData({
+    }),{
       id: user.id,
       tenant: user.tenant,
       firstName: user.firstName,
       secondName: user.secondName
-    }));
+    });
   }
 
   public logout = (_: Request, res: Response) => {
