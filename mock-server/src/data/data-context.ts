@@ -10,7 +10,7 @@ export class DataContext {
   public expensesDbSet = expenses;
   public categoriesDbSet = categories;
   public mainCurrenciesDbSet = mainCurrencies;
-  public userConnections = userConnections;
+  public userConnectionsDbSet = userConnections;
 
   public currenciesDbSet = currencies;
   public usersDbSet = users;

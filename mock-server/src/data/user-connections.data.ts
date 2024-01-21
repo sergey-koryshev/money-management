@@ -5,35 +5,50 @@ import { UserShort } from '../models/user.model';
 import { users } from './users.data';
 
 export function userConnectionEntityToModel(entity: UserConnectionEntity, tenant: string): UserConnection {
-  const targetUser = users.find((u) => u.id === entity.connectedUserId);
+  const requestor = users.find((u) => u.id === entity.requestorUserId);
 
-  if (!targetUser) {
-    throw new Error(`User with ID ${entity.userId} doesn't exist`);
+  if (!requestor) {
+    throw new Error(`User with ID ${entity.requestorUserId} doesn't exist`);
   }
 
-  let status: UserConnectionStatus;
+  const targetUser = users.find((u) => u.id === entity.targetUserId);
 
-  if (userConnections.filter((c) => c.userId === entity.connectedUserId || c.connectedUserId === entity.userId).length == 2) {
-    status = UserConnectionStatus.accepted;
-  } else (
-    status = targetUser.tenant === tenant
+  if (!targetUser) {
+    throw new Error(`User with ID ${entity.targetUserId} doesn't exist`);
+  }
+
+  const currentUser = users.find((u) => u.tenant === tenant);
+
+  if (!currentUser) {
+    throw new Error(`User with tenant ${tenant} doesn't exist`);
+  }
+
+  if (currentUser.id != requestor.id && currentUser.id != targetUser.id) {
+    throw new Error(`Current user with tenant ${tenant} is not related to the user connection`);
+  }
+
+  const status = entity.acceptDate
+    ? UserConnectionStatus.accepted
+    : requestor.id === currentUser.id
       ? UserConnectionStatus.pendingOnTargetUser
-      : UserConnectionStatus.pending
-  )
+      : UserConnectionStatus.pending;
 
   const userShortModel: UserShort = {}
 
+  const user = requestor.id === currentUser.id ? targetUser : requestor
+
   if (status === UserConnectionStatus.accepted || status === UserConnectionStatus.pending) {
-    userShortModel.firstName = targetUser.firstName;
-    userShortModel.secondName = targetUser.secondName;
-    userShortModel.tenant = targetUser.tenant;
+    userShortModel.firstName = user.firstName;
+    userShortModel.secondName = user.secondName;
+    userShortModel.tenant = user.tenant;
   }
 
   if (status === UserConnectionStatus.accepted || status === UserConnectionStatus.pendingOnTargetUser) {
-    userShortModel.id = targetUser.id;
+    userShortModel.id = user.id;
   }
 
   return {
+    id: entity.id,
     user: userShortModel,
     status: status
   }
@@ -41,7 +56,24 @@ export function userConnectionEntityToModel(entity: UserConnectionEntity, tenant
 
 export const userConnections: UserConnectionEntity[] = [
   {
-    userId: 2,
-    connectedUserId: 1
+    id: 1,
+    requestorUserId: 2,
+    targetUserId: 1,
+    requestDate: new Date('2024-01-01 00:01:08'),
+    accepted: false
+  },
+  {
+    id: 2,
+    requestorUserId: 2,
+    targetUserId: 3,
+    requestDate: new Date('2024-01-01 05:01:08'),
+    accepted: false
+  },
+  {
+    id: 3,
+    requestorUserId: 1,
+    targetUserId: 3,
+    requestDate: new Date('2024-01-01 12:01:08'),
+    accepted: false
   }
 ];
