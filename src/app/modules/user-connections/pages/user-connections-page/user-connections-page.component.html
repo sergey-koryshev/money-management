@@ -1,0 +1,7 @@
+<div class="mt-1 mb-3 d-flex align-items-center justify-content-between">
+  <h4 class="mb-0">Connections</h4>
+  <button type="button" class="btn btn-primary" (click)="openAddNewConnectionDialog()">Add new connection</button>
+</div>
+<app-user-connections-list
+  [connections]="connections"
+  (statusChanged)="sortConnections()"></app-user-connections-list>
