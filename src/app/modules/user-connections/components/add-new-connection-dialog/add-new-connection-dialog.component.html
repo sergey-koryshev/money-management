@@ -1,0 +1,8 @@
+<app-modal-dialog name="Add new connection" buttonSaveName="Connect" buttonCancelName="Cancel" [error]="error" (submit)="onSubmit($event)">
+  <form class="row">
+    <div class="input-group">
+      <span class="input-group-text">User ID</span>
+      <input type="text" class="form-control" [(ngModel)]="userId" [ngModelOptions]="{ standalone: true }" data-1p-ignore>
+    </div>
+  </form>
+</app-modal-dialog>
