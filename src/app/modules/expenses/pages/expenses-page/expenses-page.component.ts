@@ -6,7 +6,6 @@ import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { switchMap, skip } from 'rxjs/operators';
 import { NgbDatepickerNavigateEvent, NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { AddExpenseParams } from '@app/http-clients/expenses-http-client.model';
 import { Month } from '@app/models/month.model';
 import { AddNewExpenseDialogComponent } from '../../components/add-new-expense-dialog/add-new-expense-dialog.component';
 import { Price } from '@app/models/price.model';
@@ -48,28 +47,17 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
       .subscribe(data => this.populateData(data));
   }
 
-  addNewExpense(expense: AddExpenseParams) {
-    this.expensesHttpClient.addNewExpense(expense)
-      .subscribe((addedExpanse) => {
-        const date = new Date(addedExpanse.date)
-        if (this.expensesMonthService.month.month == date.getMonth() + 1
-          && this.expensesMonthService.month.year == date.getFullYear()) {
-            this.expenses.push(addedExpanse);
-            this.onItemChange({
-              newValue: addedExpanse.exchangedPrice?.amount ?? addedExpanse.price.amount
-            })
-          }
-      });
-  }
-
   open() {
     const modalRef = this.modalService.open(AddNewExpenseDialogComponent);
-    modalRef.closed.subscribe(({date, priceAmount, ...restParams}) => {
-      this.addNewExpense({
-        date: new Date(date.year, date.month - 1, date.day),
-        priceAmount: Number(priceAmount),
-        ...restParams
-      });
+    modalRef.closed.subscribe((addedExpanse: Expense) => {
+      const date = new Date(addedExpanse.date);
+      if (this.expensesMonthService.month.month == date.getMonth() + 1
+        && this.expensesMonthService.month.year == date.getFullYear()) {
+          this.expenses.push(addedExpanse);
+          this.onItemChange({
+            newValue: addedExpanse.exchangedPrice?.amount ?? addedExpanse.price.amount
+          })
+        }
     });
   }
 
