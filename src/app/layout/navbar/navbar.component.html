@@ -43,7 +43,7 @@
           <span>{{ user.id }}</span>
         </h6>
         <div class="dropdown-divider"></div>
-        <button ngbDropdownItem class="d-flex flex-row align-items-center">
+        <button ngbDropdownItem class="d-flex flex-row align-items-center" [routerLink]="['connections']">
           <div>Connections</div>
           <div *ngIf="pendingConnectionsCount > 0" class="pending-connections">
             <span>{{ pendingConnectionsCount }}</span>
