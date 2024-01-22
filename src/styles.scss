@@ -9,6 +9,9 @@
 /* Importing ng-select theme */
 @import '~@ng-select/ng-select/themes/default.theme.css';
 
+/* Importing icons */
+@import 'styles/icons.scss';
+
 html, body {
   height: 100%;
 }
