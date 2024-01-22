@@ -13,11 +13,9 @@ export class UserTileComponent implements OnChanges {
   @Input()
   short: boolean;
 
-  fullName?: string;
   initials: string;
 
   ngOnChanges(): void {
     this.initials = this.user.firstName[0] + (this.user.secondName ? this.user.secondName[0] : '')
-    this.fullName = `${this.user.firstName}${this.user.secondName ? ' ' + this.user.secondName : ''}`;
   }
 }

@@ -1,4 +1,7 @@
 <div class="user-tile-container">
   <app-user-avatar [tenant]="user.tenant" [initials]="initials" class="me-2"></app-user-avatar>
-  <div *ngIf="!short && fullName">{{ fullName }}</div>
+  <div class="d-flex flex-row user-name" *ngIf="!short && user.firstName">
+    <div class="me-1" [title]="user.firstName">{{ user.firstName }}</div>
+    <div *ngIf="user.secondName" [title]="user.secondName">{{ user.secondName }}</div>
+  </div>
 </div>
