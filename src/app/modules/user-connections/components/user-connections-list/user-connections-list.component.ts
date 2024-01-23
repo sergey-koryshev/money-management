@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UserConnectionHttpClient } from '@app/http-clients/user-connections-http-client.service';
-import { UserConnectionStatus, userConnectionStatusIdToLabel } from '@app/models/enums/user-connection-status.enum';
+import { UserConnectionStatus } from '@app/models/enums/user-connection-status.enum';
 import { UserConnection } from '@app/models/user-connnection.model';
 import { AuthService } from '@app/services/auth.service';
 
@@ -21,10 +21,6 @@ export class UserConnectionsListComponent implements OnInit {
   constructor(private userConnectionsHttpClient: UserConnectionHttpClient, private authService: AuthService) { }
 
   ngOnInit(): void {
-  }
-
-  getStatusLabel(status: UserConnectionStatus) {
-    return userConnectionStatusIdToLabel[status];
   }
 
   onAcceptButtonClick(connection: UserConnection) {
