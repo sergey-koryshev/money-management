@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { UserConnection } from '@app/models/user-connnection.model';
+import { UserConnection } from '@app/models/user-connection.model';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddNewConnectionDialogComponent } from '../../components/add-new-connection-dialog/add-new-connection-dialog.component';
 

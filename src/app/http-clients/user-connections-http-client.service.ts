@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BaseHttpClientService } from './base-http-client.service';
-import { UserConnection } from '@app/models/user-connnection.model';
+import { UserConnection } from '@app/models/user-connection.model';
 import { CreateUserConnectionParams } from './user-connections-http-client.model';
 
 @Injectable({

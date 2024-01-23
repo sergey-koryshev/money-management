@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { UserConnectionStatus } from '@app/models/enums/user-connection-status.enum';
-import { UserConnection } from '@app/models/user-connnection.model';
+import { UserConnection } from '@app/models/user-connection.model';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 const userConnectionStatusToColor = {

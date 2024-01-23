@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { UserConnectionHttpClient } from '@app/http-clients/user-connections-http-client.service';
 import { UserConnectionStatus } from '@app/models/enums/user-connection-status.enum';
-import { UserConnection } from '@app/models/user-connnection.model';
+import { UserConnection } from '@app/models/user-connection.model';
 import { AuthService } from '@app/services/auth.service';
 
 @Component({
