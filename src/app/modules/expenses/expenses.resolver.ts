@@ -5,9 +5,7 @@ import { Expense } from '@app/models/expense.model';
 import { ExpensesMonthService } from '@app/services/expenses-month.service';
 import { Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class ExpensesResolver implements Resolve<Expense[]> {
   constructor(private expensesHttpClient: ExpensesHttpClientService, private expensesMonthService: ExpensesMonthService) {}
   resolve(): Observable<Expense[]>  {

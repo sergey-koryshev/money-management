@@ -6,3 +6,10 @@ export interface User {
   secondName?: string;
   password: string;
 }
+
+export interface PolyUser {
+  id?: number
+  tenant?: string,
+  firstName?: string,
+  secondName?: string
+}

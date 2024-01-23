@@ -1,5 +1,13 @@
 export interface User {
-    tenant: string,
-    firstName: string,
-    secondName?: string
+  id: number
+  tenant: string
+  firstName: string
+  secondName?: string
+}
+
+export interface PolyUser {
+  id?: number
+  tenant?: string
+  firstName?: string
+  secondName?: string
 }

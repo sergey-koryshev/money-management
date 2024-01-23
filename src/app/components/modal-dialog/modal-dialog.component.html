@@ -6,6 +6,9 @@
   <ng-content></ng-content>
 </div>
 <div class="modal-footer">
+  <div *ngIf="error" class="modal-icon">
+    <li class="icon icon-error" [ngbTooltip]="error"></li>
+  </div>
   <button type="button" class="btn btn-outline-dark" (click)="modalRef.dismiss()">{{ buttonCancelName }}</button>
-  <button type="button" class="btn btn-success" [disabled]="disableSubmitButton" (click)="modalRef.close(returnValue)">{{ buttonSaveName }}</button>
+  <button type="button" class="btn btn-success" [disabled]="disableSubmitButton" (click)="submit.emit({modalRef: modalRef, value: returnValue})">{{ buttonSaveName }}</button>
 </div>

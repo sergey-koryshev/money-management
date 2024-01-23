@@ -1,0 +1,42 @@
+.user-connection-container {
+  background-color: #FBFBFB;
+  border-radius: 5px;
+  padding: 10px;
+  transition: 220ms all ease-in-out;
+
+  .user-tile-container {
+    overflow: hidden;
+  }
+
+  &:hover {
+    background-color: #F5F5F5;
+  }
+}
+
+.status-pin {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.small-id {
+  color: #8E8E8E;
+  font-size: small;
+}
+
+.user-name-container {
+  line-height: 1em;
+  max-width: 200px;
+
+  & .user-name {
+    div {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+}
+
+.buttons-container {
+  white-space: nowrap;
+}

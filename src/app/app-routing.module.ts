@@ -17,6 +17,11 @@ const routes: Routes = [
   {
     path: 'signin',
     loadChildren: () => import('./modules/login/login.module').then((module) => module.LoginModule)
+  },
+  {
+    path: 'connections',
+    canActivate: [AuthGuardService],
+    loadChildren: () => import('./modules/user-connections/user-connections.module').then((module) => module.UserConnectionsModule)
   }
 ];
 

@@ -6,12 +6,12 @@ import { currencyEntityToModel } from '../data/currencies.data';
 
 export class CurrenciesController extends ControllerBase {
   public getCurrencies = (_: Request, res: Response) => {
-    res.send(this.wrapData(this.dataContext.currenciesDbSet.map(currencyEntityToModel)));
+    this.sendData(res, this.dataContext.currenciesDbSet.map(currencyEntityToModel));
   }
 
   public getMainCurrency = (req: Request, res: Response) => {
     const mainCurrency = this.dataContext.getMainCurrency(req.userTenant);
-    res.send(this.wrapData(mainCurrency ? this.getCurrencyById(mainCurrency.currencyId) : null));
+    this.sendData(res, mainCurrency ? this.getCurrencyById(mainCurrency.currencyId) : null);
   }
 
   public setMainCurrency = (req: Request<unknown, unknown, SetMainCurrencyParams>, res: Response) => {
@@ -32,13 +32,13 @@ export class CurrenciesController extends ControllerBase {
 
     const currency = this.getCurrencyById(req.body.currencyId);
 
-    res.send(this.wrapData(currency));
+    this.sendData(res, currency);
   }
 
   public removeMainCurrency = (req: Request<Currency>, res: Response) => {
     const index = this.dataContext.mainCurrenciesDbSet.findIndex((m) => m.tenant === req.userTenant);
     this.dataContext.mainCurrenciesDbSet.splice(index, 1);
-    res.send(this.wrapData(null));
+    this.sendData(res, null);
   }
 
   private getCurrencyById (id: number): Currency {

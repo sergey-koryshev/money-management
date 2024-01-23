@@ -103,32 +103,26 @@ export class ExpensesTableComponent {
   editItem(item: Expense) {
     const modalRef = this.modalService.open(EditExpenseDialogComponent);
     modalRef.componentInstance.item = {...item, date: new Date(item.date)};
-    modalRef.closed.subscribe(({date, priceAmount, ...restParams}) => {
-      const indexOfItem = this.data.indexOf(item);
-      this.expensesHttpClient.editExpense({
-        date: new Date(date.year, date.month - 1, date.day),
-        priceAmount: Number(priceAmount),
-        ...restParams
-      }).subscribe({
-        next: (updatedItem: Expense) => {
-          if (this.selectedMonth == null
-            || (this.selectedMonth.month == date.month
-              && this.selectedMonth.year == date.year)) {
-            this.data[indexOfItem] = updatedItem;
-            this.itemChanged.emit({
-              oldValue: item.exchangedPrice?.amount ?? item.price.amount,
-              newValue: updatedItem.exchangedPrice?.amount ?? updatedItem.price.amount,
-            })
-          } else {
-            this.data.splice(indexOfItem, 1);
-            this.itemChanged.emit({
-              oldValue: item.exchangedPrice?.amount ?? item.price.amount
-            })
-          }
-        },
-        error: (ex) => {
-          console.log(`Error has occurred while updating item: ${ex.message}`)
-        }});
+    modalRef.closed.subscribe((updatedItem: Expense) => {
+      const date = new Date(updatedItem.date)
+      const indexOfItem = this.data.findIndex((e) => e.id === updatedItem.id);
+
+      if (indexOfItem) {
+        if (this.selectedMonth == null
+          || (this.selectedMonth.month == date.getMonth() + 1
+            && this.selectedMonth.year == date.getFullYear())) {
+          this.data[indexOfItem] = updatedItem;
+          this.itemChanged.emit({
+            oldValue: item.exchangedPrice?.amount ?? item.price.amount,
+            newValue: updatedItem.exchangedPrice?.amount ?? updatedItem.price.amount,
+          })
+        } else {
+          this.data.splice(indexOfItem, 1);
+          this.itemChanged.emit({
+            oldValue: item.exchangedPrice?.amount ?? item.price.amount
+          })
+        }
+      }
     });
   }
 }

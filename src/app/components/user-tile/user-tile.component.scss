@@ -1,0 +1,17 @@
+.user-tile-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  overflow: hidden;
+  margin-right: 0.5em;
+
+  .user-name {
+    max-width: 200px;
+
+    div {
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+}

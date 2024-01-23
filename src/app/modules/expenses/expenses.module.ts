@@ -36,5 +36,6 @@ const routes: Routes = [
 @NgModule({
   declarations: [ExpensesPageComponent, ExpensesTableComponent, ExpenseFormComponent, AddNewExpenseDialogComponent, EditExpenseDialogComponent, SearchResultsComponent],
   imports: [CommonModule, RouterModule.forChild(routes), ComponentsModule, ReactiveFormsModule, NgbDatepickerModule, NgSelectModule],
+  providers: [ExpensesResolver]
 })
 export class ExpensesModule {}

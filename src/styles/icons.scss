@@ -1,0 +1,14 @@
+.icon {
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: 100% auto;
+  list-style-type: none;
+
+  &.icon-error {
+    background-color: red;
+    mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmktZXhjbGFtYXRpb24tY2lyY2xlLWZpbGwiIHZpZXdCb3g9IjAgMCAxNiAxNiIgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSI+CiAgPHBhdGggZD0iTTE2IDhBOCA4IDAgMSAxIDAgOGE4IDggMCAwIDEgMTYgME04IDRhLjkwNS45MDUgMCAwIDAtLjkuOTk1bC4zNSAzLjUwN2EuNTUyLjU1MiAwIDAgMCAxLjEgMGwuMzUtMy41MDdBLjkwNS45MDUgMCAwIDAgOCA0bS4wMDIgNmExIDEgMCAxIDAgMCAyIDEgMSAwIDAgMCAwLTIiLz4KPC9zdmc+");
+  }
+}
