@@ -26,8 +26,7 @@ export class AuthService {
       }
 
       this.fetchPendingConnectionsCount();
-    }
-    )
+    });
   }
 
   initialize() {
