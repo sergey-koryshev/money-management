@@ -13,9 +13,12 @@ export abstract class ControllerBase {
   }
 
   protected sendData<T>(res: Response, data: T) {
-    res.statusCode = data ? 200 : 204;
+    if (!data) {
+      return res.sendStatus(204);
+    }
+
     return res.send({
-      code: 200,
+      code: res.status,
       data
     })
   }
