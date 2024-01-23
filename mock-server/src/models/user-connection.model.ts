@@ -1,8 +1,8 @@
+import { PolyUser } from './user.model'
 import { UserConnectionStatus } from './user-connection-status.enum'
-import { UserShort } from './user.model'
 
 export interface UserConnection {
   id?: number
-  user: UserShort
+  user: PolyUser
   status: UserConnectionStatus
 }

@@ -5,7 +5,7 @@ export interface User {
   secondName?: string
 }
 
-export interface UserShort {
+export interface PolyUser {
   id?: number
   tenant?: string
   firstName?: string

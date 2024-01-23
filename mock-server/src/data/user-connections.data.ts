@@ -1,7 +1,7 @@
+import { PolyUser } from '../models/user.model';
 import { UserConnection } from '../models/user-connection.model';
 import { UserConnectionEntity } from './entities/user-connection.entity';
 import { UserConnectionStatus } from '../models/user-connection-status.enum';
-import { UserShort } from '../models/user.model';
 import { users } from './users.data';
 
 export function userConnectionEntityToModel(entity: UserConnectionEntity, tenant: string): UserConnection {
@@ -33,7 +33,7 @@ export function userConnectionEntityToModel(entity: UserConnectionEntity, tenant
       ? UserConnectionStatus.pendingOnTargetUser
       : UserConnectionStatus.pending;
 
-  const userShortModel: UserShort = {}
+  const userShortModel: PolyUser = {}
 
   const user = requestor.id === currentUser.id ? targetUser : requestor
 

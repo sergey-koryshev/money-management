@@ -7,7 +7,7 @@ export interface User {
   password: string;
 }
 
-export interface UserShort {
+export interface PolyUser {
   id?: number
   tenant?: string,
   firstName?: string,
