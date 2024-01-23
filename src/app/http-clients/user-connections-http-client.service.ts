@@ -1,7 +1,7 @@
-import { CreateUserConnectionParams } from './../../../mock-server/src/models/create-user-connection-params.model';
 import { Injectable } from '@angular/core';
 import { BaseHttpClientService } from './base-http-client.service';
 import { UserConnection } from '@app/models/user-connnection.model';
+import { CreateUserConnectionParams } from './user-connections-http-client.model';
 
 @Injectable({
   providedIn: 'root'
