@@ -60,7 +60,8 @@ export const userConnections: UserConnectionEntity[] = [
     requestorUserId: 2,
     targetUserId: 1,
     requestDate: new Date('2024-01-01 00:01:08'),
-    accepted: false
+    accepted: true,
+    acceptDate: new Date('2024-01-10 00:18:42')
   },
   {
     id: 2,

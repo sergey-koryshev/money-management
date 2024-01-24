@@ -2,6 +2,7 @@ import { categories, categoryEntityToModel } from './categories.data';
 import { expenseEntityToModel, expenses } from './expenses.data';
 import { Identifier } from '../models/identifier.model';
 import { currencies } from './currencies.data';
+import { expensesToUsers } from './expenses-to-users.data';
 import { mainCurrencies } from './main-currencies.data';
 import { userConnections } from './user-connections.data';
 import { users } from './users.data';
@@ -11,16 +12,40 @@ export class DataContext {
   public categoriesDbSet = categories;
   public mainCurrenciesDbSet = mainCurrencies;
   public userConnectionsDbSet = userConnections;
+  public expensesToUsersDbSet = expensesToUsers;
 
   public currenciesDbSet = currencies;
   public usersDbSet = users;
 
   public getExpenses(tenant: string) {
-    return this.expensesDbSet.filter((e) => e.tenant === tenant).map(expenseEntityToModel);
+    const user = this.getUser(tenant);
+    const userExpenses = this.expensesDbSet.filter((e) => e.tenant === tenant).map((e) => expenseEntityToModel(e));
+    const sharedExpenseIds = this.expensesToUsersDbSet.filter((e) => e.userId === user.id).map((e) => e.expenseId);
+    const sharedExpenses = this.expensesDbSet.filter((e) => {
+      if (!e.id) {
+        return false;
+      }
+
+      return sharedExpenseIds.includes(e.id)
+    }).map((e) => expenseEntityToModel(e, tenant));
+
+    return [...userExpenses, ...sharedExpenses];
   }
 
   public getCategories(tenant: string) {
-    return this.categoriesDbSet.filter((e) => e.tenant === tenant).map(categoryEntityToModel);
+    const user = this.getUser(tenant);
+    const userCategories = this.categoriesDbSet.filter((e) => e.tenant === tenant).map(categoryEntityToModel);
+    const sharedExpenseIds = this.expensesToUsersDbSet.filter((e) => e.userId === user.id).map((e) => e.expenseId);
+    const sharedCategoriesIds = [... new Set(this.expensesDbSet.filter((e) => {
+      if (!e.id) {
+        return false;
+      }
+
+      return e.categoryId != null && sharedExpenseIds.includes(e.id)
+    }).map((e) => e.categoryId))];
+    const sharedCategories = this.categoriesDbSet.filter((c) => sharedCategoriesIds.includes(c.id)).map(categoryEntityToModel);
+
+    return [...userCategories, ...sharedCategories];
   }
 
   public getMainCurrency(tenant: string) {
@@ -32,6 +57,16 @@ export class DataContext {
     const addingEntity = {...entity, id: newId};
     dbSet.push(addingEntity);
     return addingEntity;
+  }
+
+  public getUser(tenant: string) {
+    const user = users.find((u) => u.tenant === tenant);
+
+    if (!user) {
+      throw new Error(`User with tenant ${tenant} doesn't exist`);
+    }
+
+    return user;
   }
 
   private getUniqueId<T extends Identifier>(dbSet: T[]){

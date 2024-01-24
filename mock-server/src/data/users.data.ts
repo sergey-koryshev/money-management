@@ -2,7 +2,16 @@ import { User } from '../models/user.model';
 import { UserEntity } from './entities/user.entity';
 
 export function userEntityToModel(entity: UserEntity): User {
-  return entity;
+  if (!entity.id) {
+    throw new Error('User doesn\'t contains id');
+  }
+
+  return {
+    id: entity.id,
+    tenant: entity.tenant,
+    firstName: entity.firstName,
+    secondName: entity.secondName
+  };
 }
 
 export const users: UserEntity[] = [

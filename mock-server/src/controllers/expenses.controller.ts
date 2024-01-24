@@ -83,7 +83,7 @@ export class ExpensesController extends ControllerBase {
       categoryId: category?.id,
       priceAmount: req.body.priceAmount,
       priceCurrencyId: req.body.currencyId,
-      tenant: req.userTenant
+      tenant: expense.createdBy.tenant
     };
 
     this.dataContext.expensesDbSet[index] = editedExpense;

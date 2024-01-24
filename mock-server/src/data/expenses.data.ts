@@ -1,30 +1,37 @@
 import { categories, categoryEntityToModel } from './categories.data';
 import { currencies, currencyEntityToModel } from './currencies.data';
+import { userEntityToModel, users } from './users.data';
 import { Expense } from '../models/expense.model';
 import { ExpenseEntity } from './entities/expense.entity';
 import { exchangeRates } from './exchange-rates.data';
 import { mainCurrencies } from './main-currencies.data';
 
-export function expenseEntityToModel(entity: ExpenseEntity): Expense {
+export function expenseEntityToModel(entity: ExpenseEntity, tenant: string | undefined = undefined): Expense {
   const originalCurrencyEntity = currencies.find((c) => c.id === entity.priceCurrencyId);
 
   if (!originalCurrencyEntity) {
     throw new Error(`Currency with Id ${entity.priceCurrencyId} doesn't exist`);
   }
 
-  const categoryEntity = categories.find((c) => c.id === entity.categoryId && c.tenant === entity.tenant);
+  const categoryEntity = categories.find((c) => c.id === entity.categoryId && entity.tenant);
 
   if (!categoryEntity && entity.categoryId != null) {
     throw new Error(`Category with ${entity.categoryId} doesn't exist`);
   }
 
-  const mainCurrencyEntity = mainCurrencies.find((m) => m.tenant === entity.tenant);
+  const mainCurrencyEntity = mainCurrencies.find((m) => m.tenant === (tenant ?? entity.tenant));
   const exchangeRateEntity = mainCurrencyEntity
     ? exchangeRates.find((e) => e.fromCurrencyId === originalCurrencyEntity.id && e.toCurrencyId === mainCurrencyEntity.currencyId)
     : undefined;
 
   if (!exchangeRateEntity && mainCurrencyEntity && originalCurrencyEntity.id !== mainCurrencyEntity.currencyId) {
     throw new Error(`Exchanged rate for pair ${originalCurrencyEntity.id}/${mainCurrencyEntity.currencyId} doesn't exist`);
+  }
+
+  const creator = users.find((u) => u.tenant === entity.tenant);
+
+  if (!creator) {
+    throw new Error(`User with tenant ${entity.tenant} doesn't exist`);
   }
 
   const model: Expense = {
@@ -43,7 +50,8 @@ export function expenseEntityToModel(entity: ExpenseEntity): Expense {
       exchangeRate: exchangeRateEntity.rate,
       originalAmount: entity.priceAmount,
       originalCurrency: currencyEntityToModel(originalCurrencyEntity)
-    } : undefined
+    } : undefined,
+    createdBy: userEntityToModel(creator)
   }
   return model;
 }
