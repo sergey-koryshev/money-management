@@ -6,6 +6,11 @@
 
   .user-tile-container {
     overflow: hidden;
+
+    app-user-avatar {
+      height: 35px;
+      width: 35px;
+    }
   }
 
   &:hover {
