@@ -10,5 +10,5 @@ export interface Expense {
     item: string
     price: Price
     exchangedPrice?: ExchangedPrice
-    createdBy: User
+    sharedWith: User[]
 }
