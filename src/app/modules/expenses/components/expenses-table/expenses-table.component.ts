@@ -7,6 +7,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { EditExpenseDialogComponent } from '../edit-expense-dialog/edit-expense-dialog.component';
 import { Month } from '@app/models/month.model';
 import { ItemChangedEventArgs } from './expenses-table.model';
+import { User } from '@app/models/user.model';
 
 @Component({
   selector: 'app-expenses-table',
@@ -54,6 +55,13 @@ export class ExpensesTableComponent {
       sortFunc: priceComparer
     },
     {
+      name: 'sharedWith',
+      ignorePadding: true,
+      disableSorting: true,
+      template: () => this.sharedWithTemplate,
+      hide: () => this.isSharedWithColumnVisible()
+    },
+    {
       name: 'actions',
       ignorePadding: true,
       disableSorting: true,
@@ -71,6 +79,10 @@ export class ExpensesTableComponent {
 
   @ViewChild('actions', { read: TemplateRef, static: true })
   actions: TemplateRef<unknown>;
+
+  @ViewChild('sharedWith', { read: TemplateRef, static: true })
+  sharedWithTemplate: TemplateRef<unknown>;
+
 
   @ViewChild('confirmationDialog', { read: TemplateRef, static: true })
   confirmationDialog: TemplateRef<unknown>;
@@ -124,5 +136,17 @@ export class ExpensesTableComponent {
         }
       }
     });
+  }
+
+  getUserInitials(createdBy: User): string {
+    return createdBy.firstName[0] + (createdBy.secondName ? createdBy.secondName[0] : '');
+  }
+
+  getUserFullName(createdBy: User): string {
+    return `${createdBy.firstName}${createdBy.secondName ? ' ' + createdBy.secondName : ''}`;
+  }
+
+  private isSharedWithColumnVisible() {
+    return this.data?.filter((e) => e.sharedWith.length > 0).length > 0;
   }
 }

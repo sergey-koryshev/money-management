@@ -1,0 +1,19 @@
+.shared-with-container {
+  app-user-avatar {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    font-size: small;
+    transition: 220ms all ease-in-out;
+  }
+
+  app-user-avatar:not(:first-child) {
+    margin-left: -20px;
+  }
+
+  &:hover {
+    app-user-avatar:not(:first-child) {
+      margin-left: 0.25em;
+    }
+  }
+}
