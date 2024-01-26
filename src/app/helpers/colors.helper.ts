@@ -8,6 +8,17 @@ export function shade(color: string, amount: number) {
   return (color[0] == "#" ? color[0] : "") + (blue | (green << 8) | (red << 16)).toString(16);
 }
 
+export function blend(color: string, baseColor: string, blendRate: number = 1) {
+  var colorNum = parseHexColor(color);
+  var baseColorNum =  parseHexColor(baseColor);
+
+  var red = Math.round((blendRate * (getByte(colorNum, 2) / 255) + blendRate * (getByte(baseColorNum, 2) / 255)) * 255);
+  var green = Math.round((blendRate * (getByte(colorNum, 1) / 255) + blendRate * (getByte(baseColorNum, 1) / 255)) * 255);
+  var blue = Math.round((blendRate * (getByte(colorNum) / 255) + blendRate * (getByte(baseColorNum) / 255)) * 255);
+
+  return (color[0] == "#" ? color[0] : "") + (blue | (green << 8) | (red << 16)).toString(16);
+}
+
 function parseHexColor(color: string) {
   if (color[0] == "#") {
     color = color.slice(1);
