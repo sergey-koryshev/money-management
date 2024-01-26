@@ -80,8 +80,8 @@ export class TableComponent<T> implements OnInit, DoCheck {
       const columnDefinition = this.getColumnDefinition(column);
       const compareFunc = columnDefinition?.sortFunc ;
       this.sortedData = [...this.data].sort((a, b) => {
-        const result = compareFunc 
-          ? compareFunc(a, b) 
+        const result = compareFunc
+          ? compareFunc(a, b)
           : this.compareProperties(this.extractProperty(a, column), this.extractProperty(b, column));
         return direction === 'asc' ? result : -result;
       });
@@ -89,12 +89,16 @@ export class TableComponent<T> implements OnInit, DoCheck {
   }
 
   compareProperties(a: any, b: any) {
-    if ((typeof a === 'string') || (typeof a === 'number') && 
+    if ((typeof a === 'string') || (typeof a === 'number') &&
       (typeof b === 'string' || typeof b === 'number')) {
       return a < b ? -1 : a > b ? 1 : 0;
     }
 
     return 0;
+  }
+
+  getVisibleColumns() {
+    return this.columns.filter((c) => c.hide ? c.hide() : true);
   }
 
   private getColumnDefinition(columnName: string) {

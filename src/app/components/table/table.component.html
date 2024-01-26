@@ -7,7 +7,7 @@
                 [direction]="defaultSorting.column === column.name ? defaultSorting.direction : ''"
                 [disableSorting]="column.disableSorting ?? false"
                 (sort)="onSort($event)"
-                *ngFor="let column of columns"
+                *ngFor="let column of getVisibleColumns()"
                 [ngStyle]="{ 'min-width': column.minWidth, 'width': column.stretch ? '100%' : null, 'white-space': 'nowrap' }">
                 <span>{{ column.displayName ?? "" }}</span>
             </th>
@@ -15,7 +15,7 @@
     </thead>
     <tbody>
         <tr *ngFor="let row of sortedData">
-            <td *ngFor="let column of columns" [ngSwitch]="getColumnType(column)" [ngClass]="{ 'p-0': column.ignorePadding }" [ngStyle]="{ 'vertical-align': 'middle', 'white-space': column.stretch ? 'normal' : 'nowrap' }">
+            <td *ngFor="let column of getVisibleColumns()" [ngSwitch]="getColumnType(column)" [ngClass]="{ 'p-0': column.ignorePadding }" [ngStyle]="{ 'vertical-align': 'middle', 'white-space': column.stretch ? 'normal' : 'nowrap' }">
                 <span *ngSwitchCase="columnTypes.function">
                     {{ column.function?.(row) ?? emptyTableData}}
                 </span>
