@@ -77,13 +77,12 @@ export class ExpensesController extends ControllerBase {
       : undefined;
 
     const editedExpense: ExpenseEntity = {
-      id: req.body.id,
+      ...this.dataContext.expensesDbSet[index],
       date: new Date(req.body.date),
       item: req.body.item,
       categoryId: category?.id,
       priceAmount: req.body.priceAmount,
       priceCurrencyId: req.body.currencyId,
-      tenant: expense.createdBy.tenant
     };
 
     this.dataContext.expensesDbSet[index] = editedExpense;
