@@ -2,7 +2,7 @@ import { categories, categoryEntityToModel } from './categories.data';
 import { expenseEntityToModel, expenses } from './expenses.data';
 import { Identifier } from '../models/identifier.model';
 import { currencies } from './currencies.data';
-import { expensesToUsers } from './expenses-to-users.data';
+import { expensesToUsers } from './expense-to-users.data';
 import { mainCurrencies } from './main-currencies.data';
 import { userConnections } from './user-connections.data';
 import { users } from './users.data';

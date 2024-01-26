@@ -4,5 +4,9 @@ export const expensesToUsers: ExpenseToUser[] = [
   {
     expenseId: 1,
     userId: 2
+  },
+  {
+    expenseId: 1,
+    userId: 3
   }
 ]

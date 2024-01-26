@@ -4,6 +4,7 @@ import { userEntityToModel, users } from './users.data';
 import { Expense } from '../models/expense.model';
 import { ExpenseEntity } from './entities/expense.entity';
 import { exchangeRates } from './exchange-rates.data';
+import { expensesToUsers } from './expense-to-users.data';
 import { mainCurrencies } from './main-currencies.data';
 
 export function expenseEntityToModel(entity: ExpenseEntity, tenant: string | undefined = undefined): Expense {
@@ -34,6 +35,17 @@ export function expenseEntityToModel(entity: ExpenseEntity, tenant: string | und
     throw new Error(`User with tenant ${entity.tenant} doesn't exist`);
   }
 
+  const sharedWithUserIds = expensesToUsers.filter((e) => e.expenseId === entity.id).map((e) => e.userId);
+  const sharedWith = (!tenant || entity.tenant === tenant)
+    ? users.filter((u) => {
+        if (!u.id) {
+          return false;
+        }
+
+        return sharedWithUserIds.includes(u.id);
+      }).map(userEntityToModel)
+    : sharedWithUserIds.length === 0 ? [] : [userEntityToModel(creator)];
+
   const model: Expense = {
     id: entity.id,
     date: entity.date,
@@ -51,7 +63,7 @@ export function expenseEntityToModel(entity: ExpenseEntity, tenant: string | und
       originalAmount: entity.priceAmount,
       originalCurrency: currencyEntityToModel(originalCurrencyEntity)
     } : undefined,
-    createdBy: userEntityToModel(creator)
+    sharedWith: sharedWith,
   }
   return model;
 }
