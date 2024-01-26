@@ -1,4 +1,4 @@
-export function Shade(color: string, amount: number) {
+export function shade(color: string, amount: number) {
   var num = parseHexColor(color);
 
   var red = limitInt(getByte(num, 2) + amount);

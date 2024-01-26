@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Shade } from '@app/helpers/colors.helper';
+import { shade } from '@app/helpers/colors.helper';
 
 @Component({
   selector: 'app-pill-button',
@@ -17,8 +17,8 @@ export class PillButtonComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentBackgroundColor = this.backgroundColor;
-    this.lighterBackgroundColor = Shade(this.backgroundColor, -20);
-    this.textColor = Shade(this.backgroundColor, -100);
+    this.lighterBackgroundColor = shade(this.backgroundColor, -20);
+    this.textColor = shade(this.backgroundColor, -100);
   }
 
   onMouseOver() {
