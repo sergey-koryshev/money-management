@@ -7,7 +7,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { EditExpenseDialogComponent } from '../edit-expense-dialog/edit-expense-dialog.component';
 import { Month } from '@app/models/month.model';
 import { ItemChangedEventArgs } from './expenses-table.model';
-import { User } from '@app/models/user.model';
+import { PolyUser } from '@app/models/user.model';
 
 @Component({
   selector: 'app-expenses-table',
@@ -138,12 +138,12 @@ export class ExpensesTableComponent {
     });
   }
 
-  getUserInitials(createdBy: User): string {
-    return createdBy.firstName[0] + (createdBy.secondName ? createdBy.secondName[0] : '');
+  getUserInitials(user: PolyUser): string {
+    return user.firstName ? user.firstName[0] + (user.secondName ? user.secondName[0] : '') : 'U';
   }
 
-  getUserFullName(createdBy: User): string {
-    return `${createdBy.firstName}${createdBy.secondName ? ' ' + createdBy.secondName : ''}`;
+  getUserFullName(user: PolyUser): string {
+    return user.firstName ? `${user.firstName}${user.secondName ? ' ' + user.secondName : ''}` : `User ID: #${user.id}`;
   }
 
   private isSharedWithColumnVisible() {
