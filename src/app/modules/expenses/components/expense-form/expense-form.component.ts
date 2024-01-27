@@ -3,7 +3,7 @@ import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { CurrencyService } from '@services/currency.service';
 import { CategoryHttpClient } from '@http-clients/category-http-client.service';
 import { Component, OnInit, Input } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, NgSelectOption, Validators } from '@angular/forms';
 import { Currency } from '@app/models/currency.model';
 import { ExpensesMonthService } from '@app/services/expenses-month.service';
 import { Month } from '@app/models/month.model';
@@ -11,6 +11,10 @@ import { Category } from '@app/models/category.model';
 import { Observable, Subject, catchError, of, switchMap, tap } from 'rxjs';
 import { ItemWithCategory } from '@app/http-clients/expenses-http-client.model';
 import { Expense } from '@app/models/expense.model';
+import { UserConnectionHttpClient } from '@app/http-clients/user-connections-http-client.service';
+import { PolyUser, User } from '@app/models/user.model';
+import { UserConnectionStatus } from '@app/models/enums/user-connection-status.enum';
+import { NgOption } from '@ng-select/ng-select';
 
 @Component({
   selector: 'app-expense-form',
@@ -30,6 +34,7 @@ export class ExpenseFormComponent implements OnInit {
   searchEntry$ = new Subject<string>();
   loading: boolean;
   addItem: (item: string) => any;
+  friends: PolyUser[];
 
   get defaultCurrency(): number {
     const currencyId = localStorage.getItem(this.defaultCurrencyIdStorageName);
@@ -41,10 +46,13 @@ export class ExpenseFormComponent implements OnInit {
     currency: CurrencyService,
     expensesMonthService: ExpensesMonthService,
     private categoriesHttpClient: CategoryHttpClient,
-    private expensesHttpClient: ExpensesHttpClientService) {
+    private expensesHttpClient: ExpensesHttpClientService,
+    private userConnectionsHttpClient: UserConnectionHttpClient) {
     this.currencies = currency.currencies;
     this.categoriesHttpClient.getAllCategories()
       .subscribe((categories) => this.categories = categories)
+    this.userConnectionsHttpClient.getUserConnections()
+      .subscribe((connections) => this.friends = connections.filter((c) => c.status === UserConnectionStatus.accepted).map((c) => c.user as User));
     this.items$ = this.searchEntry$.pipe(
       tap(() => this.loading = true),
       switchMap(searchEntry => this.expensesHttpClient.getExistingItems(searchEntry).pipe(
@@ -59,7 +67,8 @@ export class ExpenseFormComponent implements OnInit {
       'item': [null, Validators.required],
       'priceAmount': [null, Validators.required],
       'currencyId': [this.defaultCurrency, Validators.required],
-      'category': [null]
+      'category': [null],
+      'sharedWith': [null]
     });
 
     this.form.controls['date'].valueChanges
@@ -119,7 +128,16 @@ export class ExpenseFormComponent implements OnInit {
       item: item.item,
       priceAmount: item.price.amount,
       currencyId: item.price.currency.id,
-      category: item.category
+      category: item.category,
+      sharedWith: item.isShared ? null : item.sharedWith
     });
+  }
+
+  getUserFullName(user: User | NgOption): string {
+    return user.firstName ? `${user.firstName}${user.secondName ? ' ' + user.secondName : ''}` : `User ID: #${user.id}`;
+  }
+
+  compareUsers(item: PolyUser, selected: PolyUser) {
+    return item.id === selected.id;
   }
 }

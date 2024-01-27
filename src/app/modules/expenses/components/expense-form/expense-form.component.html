@@ -26,6 +26,32 @@
             <option *ngFor="let currency of currencies" [ngValue]="currency.id">{{ currency.name }}</option>
           </select>
         </div>
-        </div>
+      </div>
     </div>
+    <div *ngIf="((friends && friends.length > 0) || (item && item.sharedWith.length > 0)) && (!item || (item && !item.isShared))" class="row mt-3">
+      <div class="col">
+        <label for="sharedWith">Shared with:</label>
+        <ng-select id="sharedWith" formControlName="sharedWith" [items]="friends" [hideSelected]="true" [multiple]="true" [closeOnSelect]="false" [compareWith]="compareUsers" data-1p-ignore>
+          <ng-template ng-label-tmp let-item="item" let-clear="clear">
+            <div class="d-flex flex-row align-items-center">
+              <ng-container [ngTemplateOutlet]="userLookupOption" [ngTemplateOutletContext]="{item: item}">
+              </ng-container>
+              <span class="ng-value-icon right" (click)="clear(item)" aria-hidden="true">×</span>
+            </div>
+          </ng-template>
+          <ng-template ng-option-tmp let-item="item">
+            <ng-container [ngTemplateOutlet]="userLookupOption" [ngTemplateOutletContext]="{item: item}">
+            </ng-container>
+          </ng-template>
+        </ng-select>
+      </div>
+    </div>
+    <code>{{ form.value | json }}</code>
 </form>
+
+<ng-template #userLookupOption let-item="item">
+  <div class="d-flex flex-row align-items-center">
+    <app-user-avatar class="mx-1" initials="" [tenant]="item.tenant"></app-user-avatar>
+    <span class="me-1">{{ getUserFullName(item) }}</span>
+  </div>
+</ng-template>
