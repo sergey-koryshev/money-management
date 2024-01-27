@@ -6,4 +6,5 @@ export interface AddExpenseParams {
   priceAmount: number;
   currencyId: number;
   category?: Category;
+  sharedWith?: number[]
 }
