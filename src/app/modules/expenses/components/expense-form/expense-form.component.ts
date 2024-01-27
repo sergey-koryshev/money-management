@@ -27,6 +27,7 @@ export class ExpenseFormComponent implements OnInit {
 
   private defaultCurrencyIdStorageName = 'default-currency';
   private lastUsedDateStorageName = 'last-date';
+  private lastUsersToShareExpenseStorageName = 'last-users-to-share-expense';
   currencies: Currency[];
   categories: Category[];
   form: FormGroup;
@@ -41,6 +42,11 @@ export class ExpenseFormComponent implements OnInit {
     return currencyId ? Number(currencyId) : 0;
   }
 
+  get lastUsersToShareExpense() : number[] | null {
+    const jsonUserIds = localStorage.getItem(this.lastUsersToShareExpenseStorageName);
+    return jsonUserIds ? JSON.parse(jsonUserIds) : null;
+  }
+
   constructor(
     private fb: FormBuilder,
     currency: CurrencyService,
@@ -52,7 +58,18 @@ export class ExpenseFormComponent implements OnInit {
     this.categoriesHttpClient.getAllCategories()
       .subscribe((categories) => this.categories = categories)
     this.userConnectionsHttpClient.getUserConnections()
-      .subscribe((connections) => this.friends = connections.filter((c) => c.status === UserConnectionStatus.accepted).map((c) => c.user as User));
+      .subscribe((connections) => {
+        this.friends = connections
+          .filter((c) => c.status === UserConnectionStatus.accepted)
+          .map((c) => c.user as User);
+
+        if (this.item == null) {
+          const lastUsers = this.lastUsersToShareExpense;
+          this.form?.patchValue({
+            sharedWith: this.friends.filter((u) => lastUsers?.includes(Number(u.id)))
+          });
+        }
+      });
     this.items$ = this.searchEntry$.pipe(
       tap(() => this.loading = true),
       switchMap(searchEntry => this.expensesHttpClient.getExistingItems(searchEntry).pipe(
@@ -76,13 +93,19 @@ export class ExpenseFormComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    this.populateValues(this.item);
+
     this.form.get('currencyId')?.valueChanges.subscribe((value) => {
       if (value) {
         localStorage.setItem(this.defaultCurrencyIdStorageName, String(value));
       }
     });
 
-    this.populateValues(this.item);
+    this.form.get('sharedWith')?.valueChanges.subscribe((value: PolyUser[]) => {
+      if (((this.item && !this.item.isShared) || (!this.item)) && value) {
+        localStorage.setItem(this.lastUsersToShareExpenseStorageName, JSON.stringify(value.map((u) => u.id)));
+      }
+    });
   }
 
   getCurrentDate(month: Month): NgbDate {
