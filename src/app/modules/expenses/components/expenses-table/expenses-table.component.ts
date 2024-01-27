@@ -119,7 +119,7 @@ export class ExpensesTableComponent {
       const date = new Date(updatedItem.date)
       const indexOfItem = this.data.findIndex((e) => e.id === updatedItem.id);
 
-      if (indexOfItem) {
+      if (indexOfItem >= 0) {
         if (this.selectedMonth == null
           || (this.selectedMonth.month == date.getMonth() + 1
             && this.selectedMonth.year == date.getFullYear())) {
