@@ -140,11 +140,6 @@ export class ExpensesController extends ControllerBase {
         return this.sendError(res, 500, 'You cannot change users list the expense is shared with');
       }
 
-      console.log(req.body.sharedWith);
-      console.log(existingFriends);
-      console.log(friendsToAdd);
-      console.log(friendsToDelete);
-
       if (friendsToDelete.length > 0) {
         friendsToDelete.forEach((userId) => this.removeSharingInformation(Number(expense.id), Number(userId)));
       }
