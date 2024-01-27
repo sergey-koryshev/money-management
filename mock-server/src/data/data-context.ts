@@ -22,11 +22,7 @@ export class DataContext {
     const userExpenses = this.expensesDbSet.filter((e) => e.tenant === tenant).map((e) => expenseEntityToModel(e));
     const sharedExpenseIds = this.expensesToUsersDbSet.filter((e) => e.userId === user.id).map((e) => e.expenseId);
     const sharedExpenses = this.expensesDbSet.filter((e) => {
-      if (!e.id) {
-        return false;
-      }
-
-      return sharedExpenseIds.includes(e.id)
+      return sharedExpenseIds.includes(Number(e.id))
     }).map((e) => expenseEntityToModel(e, tenant));
 
     return [...userExpenses, ...sharedExpenses];
