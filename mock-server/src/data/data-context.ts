@@ -59,6 +59,18 @@ export class DataContext {
     return addingEntity;
   }
 
+  public removeEntity<T extends Identifier>(id: number, dbSet: T[]) {
+    const entityIndex = dbSet.findIndex((e) => e.id === id);
+
+    if (entityIndex < 0) {
+      throw new Error(`Entity with id ${id} doesn't exist`);
+    }
+
+    const removingEntity = dbSet[entityIndex];
+    dbSet.splice(entityIndex, 1);
+    return removingEntity;
+  }
+
   public getUser(tenant: string) {
     const user = users.find((u) => u.tenant === tenant);
 
