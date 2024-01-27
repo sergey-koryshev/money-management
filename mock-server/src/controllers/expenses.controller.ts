@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { AddExpenseParams } from '../models/add-expense-params.model';
 import { ControllerBase } from './controller-base';
-import { EditExpenseParams } from '../models/edit-expense-params.model';
+import { EditExpenseParams } from '../models/edit-expense-params,model';
 import { Expense } from '../models/expense.model';
 import { ExpenseEntity } from '../data/entities/expense.entity';
 import FuzzySearch from 'fuzzy-search';
@@ -84,7 +84,7 @@ export class ExpensesController extends ControllerBase {
     const user = this.dataContext.getUser(req.userTenant);
     const expense = this.dataContext.getExpenses(req.userTenant).find(e => e.id === Number(req.params['id']));
 
-    if (!expense?.id) {
+    if (expense?.id == null) {
       throw new Error(`Expense with id ${req.params['id']} doesn't exist`)
     }
 
@@ -108,7 +108,7 @@ export class ExpensesController extends ControllerBase {
   public editExpense = (req: Request<unknown, unknown, EditExpenseParams>, res: Response) => {
     const expense = this.dataContext.getExpenses(req.userTenant).find(e => e.id === Number(req.body.id));
 
-    if (!expense?.id) {
+    if (expense?.id == null) {
       throw new Error(`Expense with id ${req.body.id} doesn't exist`)
     }
 
@@ -127,21 +127,30 @@ export class ExpensesController extends ControllerBase {
       priceCurrencyId: req.body.currencyId,
     };
 
-    if (req.body.sharedWith && req.body.sharedWith.length > 0) {
+    if (req.body.sharedWith) {
       const existingFriends = expense.sharedWith.map((u) => u.id);
-      const friendsToDelete = existingFriends.filter((userId) => !req.body.sharedWith?.includes(Number(userId)));
-      const friendsToAdd = req.body.sharedWith.filter((userId) => existingFriends.includes(userId));
+      const friendsToDelete = existingFriends.length > 0
+        ? existingFriends.filter((userId) => !req.body.sharedWith?.includes(Number(userId)))
+        : [];
+      const friendsToAdd = existingFriends.length > 0
+        ? req.body.sharedWith.filter((userId) => existingFriends.includes(userId))
+        : req.body.sharedWith;
 
       if (editedExpense.tenant !== req.userTenant && (friendsToAdd.length > 0 || friendsToDelete.length > 0)) {
         return this.sendError(res, 500, 'You cannot change users list the expense is shared with');
       }
+
+      console.log(req.body.sharedWith);
+      console.log(existingFriends);
+      console.log(friendsToAdd);
+      console.log(friendsToDelete);
 
       if (friendsToDelete.length > 0) {
         friendsToDelete.forEach((userId) => this.removeSharingInformation(Number(expense.id), Number(userId)));
       }
 
       if (friendsToAdd.length > 0) {
-        friendsToDelete.forEach((userId) => this.removeSharingInformation(Number(expense.id), Number(userId)));
+        friendsToAdd.forEach((userId) => this.addSharingInformation(Number(expense.id), Number(userId)));
       }
     }
 
@@ -189,6 +198,17 @@ export class ExpensesController extends ControllerBase {
 
     if (index >= 0) {
       this.dataContext.expensesToUsersDbSet.splice(index, 1);
+    }
+  }
+
+  private addSharingInformation(expenseId: number, userId: number) {
+    const index = this.dataContext.expensesToUsersDbSet.findIndex((e) => e.expenseId === expenseId && e.userId === userId);
+
+    if (index < 0) {
+      this.dataContext.expensesToUsersDbSet.push({
+        expenseId,
+        userId
+      });
     }
   }
 }

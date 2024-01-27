@@ -21,7 +21,7 @@ export class UserConnectionsController extends ControllerBase {
   public createConnection = (req: Request<unknown, unknown, CreateUserConnectionParams>, res: Response) => {
     const user = this.dataContext.usersDbSet.find((u) => u.tenant === req.userTenant);
 
-    if (!user?.id) {
+    if (user?.id == null) {
       return this.sendError(res, 500, `User with tenant ${req.userTenant} doesn't exist`);
     }
 
@@ -31,7 +31,7 @@ export class UserConnectionsController extends ControllerBase {
 
     const targetUser = this.dataContext.usersDbSet.find((u) => u.id === req.body.userId);
 
-    if (!targetUser?.id) {
+    if (targetUser?.id == null) {
       return this.sendError(res, 500, `User with id ${req.body.userId} doesn't exist`);
     }
 
@@ -54,7 +54,7 @@ export class UserConnectionsController extends ControllerBase {
   public getPendingConnectionsCount = (req: Request, res: Response) => {
     const user = this.dataContext.usersDbSet.find((u) => u.tenant === req.userTenant);
 
-    if (!user?.id) {
+    if (user?.id == null) {
       return this.sendError(res, 500, `User with tenant ${req.userTenant} doesn't exist`)
     }
 
@@ -67,7 +67,7 @@ export class UserConnectionsController extends ControllerBase {
   public acceptRequest = (req: Request, res: Response) => {
     const user = this.dataContext.usersDbSet.find((u) => u.tenant === req.userTenant);
 
-    if (!user?.id) {
+    if (user?.id == null) {
       return this.sendError(res, 500, `User with tenant ${req.userTenant} doesn't exist`)
     }
 
@@ -93,7 +93,7 @@ export class UserConnectionsController extends ControllerBase {
   public declineRequest = (req: Request, res: Response) => {
     const user = this.dataContext.usersDbSet.find((u) => u.tenant === req.userTenant);
 
-    if (!user?.id) {
+    if (user?.id == null) {
       return this.sendError(res, 500, `User with tenant ${req.userTenant} doesn't exist`)
     }
 
@@ -117,7 +117,7 @@ export class UserConnectionsController extends ControllerBase {
   public deleteUserConnection = (req: Request, res: Response) => {
     const user = this.dataContext.usersDbSet.find((u) => u.tenant === req.userTenant);
 
-    if (!user?.id) {
+    if (user?.id == null) {
       return this.sendError(res, 500, `User with tenant ${req.userTenant} doesn't exist`)
     }
 
