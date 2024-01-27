@@ -3,9 +3,12 @@ import { currencies, currencyEntityToModel } from './currencies.data';
 import { userEntityToModel, users } from './users.data';
 import { Expense } from '../models/expense.model';
 import { ExpenseEntity } from './entities/expense.entity';
+import { PolyUser } from '../models/user.model';
+import { UserEntity } from './entities/user.entity';
 import { exchangeRates } from './exchange-rates.data';
 import { expensesToUsers } from './expense-to-users.data';
 import { mainCurrencies } from './main-currencies.data';
+import { userConnections } from './user-connections.data';
 
 export function expenseEntityToModel(entity: ExpenseEntity, tenant: string | undefined = undefined): Expense {
   const originalCurrencyEntity = currencies.find((c) => c.id === entity.priceCurrencyId);
@@ -35,16 +38,25 @@ export function expenseEntityToModel(entity: ExpenseEntity, tenant: string | und
     throw new Error(`User with tenant ${entity.tenant} doesn't exist`);
   }
 
+  const currentUser = tenant ? users.find((u) => u.tenant === tenant) : creator;
+
+  if (!currentUser) {
+    throw new Error(`User with tenant ${tenant} doesn't exist`);
+  }
+
   const sharedWithUserIds = expensesToUsers.filter((e) => e.expenseId === entity.id).map((e) => e.userId);
-  const sharedWith = (!tenant || entity.tenant === tenant)
+  const friendsIds = userConnections
+    .filter((c) => (c.requestorUserId === currentUser.id || c.targetUserId === currentUser.id) && c.accepted)
+    .map((c) => c.requestorUserId === currentUser.id ? c.targetUserId : c.requestorUserId);
+  const sharedWith: PolyUser[] = (!tenant || entity.tenant === tenant)
     ? users.filter((u) => {
         if (!u.id) {
           return false;
         }
 
         return sharedWithUserIds.includes(u.id);
-      }).map(userEntityToModel)
-    : sharedWithUserIds.length === 0 ? [] : [userEntityToModel(creator)];
+      }).map((u) => getSharedUserModel(friendsIds, u, Number(currentUser.id)))
+    : sharedWithUserIds.length === 0 ? [] : [getSharedUserModel(friendsIds, creator, Number(currentUser.id))];
 
   const model: Expense = {
     id: entity.id,
@@ -64,6 +76,7 @@ export function expenseEntityToModel(entity: ExpenseEntity, tenant: string | und
       originalCurrency: currencyEntityToModel(originalCurrencyEntity)
     } : undefined,
     sharedWith: sharedWith,
+    isShared: !!tenant && entity.tenant !== tenant
   }
   return model;
 }
@@ -133,3 +146,15 @@ export const expenses: ExpenseEntity[] = [
     tenant: 'f1d4515b-f201-4696-86b8-3580ad740ada'
   }
 ]
+
+function getSharedUserModel(friendsIds: number[], user: UserEntity, currentUserId: number): PolyUser {
+  if (friendsIds.includes(Number(user.id))) {
+    return userEntityToModel(user);
+  }
+
+  const relatedConnection = userConnections.find((c) => ((c.requestorUserId === currentUserId && c.targetUserId === user.id) || (c.requestorUserId === user.id && c.targetUserId === currentUserId)) && !c.accepted);
+
+  return relatedConnection?.targetUserId === currentUserId
+    ? userEntityToModel(user)
+    : { id: user.id };
+}

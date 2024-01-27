@@ -1,7 +1,7 @@
 import { Category } from './category.model';
 import { ExchangedPrice } from './exchanged-price.model';
+import { PolyUser } from './user.model';
 import { Price } from './price.model';
-import { User } from './user.model';
 
 export interface Expense {
   id?: number
@@ -10,5 +10,6 @@ export interface Expense {
   item: string
   price: Price
   exchangedPrice?: ExchangedPrice
-  sharedWith: User[]
+  sharedWith: PolyUser[]
+  isShared: boolean
 }
