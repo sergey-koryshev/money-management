@@ -8,6 +8,7 @@ import { EditExpenseDialogComponent } from '../edit-expense-dialog/edit-expense-
 import { Month } from '@app/models/month.model';
 import { ItemChangedEventArgs } from './expenses-table.model';
 import { PolyUser } from '@app/models/user.model';
+import { ExpenseViewType } from '@app/models/enums/expense-view-type.enum';
 
 @Component({
   selector: 'app-expenses-table',
@@ -21,6 +22,9 @@ export class ExpensesTableComponent {
 
   @Input()
   data: Expense[];
+
+  @Input()
+  viewType: ExpenseViewType;
 
   @Output()
   itemChanged = new EventEmitter<ItemChangedEventArgs>()
@@ -122,7 +126,10 @@ export class ExpensesTableComponent {
       if (indexOfItem >= 0) {
         if (this.selectedMonth == null
           || (this.selectedMonth.month == date.getMonth() + 1
-            && this.selectedMonth.year == date.getFullYear())) {
+            && this.selectedMonth.year == date.getFullYear())
+            && (this.viewType === ExpenseViewType.All
+              || (this.viewType === ExpenseViewType.OnlyShared && updatedItem.sharedWith.length > 0)
+              || (this.viewType === ExpenseViewType.OnlyNotShared && updatedItem.sharedWith.length === 0))) {
           this.data[indexOfItem] = updatedItem;
           this.itemChanged.emit({
             oldValue: item.exchangedPrice?.amount ?? item.price.amount,

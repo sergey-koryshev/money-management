@@ -8,6 +8,18 @@
     <span class="me-2">Total:</span>
     <app-price [price]="totalAmount"></app-price>
   </div>
-  <button type="button" class="btn btn-primary" (click)="open()">Add new expense</button>
+  <div>
+    <div ngbDropdown class="d-inline-block me-1">
+      <button ngbDropdownToggle type="button" class="btn btn-outline-success">
+        {{ viewTypeEnumToLabel[viewType] }}
+      </button>
+      <div ngbDropdownMenu>
+        <button ngbDropdownItem (click)="onViewTypeChanged(0)">{{ viewTypeEnumToLabel[0] }}</button>
+        <button ngbDropdownItem (click)="onViewTypeChanged(1)">{{ viewTypeEnumToLabel[1] }}</button>
+        <button ngbDropdownItem (click)="onViewTypeChanged(2)">{{ viewTypeEnumToLabel[2] }}</button>
+      </div>
+    </div>
+    <button type="button" class="btn btn-primary" (click)="open()">Add new expense</button>
+  </div>
 </div>
-<app-expenses-table [data]="expenses" [selectedMonth]="selectedMonth" (itemChanged)="onItemChange($event)"></app-expenses-table>
+<app-expenses-table [data]="expenses" [selectedMonth]="selectedMonth" [viewType]="viewType" (itemChanged)="onItemChange($event)"></app-expenses-table>

@@ -4,6 +4,7 @@ import { ControllerBase } from './controller-base';
 import { EditExpenseParams } from '../models/edit-expense-params,model';
 import { Expense } from '../models/expense.model';
 import { ExpenseEntity } from '../data/entities/expense.entity';
+import { ExpenseViewType } from '../models/expense-view-type.enum';
 import FuzzySearch from 'fuzzy-search';
 import { ItemWithCategory } from '../models/item-with-category.model';
 import { categoryEntityToModel } from '../data/categories.data';
@@ -13,12 +14,15 @@ export class ExpensesController extends ControllerBase {
   public getExpenses = (req: Request, res: Response) => {
     const month = req.query['month'];
     const year = req.query['year'];
+    const viewType = req.query['viewType'] == null
+      ? ExpenseViewType.All
+      : Number(req.query['viewType']);
 
     if (!month && !year) {
       this.sendError(res, 500, 'Month and year must be specified');
     }
 
-    this.sendData(res, this.getFilteredExpenses(Number(month), Number(year), req.userTenant));
+    this.sendData(res, this.getFilteredExpenses(Number(month), Number(year), req.userTenant, viewType));
   }
 
   public addNewExpense = (req: Request<unknown, unknown, AddExpenseParams>, res: Response) => {
@@ -163,8 +167,8 @@ export class ExpensesController extends ControllerBase {
     this.sendData(res, result);
   }
 
-  private getFilteredExpenses(month: number, year: number, tenant: string) {
-    return this.dataContext.getExpenses(tenant).filter((e) =>
+  private getFilteredExpenses(month: number, year: number, tenant: string, viewType: ExpenseViewType) {
+    return this.dataContext.getExpenses(tenant, viewType).filter((e) =>
       e.date.getMonth() + 1 == month && e.date.getFullYear() == year
     );
   }

@@ -1,5 +1,6 @@
 import { categories, categoryEntityToModel } from './categories.data';
 import { expenseEntityToModel, expenses } from './expenses.data';
+import { ExpenseViewType } from '../models/expense-view-type.enum';
 import { Identifier } from '../models/identifier.model';
 import { currencies } from './currencies.data';
 import { expensesToUsers } from './expense-to-users.data';
@@ -17,12 +18,29 @@ export class DataContext {
   public currenciesDbSet = currencies;
   public usersDbSet = users;
 
-  public getExpenses(tenant: string) {
+  public getExpenses(tenant: string, viewType: ExpenseViewType = ExpenseViewType.All) {
     const user = this.getUser(tenant);
-    const userExpenses = this.expensesDbSet.filter((e) => e.tenant === tenant).map((e) => expenseEntityToModel(e));
-    const sharedExpenseIds = this.expensesToUsersDbSet.filter((e) => e.userId === user.id).map((e) => e.expenseId);
+    const userExpenses = this.expensesDbSet
+      .filter((e) => e.tenant === tenant)
+      .map((e) => expenseEntityToModel(e))
+      .filter((e) => {
+        if (viewType === ExpenseViewType.OnlyNotShared) {
+          return e.sharedWith.length === 0
+        }
+
+        if (viewType === ExpenseViewType.OnlyShared) {
+          return e.sharedWith.length > 0
+        }
+
+        return true;
+      });
+
+    const sharedExpenseWithCurrentUserIds = viewType === ExpenseViewType.All || viewType === ExpenseViewType.OnlyShared
+      ? this.expensesToUsersDbSet.filter((e) => e.userId === user.id).map((e) => e.expenseId)
+      : [];
+
     const sharedExpenses = this.expensesDbSet.filter((e) => {
-      return sharedExpenseIds.includes(Number(e.id))
+      return sharedExpenseWithCurrentUserIds.includes(Number(e.id))
     }).map((e) => expenseEntityToModel(e, tenant));
 
     return [...userExpenses, ...sharedExpenses];
