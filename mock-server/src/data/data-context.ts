@@ -33,13 +33,9 @@ export class DataContext {
     const userCategories = this.categoriesDbSet.filter((e) => e.tenant === tenant).map(categoryEntityToModel);
     const sharedExpenseIds = this.expensesToUsersDbSet.filter((e) => e.userId === user.id).map((e) => e.expenseId);
     const sharedCategoriesIds = [... new Set(this.expensesDbSet.filter((e) => {
-      if (!e.id) {
-        return false;
-      }
-
-      return e.categoryId != null && sharedExpenseIds.includes(e.id)
+      return e.categoryId != null && sharedExpenseIds.includes(Number(e.id))
     }).map((e) => e.categoryId))];
-    const sharedCategories = this.categoriesDbSet.filter((c) => sharedCategoriesIds.includes(c.id)).map(categoryEntityToModel);
+    const sharedCategories = this.categoriesDbSet.filter((c) => sharedCategoriesIds.includes(c.id) && userCategories.find((uc) => uc.name === c.name) == null).map(categoryEntityToModel);
 
     return [...userCategories, ...sharedCategories];
   }
