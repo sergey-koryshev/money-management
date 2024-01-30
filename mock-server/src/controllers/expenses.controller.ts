@@ -60,12 +60,7 @@ export class ExpensesController extends ControllerBase {
       return this.sendError(res, 500, 'The expense can be shared only with user you have accepted connection with');
     }
 
-    req.body.sharedWith?.forEach((userId) => {
-      this.dataContext.expensesToUsersDbSet.push({
-        expenseId: newExpense.id,
-        userId: userId
-      });
-    });
+    req.body.sharedWith?.forEach((userId) => this.addSharingInformation(newExpense.id, userId));
 
     this.sendData(res, expenseEntityToModel(newExpense));
   }
