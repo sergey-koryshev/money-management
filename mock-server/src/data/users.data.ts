@@ -2,7 +2,7 @@ import { User } from '../models/user.model';
 import { UserEntity } from './entities/user.entity';
 
 export function userEntityToModel(entity: UserEntity): User {
-  if (!entity.id) {
+  if (entity.id == null) {
     throw new Error('User doesn\'t contains id');
   }
 
