@@ -108,17 +108,27 @@ export class ExpensesController extends ControllerBase {
     const expense = this.dataContext.getExpenses(req.userTenant).find(e => e.id === Number(req.body.id));
 
     if (expense?.id == null) {
-      throw new Error(`Expense with id ${req.body.id} doesn't exist`)
+      return this.sendError(res, 500, `Expense with id ${req.body.id} doesn't exist`);
     }
 
     const index = this.dataContext.expensesDbSet.findIndex(e => e.id === Number(req.body.id));
+
+    const expenseEntity = this.dataContext.expensesDbSet[index]
+
+    if (expenseEntity.tenant !== req.userTenant) {
+      const creator = this.dataContext.getUser(expenseEntity.tenant);
+      const currentUser = this.dataContext.getUser(req.userTenant);
+      if (this.dataContext.userConnectionsDbSet.find((c) => ((c.requestorUserId === currentUser.id && c.targetUserId === creator.id) || (c.requestorUserId === creator.id && c.targetUserId === currentUser.id)) && c.accepted) == null) {
+        return this.sendError(res, 500, 'You doesn\'t have permissions to edit the expense');
+      }
+    }
 
     const category = req.body.category
       ? this.createOrGetCategory(req.body.category.id, req.body.category.name, req.userTenant)
       : undefined;
 
     const editedExpense: ExpenseEntity = {
-      ...this.dataContext.expensesDbSet[index],
+      ...expenseEntity,
       date: new Date(req.body.date),
       item: req.body.item,
       categoryId: category?.id,

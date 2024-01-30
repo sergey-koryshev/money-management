@@ -50,13 +50,16 @@ export function expenseEntityToModel(entity: ExpenseEntity, tenant: string | und
     .map((c) => c.requestorUserId === currentUser.id ? c.targetUserId : c.requestorUserId);
   const sharedWith: PolyUser[] = (!tenant || entity.tenant === tenant)
     ? users.filter((u) => {
-        if (!u.id) {
-          return false;
-        }
+      if (!u.id) {
+        return false;
+      }
 
-        return sharedWithUserIds.includes(u.id);
-      }).map((u) => getSharedUserModel(friendsIds, u, Number(currentUser.id)))
+      return sharedWithUserIds.includes(u.id);
+    }).map((u) => getSharedUserModel(friendsIds, u, Number(currentUser.id)))
     : sharedWithUserIds.length === 0 ? [] : [getSharedUserModel(friendsIds, creator, Number(currentUser.id))];
+  const canBeEdited = !!tenant && entity.tenant !== tenant
+    ? sharedWith.length > 0 && friendsIds.includes(Number(sharedWith[0].id))
+    : true;
 
   const model: Expense = {
     id: entity.id,
@@ -76,7 +79,8 @@ export function expenseEntityToModel(entity: ExpenseEntity, tenant: string | und
       originalCurrency: currencyEntityToModel(originalCurrencyEntity)
     } : undefined,
     sharedWith: sharedWith,
-    isShared: !!tenant && entity.tenant !== tenant
+    isShared: !!tenant && entity.tenant !== tenant,
+    canBeEdited: canBeEdited
   }
   return model;
 }

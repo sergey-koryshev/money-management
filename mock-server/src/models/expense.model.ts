@@ -12,4 +12,5 @@ export interface Expense {
   exchangedPrice?: ExchangedPrice
   sharedWith: PolyUser[]
   isShared: boolean
+  canBeEdited: boolean
 }
