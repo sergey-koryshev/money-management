@@ -15,6 +15,7 @@ import { UserConnectionHttpClient } from '@app/http-clients/user-connections-htt
 import { PolyUser, User } from '@app/models/user.model';
 import { UserConnectionStatus } from '@app/models/enums/user-connection-status.enum';
 import { NgOption } from '@ng-select/ng-select';
+import { getUserFullName } from '@app/helpers/users.helper';
 
 @Component({
   selector: 'app-expense-form',
@@ -156,8 +157,8 @@ export class ExpenseFormComponent implements OnInit {
     });
   }
 
-  getUserFullName(user: User | NgOption): string {
-    return user.firstName ? `${user.firstName}${user.secondName ? ' ' + user.secondName : ''}` : `User ID: #${user.id}`;
+  getUserFullName(user: PolyUser): string {
+    return getUserFullName(user);
   }
 
   compareUsers(item: PolyUser, selected: PolyUser) {

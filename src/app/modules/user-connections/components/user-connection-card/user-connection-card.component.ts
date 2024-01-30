@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import { getUserInitials } from '@app/helpers/users.helper';
 import { UserConnectionStatus } from '@app/models/enums/user-connection-status.enum';
 import { UserConnection } from '@app/models/user-connection.model';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -40,7 +41,7 @@ export class UserConnectionCardComponent implements OnInit {
   constructor(private modalService: NgbModal) { }
 
   ngOnInit(): void {
-    this.initials = this.connection.user.firstName ? this.connection.user.firstName[0] + (this.connection.user.secondName ? this.connection.user.secondName[0] : '') : 'U';
+    this.initials = getUserInitials(this.connection.user);
     this.statusPinColor = userConnectionStatusToColor[this.connection.status];
   }
 

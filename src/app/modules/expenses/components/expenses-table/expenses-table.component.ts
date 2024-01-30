@@ -9,6 +9,7 @@ import { Month } from '@app/models/month.model';
 import { ItemChangedEventArgs } from './expenses-table.model';
 import { PolyUser } from '@app/models/user.model';
 import { ExpenseViewType } from '@app/models/enums/expense-view-type.enum';
+import { getUserFullName, getUserInitials } from '@app/helpers/users.helper';
 
 @Component({
   selector: 'app-expenses-table',
@@ -146,11 +147,11 @@ export class ExpensesTableComponent {
   }
 
   getUserInitials(user: PolyUser): string {
-    return user.firstName ? user.firstName[0] + (user.secondName ? user.secondName[0] : '') : 'U';
+    return getUserInitials(user);
   }
 
   getUserFullName(user: PolyUser): string {
-    return user.firstName ? `${user.firstName}${user.secondName ? ' ' + user.secondName : ''}` : `User ID: #${user.id}`;
+    return getUserFullName(user);
   }
 
   private isSharedWithColumnVisible() {
