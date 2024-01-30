@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { Shade } from '@app/helpers/colors.helper';
+import { shade } from '@app/helpers/colors.helper';
 
 @Component({
   selector: 'app-round-button',
@@ -16,7 +16,7 @@ export class RoundButtonComponent implements OnInit {
 
   ngOnInit(): void {
     this.currentBackgroundColor = this.backgroundColor;
-    this.lighterBackgroundColor = Shade(this.backgroundColor, -20);
+    this.lighterBackgroundColor = shade(this.backgroundColor, -20);
   }
 
   onMouseOver() {

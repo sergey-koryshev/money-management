@@ -8,7 +8,7 @@ import { ExpensesTableComponent } from './components/expenses-table/expenses-tab
 import { ComponentsModule } from '@app/components/components.module';
 import { ExpensesResolver } from './expenses.resolver';
 import { ExpenseFormComponent } from './components/expense-form/expense-form.component';
-import { NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDatepickerModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { AddNewExpenseDialogComponent } from './components/add-new-expense-dialog/add-new-expense-dialog.component';
 import { EditExpenseDialogComponent } from './components/edit-expense-dialog/edit-expense-dialog.component';
@@ -35,7 +35,7 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [ExpensesPageComponent, ExpensesTableComponent, ExpenseFormComponent, AddNewExpenseDialogComponent, EditExpenseDialogComponent, SearchResultsComponent],
-  imports: [CommonModule, RouterModule.forChild(routes), ComponentsModule, ReactiveFormsModule, NgbDatepickerModule, NgSelectModule],
+  imports: [CommonModule, NgbModule, RouterModule.forChild(routes), ComponentsModule, ReactiveFormsModule, NgbDatepickerModule, NgSelectModule],
   providers: [ExpensesResolver]
 })
 export class ExpensesModule {}

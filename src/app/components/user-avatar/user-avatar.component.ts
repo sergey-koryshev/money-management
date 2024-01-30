@@ -1,3 +1,4 @@
+import { blend, shade } from '@app/helpers/colors.helper';
 import { Component, Input, OnChanges } from '@angular/core';
 
 @Component({
@@ -15,10 +16,10 @@ export class UserAvatarComponent implements OnChanges {
   avatarStyles: {[key: string]: string};
 
   ngOnChanges(): void {
-    const avatarBackgroundColor = this.getUniqueColor(this.tenant ?? '8eeb9d4b-d246-4075-a53a-fa31184f71ec');
+    const avatarBackgroundColor = blend(this.getUniqueColor(this.tenant ?? '8eeb9d4b-d246-4075-a53a-fa31184f71ec'), '#f8f9fa', 0.5);
     const avatarForegroundColor = this.getForegroundColor(avatarBackgroundColor);
     this.avatarStyles = {
-      'background-color': `${avatarBackgroundColor}80`,
+      'background-color': avatarBackgroundColor,
       'color': avatarForegroundColor
     }
   }

@@ -7,6 +7,9 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { EditExpenseDialogComponent } from '../edit-expense-dialog/edit-expense-dialog.component';
 import { Month } from '@app/models/month.model';
 import { ItemChangedEventArgs } from './expenses-table.model';
+import { PolyUser } from '@app/models/user.model';
+import { ExpenseViewType } from '@app/models/enums/expense-view-type.enum';
+import { getUserFullName, getUserInitials } from '@app/helpers/users.helper';
 
 @Component({
   selector: 'app-expenses-table',
@@ -20,6 +23,9 @@ export class ExpensesTableComponent {
 
   @Input()
   data: Expense[];
+
+  @Input()
+  viewType: ExpenseViewType;
 
   @Output()
   itemChanged = new EventEmitter<ItemChangedEventArgs>()
@@ -54,6 +60,13 @@ export class ExpensesTableComponent {
       sortFunc: priceComparer
     },
     {
+      name: 'sharedWith',
+      ignorePadding: true,
+      disableSorting: true,
+      template: () => this.sharedWithTemplate,
+      hide: () => this.isSharedWithColumnVisible()
+    },
+    {
       name: 'actions',
       ignorePadding: true,
       disableSorting: true,
@@ -71,6 +84,10 @@ export class ExpensesTableComponent {
 
   @ViewChild('actions', { read: TemplateRef, static: true })
   actions: TemplateRef<unknown>;
+
+  @ViewChild('sharedWith', { read: TemplateRef, static: true })
+  sharedWithTemplate: TemplateRef<unknown>;
+
 
   @ViewChild('confirmationDialog', { read: TemplateRef, static: true })
   confirmationDialog: TemplateRef<unknown>;
@@ -107,10 +124,13 @@ export class ExpensesTableComponent {
       const date = new Date(updatedItem.date)
       const indexOfItem = this.data.findIndex((e) => e.id === updatedItem.id);
 
-      if (indexOfItem) {
+      if (indexOfItem >= 0) {
         if (this.selectedMonth == null
           || (this.selectedMonth.month == date.getMonth() + 1
-            && this.selectedMonth.year == date.getFullYear())) {
+            && this.selectedMonth.year == date.getFullYear())
+            && (this.viewType === ExpenseViewType.All
+              || (this.viewType === ExpenseViewType.OnlyShared && updatedItem.sharedWith.length > 0)
+              || (this.viewType === ExpenseViewType.OnlyNotShared && updatedItem.sharedWith.length === 0))) {
           this.data[indexOfItem] = updatedItem;
           this.itemChanged.emit({
             oldValue: item.exchangedPrice?.amount ?? item.price.amount,
@@ -124,5 +144,17 @@ export class ExpensesTableComponent {
         }
       }
     });
+  }
+
+  getUserInitials(user: PolyUser): string {
+    return getUserInitials(user);
+  }
+
+  getUserFullName(user: PolyUser): string {
+    return getUserFullName(user);
+  }
+
+  private isSharedWithColumnVisible() {
+    return this.data?.filter((e) => e.sharedWith.length > 0).length > 0;
   }
 }

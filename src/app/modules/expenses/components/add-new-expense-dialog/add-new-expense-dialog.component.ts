@@ -21,11 +21,12 @@ export class AddNewExpenseDialogComponent {
     }
 
     this.error = undefined;
-    const { date, priceAmount, ...restParams } = event.value;
+    const { date, priceAmount, sharedWith, ...restParams } = event.value;
 
     const params: AddExpenseParams = {
       date: new Date(date.year, date.month - 1, date.day),
       priceAmount: Number(priceAmount),
+      sharedWith: sharedWith?.map((u) => Number(u.id)),
       ...restParams
     }
 
