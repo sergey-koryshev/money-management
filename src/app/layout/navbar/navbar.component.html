@@ -8,9 +8,6 @@
         <li class="nav-item">
           <a class="nav-link active" aria-current="page" [routerLink]="['/expenses']">Expenses</a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="#">Incomes</a>
-        </li>
       </ul>
     </div>
     <form *ngIf="user" [formGroup]="searchForm" (ngSubmit)="onSearchFormSubmit()">
