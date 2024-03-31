@@ -17,7 +17,7 @@ import { getUserFullName, getUserInitials } from '@app/helpers/users.helper';
   styleUrls: ['./expenses-table.component.scss']
 })
 export class ExpensesTableComponent implements OnInit {
-  private sortingStorageName = 'default-currency';
+  private sortingStorageName = 'expenses-table-sorting';
   private defaultSorting: SortEvent = {
     column: 'date',
     direction: 'desc'
