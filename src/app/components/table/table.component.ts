@@ -1,5 +1,5 @@
 import { SortEvent, TableColumn, TableColumnType } from './table.model';
-import { Component, Input, QueryList, ViewChildren, OnInit, OnChanges, SimpleChanges, DoCheck } from '@angular/core';
+import { Component, Input, QueryList, ViewChildren, OnInit, OnChanges, SimpleChanges, DoCheck, Output, EventEmitter } from '@angular/core';
 import { emptyTableData } from '@app/constants';
 import { ObjectKey } from '@app/models/base.model';
 import { SortableHeaderDirective } from './sortable-header.directive';
@@ -20,6 +20,9 @@ export class TableComponent<T> implements OnInit, DoCheck {
 
   @Input()
   defaultSorting: SortEvent;
+
+  @Output()
+  sortingChanged = new EventEmitter<SortEvent>();
 
   sortedData: T[];
 
@@ -86,6 +89,8 @@ export class TableComponent<T> implements OnInit, DoCheck {
         return direction === 'asc' ? result : -result;
       });
     }
+
+    this.sortingChanged.emit(event);
   }
 
   compareProperties(a: any, b: any) {
