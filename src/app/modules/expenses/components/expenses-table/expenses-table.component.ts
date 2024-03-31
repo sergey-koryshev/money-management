@@ -1,6 +1,6 @@
 import { ExpensesHttpClientService } from '@http-clients/expenses-http-client.service';
 import { SortEvent, TableColumn } from '@components/table/table.model';
-import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { Expense } from '@app/models/expense.model';
 import { priceComparer } from '@app/helpers/comparers.helper';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -16,7 +16,12 @@ import { getUserFullName, getUserInitials } from '@app/helpers/users.helper';
   templateUrl: './expenses-table.component.html',
   styleUrls: ['./expenses-table.component.scss']
 })
-export class ExpensesTableComponent {
+export class ExpensesTableComponent implements OnInit {
+  private sortingStorageName = 'default-currency';
+  private defaultSorting: SortEvent = {
+    column: 'date',
+    direction: 'desc'
+  }
 
   @Input()
   selectedMonth?: Month;
@@ -74,10 +79,7 @@ export class ExpensesTableComponent {
     }
   ];
 
-  defaultSorting: SortEvent = {
-    column: 'date',
-    direction: 'asc'
-  }
+  sorting = this.defaultSorting;
 
   @ViewChild('price', { read: TemplateRef, static: true })
   price: TemplateRef<unknown>;
@@ -88,11 +90,18 @@ export class ExpensesTableComponent {
   @ViewChild('sharedWith', { read: TemplateRef, static: true })
   sharedWithTemplate: TemplateRef<unknown>;
 
-
   @ViewChild('confirmationDialog', { read: TemplateRef, static: true })
   confirmationDialog: TemplateRef<unknown>;
 
   constructor(private expensesHttpClient: ExpensesHttpClientService, private modalService: NgbModal) {}
+
+  ngOnInit(): void {
+    var storedSorting = localStorage.getItem(this.sortingStorageName);
+
+    if (storedSorting != null) {
+      this.sorting = JSON.parse(storedSorting) as SortEvent;
+    }
+  }
 
   removeItem(item: Expense) {
     this.modalService.open(this.confirmationDialog).closed.subscribe((res: boolean) => {
@@ -152,6 +161,10 @@ export class ExpensesTableComponent {
 
   getUserFullName(user: PolyUser): string {
     return getUserFullName(user);
+  }
+
+  onSortingChanged(sortingDescriptor: SortEvent) {
+    localStorage.setItem(this.sortingStorageName, JSON.stringify(sortingDescriptor));
   }
 
   private isSharedWithColumnVisible() {
