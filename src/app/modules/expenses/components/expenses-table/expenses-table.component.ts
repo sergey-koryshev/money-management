@@ -55,7 +55,11 @@ export class ExpensesTableComponent implements OnInit {
     },
     {
       name: 'item',
-      displayName: 'Item',
+      displayName: 'Item'
+    },
+    {
+      name: 'description',
+      displayName: 'Description',
       stretch: true
     },
     {
