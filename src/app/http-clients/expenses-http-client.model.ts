@@ -7,6 +7,7 @@ export interface AddExpenseParams {
   currencyId: number
   category?: Category
   sharedWith?: number[]
+  description?: string
 }
 
 export interface EditExpenseParams {
@@ -17,6 +18,7 @@ export interface EditExpenseParams {
   currencyId: number
   category?: Category
   sharedWith?: number[]
+  description?: string
 }
 
 export interface ItemWithCategory {
