@@ -80,7 +80,8 @@ export function expenseEntityToModel(entity: ExpenseEntity, tenant: string | und
     } : undefined,
     sharedWith: sharedWith,
     isShared: !!tenant && entity.tenant !== tenant,
-    canBeEdited: canBeEdited
+    canBeEdited: canBeEdited,
+    description: entity.description
   }
   return model;
 }
@@ -90,6 +91,7 @@ export const expenses: ExpenseEntity[] = [
     id: 0,
     date: new Date('2022-08-01'),
     item: 'Zavičaj',
+    description: 'Komplete lepinja, cappuccino',
     categoryId: 0,
     priceAmount: 750,
     priceCurrencyId: 1,
