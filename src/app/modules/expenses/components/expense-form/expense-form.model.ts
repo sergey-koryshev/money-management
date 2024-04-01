@@ -10,4 +10,5 @@ export interface ExpenseForm {
   currencyId: number
   category?: Category
   sharedWith?: PolyUser[]
+  description?: string
 }

@@ -35,6 +35,7 @@ export class ExpensesController extends ControllerBase {
     const newExpense = this.dataContext.addEntity({
       date: new Date(req.body.date),
       item: req.body.item,
+      description: req.body.description,
       categoryId: category?.id,
       priceAmount: req.body.priceAmount,
       priceCurrencyId: req.body.currencyId,
@@ -134,6 +135,7 @@ export class ExpensesController extends ControllerBase {
       categoryId: category?.id,
       priceAmount: req.body.priceAmount,
       priceCurrencyId: req.body.currencyId,
+      description: req.body.description
     };
 
     if (req.body.sharedWith) {

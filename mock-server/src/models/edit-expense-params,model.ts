@@ -8,4 +8,5 @@ export interface EditExpenseParams {
   currencyId: number
   category?: Category
   sharedWith?: number[]
+  description?: string
 }

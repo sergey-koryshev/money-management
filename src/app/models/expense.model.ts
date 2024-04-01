@@ -13,4 +13,5 @@ export interface Expense {
   sharedWith: PolyUser[]
   isShared: boolean
   canBeEdited: boolean
+  description?: string
 }

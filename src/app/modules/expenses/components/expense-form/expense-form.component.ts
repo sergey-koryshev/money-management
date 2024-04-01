@@ -14,7 +14,6 @@ import { Expense } from '@app/models/expense.model';
 import { UserConnectionHttpClient } from '@app/http-clients/user-connections-http-client.service';
 import { PolyUser, User } from '@app/models/user.model';
 import { UserConnectionStatus } from '@app/models/enums/user-connection-status.enum';
-import { NgOption } from '@ng-select/ng-select';
 import { getUserFullName } from '@app/helpers/users.helper';
 
 @Component({
@@ -86,7 +85,8 @@ export class ExpenseFormComponent implements OnInit {
       'priceAmount': [null, Validators.required],
       'currencyId': [this.defaultCurrency, Validators.required],
       'category': [null],
-      'sharedWith': [null]
+      'sharedWith': [null],
+      'description': [null]
     });
 
     this.form.controls['date'].valueChanges
@@ -153,7 +153,8 @@ export class ExpenseFormComponent implements OnInit {
       priceAmount: item.price.amount,
       currencyId: item.price.currency.id,
       category: item.category,
-      sharedWith: item.isShared ? null : item.sharedWith
+      sharedWith: item.isShared ? null : item.sharedWith,
+      description: item.description
     });
   }
 
