@@ -9,5 +9,6 @@ export interface ExpenseForm {
   priceAmount: number
   currencyId: number
   category?: Category
-  sharedWith?: PolyUser[]
+  sharedWith?: PolyUser[],
+  description?: string
 }
