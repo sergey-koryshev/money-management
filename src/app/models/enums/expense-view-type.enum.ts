@@ -1,5 +1,6 @@
 export enum ExpenseViewType {
   All,
   OnlyShared,
-  OnlyNotShared
+  OnlyNotShared,
+  CreatedByMe
 }
