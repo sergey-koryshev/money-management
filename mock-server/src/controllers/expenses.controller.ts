@@ -168,7 +168,8 @@ export class ExpensesController extends ControllerBase {
     let result: Expense[] = [];
 
     if (req.body != null && req.body.length > 0) {
-      result = this.dataContext.getExpenses(req.userTenant).filter(e => e.item.toUpperCase() == req.body.toUpperCase())
+      const itemsSearcher = new FuzzySearch<Expense>(this.dataContext.getExpenses(req.userTenant), ['item', 'description'])
+      result = itemsSearcher.search(req.body);
     }
 
     this.sendData(res, result);
