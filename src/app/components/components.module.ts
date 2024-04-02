@@ -10,6 +10,7 @@ import { RoundButtonComponent } from './round-button/round-button.component';
 import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
 import { UserTileComponent } from './user-tile/user-tile.component';
 import { PillButtonComponent } from './pill-button/pill-button.component';
+import { ParenthesesPipe } from './parentheses-pipe/parentheses.pipe';
 
 @NgModule({
   declarations: [
@@ -20,6 +21,7 @@ import { PillButtonComponent } from './pill-button/pill-button.component';
     ModalDialogComponent,
     UserTileComponent,
     PillButtonComponent,
+    ParenthesesPipe
   ],
   imports: [
     CommonModule,
@@ -34,7 +36,8 @@ import { PillButtonComponent } from './pill-button/pill-button.component';
     TableComponent,
     RoundButtonComponent,
     ModalDialogComponent,
-    PillButtonComponent
+    PillButtonComponent,
+    ParenthesesPipe
   ],
 })
 export class ComponentsModule { }

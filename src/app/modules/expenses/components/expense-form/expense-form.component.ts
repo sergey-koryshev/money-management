@@ -16,6 +16,10 @@ import { PolyUser, User } from '@app/models/user.model';
 import { UserConnectionStatus } from '@app/models/enums/user-connection-status.enum';
 import { getUserFullName } from '@app/helpers/users.helper';
 
+interface ItemWithCategoryForm extends ItemWithCategory {
+  isNew: boolean
+}
+
 @Component({
   selector: 'app-expense-form',
   templateUrl: './expense-form.component.html',
@@ -34,7 +38,7 @@ export class ExpenseFormComponent implements OnInit {
   items$: Observable<ItemWithCategory[]>;
   searchEntry$ = new Subject<string>();
   loading: boolean;
-  addItem: (item: string) => any;
+  addItem: (item: string) => ItemWithCategoryForm;
   friends: PolyUser[];
 
   get defaultCurrency(): number {
@@ -76,7 +80,7 @@ export class ExpenseFormComponent implements OnInit {
         catchError(() => of([])),
         tap(() => this.loading = false)
     )));
-    this.addItem = (item) =>  ({ item, isNew: true });
+    this.addItem = (item) => ({ item, isNew: true });
 
     this.form = this.fb.group({
       'id': [null],
@@ -124,14 +128,14 @@ export class ExpenseFormComponent implements OnInit {
     return resultDate;
   }
 
-  itemChanged(data: ItemWithCategory) {
+  itemChanged(data: ItemWithCategoryForm) {
     let category: Category | undefined;
 
     if (data !== undefined) {
       if (data.isNew) {
         return;
       }
-      category = this.categories.find((c) => c.id === data.categoryId);
+      category = data.category;
     } else {
       category = undefined;
     }
