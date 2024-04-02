@@ -1,6 +1,6 @@
 {
   "name": "mock-server",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "description": "Mock REST API server",
   "main": "index.js",
   "scripts": {
