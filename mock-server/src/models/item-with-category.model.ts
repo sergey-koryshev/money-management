@@ -1,4 +1,6 @@
+import { Category } from './category.model';
+
 export interface ItemWithCategory {
   item: string;
-  categoryId?: number;
+  category?: Category;
 }

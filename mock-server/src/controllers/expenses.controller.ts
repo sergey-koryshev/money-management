@@ -73,8 +73,8 @@ export class ExpensesController extends ControllerBase {
     if (req.body != null && req.body.length > 0) {
       result = itemsSearcher
       .search(req.body)
-      .filter((v, i, s) => s.findIndex(o => o.item === v.item) === i)
-      .map((e) => ({ item: e.item, categoryId: e.category?.id}));
+      .filter((v, i, s) => s.findIndex(o => o.item === v.item && o.category?.id === v.category?.id) === i)
+      .map((e) => ({ item: e.item, category: e.category}));
     }
 
     this.sendData(res, result);
