@@ -30,7 +30,8 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
   viewTypeEnumToLabel = {
     [ExpenseViewType.All]: 'All',
     [ExpenseViewType.OnlyNotShared]: 'Only not shared',
-    [ExpenseViewType.OnlyShared]: 'Only shared'
+    [ExpenseViewType.OnlyShared]: 'Only shared',
+    [ExpenseViewType.CreatedByMe]: 'Created by me'
   }
 
   constructor(
