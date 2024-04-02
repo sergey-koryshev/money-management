@@ -23,6 +23,5 @@ export interface EditExpenseParams {
 
 export interface ItemWithCategory {
   item: string
-  categoryId?: number
-  isNew?: boolean
+  category?: Category
 }
