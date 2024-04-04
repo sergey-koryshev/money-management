@@ -1,3 +1,5 @@
+version: '2'
+
 services:
   frontend:
     container_name: money-mamagement-frontend
