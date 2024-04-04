@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es2016",
     "lib": ["es6"],
-    "module": "commonjs",
+    "module": "nodenext",
     "rootDir": ".",
     "resolveJsonModule": true,
     "outDir": "build",
