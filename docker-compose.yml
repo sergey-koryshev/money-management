@@ -1,0 +1,15 @@
+services:
+  frontend:
+    container_name: money-mamagement-frontend
+    build: .
+    ports:
+      - '4200:80'
+
+  backend:
+    container_name: money-mamagement-backend
+    build: ./mock-server
+    ports:
+      - '3000:${PORT}'
+    environment:
+      - PORT=${PORT}
+      - AUTH_TOKEN_SECRET=${AUTH_TOKEN_SECRET}
