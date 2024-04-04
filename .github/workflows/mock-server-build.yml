@@ -37,4 +37,4 @@ jobs:
       dist-path: build
       artifact-prefix: mock-server-prod
       run-lint: true
-      build-command: "npm run build:dev"
+      build-command: "npm run build"
