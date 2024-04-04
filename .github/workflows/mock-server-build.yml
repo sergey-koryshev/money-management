@@ -16,13 +16,25 @@ on:
       - mock-server/**
 
 jobs:
-  build:
+  dev-build:
     if: ${{ github.event_name == 'pull_request' || github.event.workflow_run.conclusion == 'success' }}
-    name: Mock Server Build
+    name: Mock Server Dev Build
     uses: ./.github/workflows/build.yml
     with:
       node-version: 16.x
       root-path: mock-server
       dist-path: build
-      artifact-prefix: mock-server
+      artifact-prefix: mock-server-dev
       run-lint: true
+      build-command: "npm run build:dev"
+  prod-build:
+    if: ${{ github.event_name == 'pull_request' || github.event.workflow_run.conclusion == 'success' }}
+    name: Mock Server Prod Build
+    uses: ./.github/workflows/build.yml
+    with:
+      node-version: 16.x
+      root-path: mock-server
+      dist-path: build
+      artifact-prefix: mock-server-prod
+      run-lint: true
+      build-command: "npm run build:dev"
