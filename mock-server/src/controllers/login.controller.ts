@@ -1,6 +1,6 @@
 import * as jwt from 'jsonwebtoken'
 import { Request, Response } from 'express';
-import { compareSync, hashSync } from 'bcrypt';
+import { compareSync, hashSync } from 'bcryptjs';
 import { ControllerBase } from './controller-base';
 
 export class LoginController extends ControllerBase {
