@@ -4,10 +4,14 @@ Money Management is a web application which helps to manage personal finances. T
 
 ## Main Features of POC
 
-- managing incomes/outcomes: adding, editing, deleting
-- displaying incomes/outcomes for selected month
-- specifying expenses with any currency
-- ability to convert all expenses in one currency automatically
+- managing expenses: add, edit, delete
+- displaying expenses for selected month
+- support for different currencies
+- ability to convert all expenses' currencies to one currency
+- displaying total amount of spent money for selected month
+- searching through expenses
+- connecting with another users
+- sharing expenses with connected users
 
 ## POC structure
 
@@ -68,14 +72,21 @@ Result build can be found under `mock-server/build`
 
 ### Local Deployment
 
-To serve the application locally you need to start `Mock Server` firstly
+To serve the application locally you need to start `Mock Server` firstly.
+It requires to have `.env` file in mock-server's folder with following values:
+
+```
+PORT=3000
+AUTH_TOKEN_SECRET=...
+```
+
+Then you can start mock server by following (in mock-server folder):
 
 ```bash
-cd mock-server
 npm run start
 ```
 
-And then start `Money Management` application
+And after that you can start `Money Management` application by this command (in root folder):
 
 ```bash
 npm run start
