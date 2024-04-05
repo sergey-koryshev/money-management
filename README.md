@@ -73,9 +73,10 @@ Result build can be found under `mock-server/build`
 ### Local Deployment
 
 To serve the application locally you need to start `Mock Server` firstly.
-It requires to have `.env` file in mock-server's folder with following values:
+Make sure there is `.env` file in mock-server's folder or your environment has following values:
 
 ```
+ORIGIN=http://localhost:4200
 PORT=3000
 AUTH_TOKEN_SECRET=...
 ```
@@ -93,3 +94,24 @@ npm run start
 ```
 
 Application will be available under `http://localhost:4200/`
+
+#### Docker
+
+Dockerfiles are available for both mock-server and angular application. You can run them separately:
+
+```
+docker build -t money-management .
+docker run money-management:latest
+```
+
+```
+docker build -t mock-server .
+docker run --env-file .env mock-server:latest
+```
+
+Or as alternative, you can run whole project via `docker-compose`:
+
+```
+docker-compose --env-file ./mock-server/.env build
+docker-compose --env-file ./mock-server/.env up
+```

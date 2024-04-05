@@ -26,7 +26,7 @@ const loginRouter = new LoginRouter(LoginController, dataContext);
 const userConnectionsRouter = new UserConnectionRouter(UserConnectionsController, dataContext);
 
 server.use(cors({
-  origin: ['http://localhost:4200'],
+  origin: process.env.ORIGIN,
   credentials: true
 }));
 server.use(express.json());
