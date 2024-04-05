@@ -8,9 +8,11 @@ services:
       - '4200:80'
 
   backend:
-    env_file:
-      - ./mock-server/.env
     container_name: money-mamagement-backend
     build: ./mock-server
     ports:
-      - '3000:3000'
+      - '3000:${PORT}'
+    environment:
+      - ORIGIN=${ORIGIN}
+      - PORT=${PORT}
+      - AUTH_TOKEN_SECRET=${AUTH_TOKEN_SECRET}
