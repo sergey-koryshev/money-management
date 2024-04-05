@@ -13,5 +13,6 @@ services:
     ports:
       - '3000:${PORT}'
     environment:
+      - ORIGIN=${ORIGIN}
       - PORT=${PORT}
       - AUTH_TOKEN_SECRET=${AUTH_TOKEN_SECRET}
