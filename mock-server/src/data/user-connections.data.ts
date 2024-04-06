@@ -62,19 +62,5 @@ export const userConnections: UserConnectionEntity[] = [
     requestDate: new Date('2024-01-01 00:01:08'),
     accepted: true,
     acceptDate: new Date('2024-01-10 00:18:42')
-  },
-  {
-    id: 2,
-    requestorUserId: 2,
-    targetUserId: 3,
-    requestDate: new Date('2024-01-01 05:01:08'),
-    accepted: false
-  },
-  {
-    id: 3,
-    requestorUserId: 1,
-    targetUserId: 3,
-    requestDate: new Date('2024-01-01 12:01:08'),
-    accepted: false
   }
 ];
