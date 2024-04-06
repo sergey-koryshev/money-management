@@ -1,10 +1,10 @@
-name: Mock Server Build
+name: Frontend Build
 
-run-name: Mock Server Build @${{ github.sha }}
+run-name: Frontend Build @${{ github.sha }}
 
 on:
   workflow_run:
-    workflows: [Create MockServer Version Label]
+    workflows: [Create Frontend Version Label]
     types:
       - completed
     branches:
@@ -13,28 +13,28 @@ on:
     branches:
       - master
     paths:
-      - sources/mock-server/**
+      - sources/frontend/**
 
 jobs:
   dev-build:
     if: ${{ github.event_name == 'pull_request' || github.event.workflow_run.conclusion == 'success' }}
-    name: Mock Server Dev Build
+    name: Frontend Dev Build
     uses: ./.github/workflows/build.yml
     with:
       node-version: 16.x
-      root-path: sources/mock-server
-      dist-path: build
-      artifact-prefix: mock-server-dev
+      root-path: sources/frontend
+      dist-path: dist/money-management
+      artifact-prefix: frontend-dev
       run-lint: true
       build-command: "npm run build:dev"
   prod-build:
     if: ${{ github.event_name == 'pull_request' || github.event.workflow_run.conclusion == 'success' }}
-    name: Mock Server Prod Build
+    name: Frontend Prod Build
     uses: ./.github/workflows/build.yml
     with:
       node-version: 16.x
-      root-path: sources/mock-server
-      dist-path: build
-      artifact-prefix: mock-server-prod
+      root-path: sources/frontend
+      dist-path: dist/money-management
+      artifact-prefix: frontend-prod
       run-lint: true
       build-command: "npm run build"

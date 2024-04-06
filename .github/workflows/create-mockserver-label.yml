@@ -8,7 +8,7 @@ on:
     branches:
       - master
     paths:
-      - mock-server/**
+      - sources/mock-server/**
 
 jobs:
   create_label:
@@ -18,5 +18,4 @@ jobs:
       REPO_TOKEN: ${{ secrets.REPO_PAT }}
     with:
       app-name: mock-server
-      skip-tag: true
-      root-path: mock-server
+      root-path: sources/mock-server
