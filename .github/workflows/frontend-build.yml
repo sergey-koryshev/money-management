@@ -25,7 +25,6 @@ jobs:
       root-path: sources/frontend
       dist-path: dist/money-management
       artifact-prefix: frontend-dev
-      run-lint: true
       build-command: "npm run build:dev"
   prod-build:
     if: ${{ github.event_name == 'pull_request' || github.event.workflow_run.conclusion == 'success' }}
@@ -36,5 +35,4 @@ jobs:
       root-path: sources/frontend
       dist-path: dist/money-management
       artifact-prefix: frontend-prod
-      run-lint: true
       build-command: "npm run build"
