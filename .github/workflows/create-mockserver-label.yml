@@ -18,4 +18,5 @@ jobs:
       REPO_TOKEN: ${{ secrets.REPO_PAT }}
     with:
       app-name: mock-server
+      skip-tag: true
       root-path: source/mock-server
