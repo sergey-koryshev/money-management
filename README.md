@@ -20,8 +20,8 @@ Frontend of `POC` version is developed on `Angular 14` framework relying on `Boo
 Folders description:
 
 - `build` - contains infrastructure scripts and tools
-- `mock-server` - contains source of mock server
-- `src` - contains source of the `Money Management` web-application
+- `source\mock-server` - contains source of the mock server
+- `source\frontend` - contains source of the frontend part
 
 ## Development
 
@@ -29,7 +29,7 @@ Folders description:
 
 Semantic versioning is used in both `MM` application and `Mock Server`. Follow rules are applied for both projects:
 
-- Major version is always `0` for `POC`
+- Major version is always `0` for `POC` and `MVP`
 - Any non-infrastructure pull request increases `patch` number
 - Release process increases `minor` number and zeroes `patch` version
 
@@ -39,7 +39,7 @@ Changing version directly in code is not allowed. It happens automatically durin
 
 All changes must be submitted via `PR` with all checks passed. Every `PR` must contains at least one label from following:
 
-- `breaking changes` - increments major number
+- `breaking changes` - increments minor number
 - `enchantment` - increments patch number
 - `minor enchantment` - increments patch number
 - `bug` - increments patch number
@@ -47,28 +47,29 @@ All changes must be submitted via `PR` with all checks passed. Every `PR` must c
 
 ### Build
 
-#### Money Management app
+#### Frontend
 
-To build `Money Management` app, follow commands must be run:
+To build frontend part, follow commands must be run:
 
 ```bash
+cd source/frontend
 npm ci
 npm run build
 ```
 
-Result build can be found under `dist/money-management`
+Result build can be found under `source/frontend/dist/money-management`
 
 #### Mock Server
 
 To build `Mock Server`, follow commands must be run:
 
 ```bash
-cd mock-server
+cd source/mock-server
 npm ci
 npm run build
 ```
 
-Result build can be found under `mock-server/build`
+Result build can be found under `source/mock-server/build`
 
 ### Local Deployment
 
@@ -87,7 +88,7 @@ Then you can start mock server by following (in mock-server folder):
 npm run start
 ```
 
-And after that you can start `Money Management` application by this command (in root folder):
+And after that you can start frontend by this command (in root folder):
 
 ```bash
 npm run start
@@ -100,8 +101,8 @@ Application will be available under `http://localhost:4200/`
 Dockerfiles are available for both mock-server and angular application. You can run them separately:
 
 ```
-docker build -t money-management .
-docker run money-management:latest
+docker build -t frontend .
+docker run frontend:latest
 ```
 
 ```
@@ -112,6 +113,6 @@ docker run --env-file .env mock-server:latest
 Or as alternative, you can run whole project via `docker-compose`:
 
 ```
-docker-compose --env-file ./mock-server/.env build
-docker-compose --env-file ./mock-server/.env up
+docker-compose --env-file ./source/mock-server/.env build
+docker-compose --env-file ./source/mock-server/.env up
 ```

@@ -1,4 +1,4 @@
-import { ExpensesHttpClientService } from './../../http-clients/expenses-http-client.service';
+import { ExpensesHttpClientService } from '../../http-clients/expenses-http-client.service';
 import { Injectable } from '@angular/core';
 import { Resolve } from '@angular/router';
 import { Expense } from '@app/models/expense.model';

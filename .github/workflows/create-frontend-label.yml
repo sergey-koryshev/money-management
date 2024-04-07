@@ -1,4 +1,4 @@
-name: Create App Version Label
+name: Create Frontend Version Label
 
 concurrency: versioning
 
@@ -7,10 +7,8 @@ on:
   push:
     branches:
       - master
-    paths-ignore:
-      - .github/**
-      - mock-server/**
-      - '*.md'
+    paths:
+      - source/frontend/**
 
 jobs:
   create_label:
@@ -19,4 +17,5 @@ jobs:
     secrets:
       REPO_TOKEN: ${{ secrets.REPO_PAT }}
     with:
-      app-name: application
+      app-name: frontend
+      root-path: source/frontend

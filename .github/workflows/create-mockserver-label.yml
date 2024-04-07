@@ -8,7 +8,7 @@ on:
     branches:
       - master
     paths:
-      - mock-server/**
+      - source/mock-server/**
 
 jobs:
   create_label:
@@ -19,4 +19,4 @@ jobs:
     with:
       app-name: mock-server
       skip-tag: true
-      root-path: mock-server
+      root-path: source/mock-server

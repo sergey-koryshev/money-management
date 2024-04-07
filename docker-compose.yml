@@ -3,13 +3,13 @@ version: '2'
 services:
   frontend:
     container_name: money-mamagement-frontend
-    build: .
+    build: ./source/frontend
     ports:
       - '4200:80'
 
   backend:
     container_name: money-mamagement-backend
-    build: ./mock-server
+    build: ./source/mock-server
     ports:
       - '3000:${PORT}'
     environment:

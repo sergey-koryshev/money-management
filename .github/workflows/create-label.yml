@@ -46,8 +46,8 @@ jobs:
           if ($pullRequestId) {
             $labels = . (Join-Path $scriptsPath "Get-Labels.ps1") -PullRequestId $pullRequestId -Owner $splitRepositoryName[0] -Repository $splitRepositoryName[1]
             if ($labels -contains "breaking changes") {
-              $incrementMajor = $true;
-              $incrementMinor = $false;
+              $incrementMajor = $false;
+              $incrementMinor = $true;
               $incrementBuildNumber = $false;
             }
             if ($labels -contains "enhancement") {
