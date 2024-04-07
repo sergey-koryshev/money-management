@@ -13,7 +13,7 @@ on:
     branches:
       - master
     paths:
-      - sources/frontend/**
+      - source/frontend/**
 
 jobs:
   dev-build:
@@ -22,7 +22,7 @@ jobs:
     uses: ./.github/workflows/build.yml
     with:
       node-version: 16.x
-      root-path: sources/frontend
+      root-path: source/frontend
       dist-path: dist/money-management
       artifact-prefix: frontend-dev
       build-command: "npm run build:dev"
@@ -32,7 +32,7 @@ jobs:
     uses: ./.github/workflows/build.yml
     with:
       node-version: 16.x
-      root-path: sources/frontend
+      root-path: source/frontend
       dist-path: dist/money-management
       artifact-prefix: frontend-prod
       build-command: "npm run build"
