@@ -19,7 +19,7 @@ jobs:
   dev-build:
     if: ${{ github.event_name == 'pull_request' || github.event.workflow_run.conclusion == 'success' }}
     name: Frontend Dev Build
-    uses: ./.github/workflows/build.yml
+    uses: ./.github/workflows/node-build.yml
     with:
       node-version: 16.x
       root-path: source/frontend
@@ -29,7 +29,7 @@ jobs:
   prod-build:
     if: ${{ github.event_name == 'pull_request' || github.event.workflow_run.conclusion == 'success' }}
     name: Frontend Prod Build
-    uses: ./.github/workflows/build.yml
+    uses: ./.github/workflows/node-build.yml
     with:
       node-version: 16.x
       root-path: source/frontend

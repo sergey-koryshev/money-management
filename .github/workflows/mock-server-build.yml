@@ -19,7 +19,7 @@ jobs:
   dev-build:
     if: ${{ github.event_name == 'pull_request' || github.event.workflow_run.conclusion == 'success' }}
     name: Mock Server Dev Build
-    uses: ./.github/workflows/build.yml
+    uses: ./.github/workflows/node-build.yml
     with:
       node-version: 16.x
       root-path: source/mock-server
@@ -30,7 +30,7 @@ jobs:
   prod-build:
     if: ${{ github.event_name == 'pull_request' || github.event.workflow_run.conclusion == 'success' }}
     name: Mock Server Prod Build
-    uses: ./.github/workflows/build.yml
+    uses: ./.github/workflows/node-build.yml
     with:
       node-version: 16.x
       root-path: source/mock-server
