@@ -9,10 +9,6 @@ on:
       solution-path:
         required: true
         type: string
-      build-path:
-        required: false
-        type: string
-        default: .
       root-path:
         required: false
         type: string
@@ -36,4 +32,4 @@ jobs:
         with:
           dotnet-version: ${{ inputs.dotnet-version }}
       - name: Build
-        run: dotnet build ${{ inputs.solution-path }} -c ${{ inputs.build-configuration }} -o ${{ inputs.build-path }}
+        run: dotnet build ${{ inputs.solution-path }} -c ${{ inputs.build-configuration }}

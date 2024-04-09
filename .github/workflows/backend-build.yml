@@ -22,17 +22,15 @@ jobs:
     uses: ./.github/workflows/dotnet-build.yml
     with:
       root-path: source/backend
-      dotnet-version: 7.0
+      dotnet-version: 7.0.x
       solution-path: Backend.sln
       build-configuration: Debug
-      build-path: app
   release-build:
     if: ${{ github.event_name == 'pull_request' || github.event.workflow_run.conclusion == 'success' }}
     name: Backend Release Build
     uses: ./.github/workflows/dotnet-build.yml
     with:
       root-path: source/backend
-      dotnet-version: 7.0
+      dotnet-version: 7.0.x
       solution-path: Backend.sln
       build-configuration: Release
-      build-path: app
