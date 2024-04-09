@@ -1,0 +1,38 @@
+name: Backend Build
+
+run-name: Backend Build @${{ github.sha }}
+
+on:
+  workflow_run:
+    workflows: [Create Backend Version Label]
+    types:
+      - completed
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+    paths:
+      - source/backend/**
+
+jobs:
+  debug-build:
+    if: ${{ github.event_name == 'pull_request' || github.event.workflow_run.conclusion == 'success' }}
+    name: Backend Debug Build
+    uses: ./.github/workflows/dotnet-build.yml
+    with:
+      root-path: source/backend
+      dotnet-version: 7.0
+      solution-path: Backend.sln
+      build-configuration: Debug
+      build-path: app
+  release-build:
+    if: ${{ github.event_name == 'pull_request' || github.event.workflow_run.conclusion == 'success' }}
+    name: Backend Release Build
+    uses: ./.github/workflows/dotnet-build.yml
+    with:
+      root-path: source/backend
+      dotnet-version: 7.0
+      solution-path: Backend.sln
+      build-configuration: Release
+      build-path: app
