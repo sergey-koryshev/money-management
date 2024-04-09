@@ -7,8 +7,8 @@ services:
     ports:
       - '4200:80'
 
-  backend:
-    container_name: money-mamagement-backend
+  mock-server:
+    container_name: money-mamagement-mock-server
     build: ./source/mock-server
     ports:
       - '3000:${PORT}'
@@ -16,3 +16,9 @@ services:
       - ORIGIN=${ORIGIN}
       - PORT=${PORT}
       - AUTH_TOKEN_SECRET=${AUTH_TOKEN_SECRET}
+
+  backend:
+    container_name: money-mamagement-backend
+    build: ./source/backend
+    ports:
+      - '9000:80'
