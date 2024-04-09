@@ -1,6 +1,6 @@
 # Money Management
 
-Money Management is a web application which helps to manage personal finances. The project is in `POC` state
+Money Management is a web application which helps to manage personal finances. The project is in `MVP` state
 
 ## Main Features of POC
 
@@ -13,15 +13,21 @@ Money Management is a web application which helps to manage personal finances. T
 - connecting with another users
 - sharing expenses with connected users
 
-## POC structure
+## Main features of MVP
 
-Frontend of `POC` version is developed on `Angular 14` framework relying on `Bootstrap`. To emulate backend, simple server based on `Express.js` is used.
+- all data is stored in DB
+- frontend interacts with real backend, mock-server is not used anymore
+
+## Folder structure
+
+Frontend is developing on `Angular 14` framework relying on `Bootstrap`. To emulate backend, simple server based on `Express.js` is used. Real backend is developing on `dotnet` platform using `.NET WebApi`.
 
 Folders description:
 
 - `build` - contains infrastructure scripts and tools
 - `source\mock-server` - contains source of the mock server
 - `source\frontend` - contains source of the frontend part
+- `source\backend` - contains source of the backend part
 
 ## Development
 
@@ -71,10 +77,24 @@ npm run build
 
 Result build can be found under `source/mock-server/build`
 
+#### Backend
+
+To build `Backend`, follow commands must be run:
+
+```bash
+cd source/backend
+dotnet build "Backend.sln" -c Debug
+```
+
+Result build can be found under `source/backend/Backend.WebApi/bin`
+
 ### Local Deployment
 
-To serve the application locally you need to start `Mock Server` firstly.
-Make sure there is `.env` file in mock-server's folder or your environment has following values:
+Since the project separated to three parts, to correct work, you need to deploy each of these parts.
+
+First of all, you need to deploy `Mock Server` and `Backend`.
+
+Make sure there is `.env` file in `Mock server`'s folder or your environment has following variables set:
 
 ```
 ORIGIN=http://localhost:4200
@@ -82,35 +102,57 @@ PORT=3000
 AUTH_TOKEN_SECRET=...
 ```
 
-Then you can start mock server by following (in mock-server folder):
+Then you can start mock server by following commands:
 
 ```bash
+cd source/mock-server
 npm run start
 ```
 
-And after that you can start frontend by this command (in root folder):
+And start backend by commands below:
 
 ```bash
+cd source/backend
+dotnet run Backend.sln -c Development
+```
+
+They will be available under http://localhost:4200 and http://localhost:5161 respectfully.
+
+Once they are started, you can start `Frontend` by the following commands:
+
+```bash
+cd source/frontend
 npm run start
 ```
 
-Application will be available under `http://localhost:4200/`
+It will be available under `http://localhost:4200/`
 
 #### Docker
 
-Dockerfiles are available for both mock-server and angular application. You can run them separately:
+As alternative, you can use docker to deploy the project, following the commands below:
+
+Mock Server:
+
+```
+docker build -t mock-server .
+docker run -p 3000:3000 --env-file .env mock-server:latest
+```
+
+Backend:
+
+```
+docker build -t backend .
+docker run -p 5161:80 backend:latest
+```
+
+Frontend:
 
 ```
 docker build -t frontend .
 docker run frontend:latest
 ```
 
-```
-docker build -t mock-server .
-docker run --env-file .env mock-server:latest
-```
-
-Or as alternative, you can run whole project via `docker-compose`:
+Or just deploy whole project via `docker-compose`:
 
 ```
 docker-compose --env-file ./source/mock-server/.env build
