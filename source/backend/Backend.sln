@@ -24,6 +24,5 @@ Global
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		description = Backend for Money Management application
-		version = 0.1.0
 	EndGlobalSection
 EndGlobal
