@@ -20,6 +20,6 @@ jobs:
       app-name: backend
       root-path: source/backend
       project-type: Custom
-      posh-custom-module-path: ../../build/WebApiIncrementVersionHelper.psm1
+      posh-custom-module-path: build/WebApiIncrementVersionHelper.psm1
       version-configuration-path: source/backend/version-configuration.json
       scripts-ref: 796e60e68ffd38b05f0bfc97a41d5094bac602fd
