@@ -13,13 +13,13 @@ on:
 jobs:
   create_label:
     name: Create Version Label
-    uses: sergey-koryshev/build-system/.github/workflows/create-version-label.yml@version-helper-v1.2.1
+    uses: sergey-koryshev/build-system/.github/workflows/create-version-label.yml@9013968c56f9d3aa018db9c221283afb9cab9830
     secrets:
       REPO_TOKEN: ${{ secrets.REPO_PAT }}
     with:
       app-name: backend
       root-path: source/backend
       project-type: Custom
-      posh-custom-module-path: ${{ github.workspace }}/build/WebApiIncrementVersionHelper.psm1
+      posh-custom-module-path: ../../build/WebApiIncrementVersionHelper.psm1
       version-configuration-path: source/backend/version-configuration.json
-      scripts-ref: version-helper-v1.2.1
+      scripts-ref: 9013968c56f9d3aa018db9c221283afb9cab9830
