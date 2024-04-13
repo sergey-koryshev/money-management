@@ -16,6 +16,13 @@ on:
       - source/backend/**
 
 jobs:
+  label_check:
+    if: ${{ github.event_name == 'pull_request' }}
+    name: Pull Request Label Checker
+    uses: sergey-koryshev/build-system/.github/workflows/pr-label-checker.yml@version-helper-v1.2.0
+    with:
+      version-configuration-path: source/backend/version-configuration.json
+      scripts-ref: version-helper-v1.2.0
   debug-build:
     if: ${{ github.event_name == 'pull_request' || github.event.workflow_run.conclusion == 'success' }}
     name: Backend Debug Build

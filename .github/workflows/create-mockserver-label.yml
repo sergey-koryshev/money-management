@@ -12,11 +12,13 @@ on:
 
 jobs:
   create_label:
-    name: Create App Version Label
-    uses: ./.github/workflows/create-label.yml
+    name: Create Version Label
+    uses: sergey-koryshev/build-system/.github/workflows/create-version-label.yml@version-helper-v1.2.0
     secrets:
       REPO_TOKEN: ${{ secrets.REPO_PAT }}
     with:
       app-name: mock-server
-      skip-tag: true
       root-path: source/mock-server
+      project-type: Node
+      version-configuration-path: source/mock-server/version-configuration.json
+      scripts-ref: version-helper-v1.2.0

@@ -1,0 +1,7 @@
+{
+  "breaking changes": ["Minor"],
+  "enchantment": ["Patch"],
+  "minor enchantment": ["Patch"],
+  "bug": ["Patch"],
+  "misc": ["Patch"]
+}

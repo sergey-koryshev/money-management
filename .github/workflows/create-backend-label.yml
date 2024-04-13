@@ -1,4 +1,4 @@
-name: Create Frontend Version Label
+name: Create Backend Version Label
 
 concurrency: versioning
 
@@ -8,7 +8,7 @@ on:
     branches:
       - master
     paths:
-      - source/frontend/**
+      - source/backend/**
 
 jobs:
   create_label:
@@ -17,8 +17,9 @@ jobs:
     secrets:
       REPO_TOKEN: ${{ secrets.REPO_PAT }}
     with:
-      app-name: frontend
-      root-path: source/frontend
-      project-type: Node
-      version-configuration-path: source/mock-server/version-configuration.json
+      app-name: backend
+      root-path: source/backend
+      project-type: Custom
+      posh-custom-module-path: ${{ github.workspace }}/build/WebApiIncrementVersionHelper.psm1
+      version-configuration-path: source/backend/version-configuration.json
       scripts-ref: version-helper-v1.2.0
