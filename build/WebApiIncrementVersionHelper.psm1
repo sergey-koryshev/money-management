@@ -1,3 +1,7 @@
+<#
+The module contains logic to increment version in .NET Web API project
+#>
+
 $script:webApiVersionFileName = "Directory.Build.props"
 $script:versionXPath = "/Project/PropertyGroup/Version"
 
