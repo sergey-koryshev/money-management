@@ -1,7 +1,7 @@
 {
   "breaking changes": ["Minor"],
-  "enchantment": ["Patch"],
-  "minor enchantment": ["Patch"],
+  "enhancement": ["Patch"],
+  "minor enhancement": ["Patch"],
   "bug": ["Patch"],
   "misc": ["Patch"]
 }
