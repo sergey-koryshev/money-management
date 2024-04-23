@@ -21,7 +21,7 @@ services:
     container_name: money-mamagement-backend
     build: ./source/backend
     ports:
-      - '9000:80'
+      - '5161:80'
 
   db:
     container_name: backend-db
