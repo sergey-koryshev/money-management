@@ -1,5 +1,5 @@
 <form class="row align-items-center" [formGroup]="form" (ngSubmit)="onSubmit()">
-  <label *ngIf="error" class="text-center text-danger mb-3">{{ error }}</label>
+  <label *ngIf="error" class="text-center text-danger mb-3 error-block">{{ error }}</label>
   <div class="input-group mb-3">
     <span class="input-group-text">
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
