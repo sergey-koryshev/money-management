@@ -10,13 +10,13 @@ export class LoginHttpClient {
   constructor(private baseHttpClient: BaseHttpClientService) { }
 
   login(email: string, password: string) {
-    return this.baseHttpClient.post<User>('auth/signin', {
-      email,
+    return this.baseHttpClient.post<User>('authentication/login', {
+      userName: email,
       password
     });
   }
 
   logout() {
-    return this.baseHttpClient.post<void>('auth/signout');
+    return this.baseHttpClient.post<void>('authentication/logout');
   }
 }
