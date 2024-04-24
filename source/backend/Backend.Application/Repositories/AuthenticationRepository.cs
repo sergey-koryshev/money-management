@@ -41,7 +41,8 @@ public class AuthenticationRepository
         {
             Id = user.Id,
             FirstName = user.FirstName,
-            SecondName = user.SecondName
+            SecondName = user.SecondName,
+            Tenant = user.Tenant
         };
     }
 }

@@ -1,10 +1,11 @@
 ﻿namespace Backend.Infrastructure;
 
 using Backend.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-public class AppDbContext : IdentityUserContext<User>
+public class AppDbContext : IdentityUserContext<User, int>
 {
     public AppDbContext(DbContextOptions<AppDbContext> options): base(options)
     {
@@ -18,9 +19,10 @@ public class AppDbContext : IdentityUserContext<User>
         builder.Entity<User>().HasData(
             new User
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = 1,
                 FirstName = "User",
                 SecondName = "1",
+                Tenant = new Guid("22a11263-56da-4327-98b7-f99d6591ac3c"),
                 UserName = "user1@test.com",
                 NormalizedUserName = "user1@test.com".ToUpper(),
                 Email = "user1@test.com",
@@ -34,9 +36,10 @@ public class AppDbContext : IdentityUserContext<User>
             },
             new User
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = 2,
                 FirstName = "User",
                 SecondName = "2",
+                Tenant = new Guid("f1d4515b-f201-4696-86b8-3580ad740ada"),
                 UserName = "user2@test.com",
                 NormalizedUserName = "user2@test.com".ToUpper(),
                 Email = "user2@test.com",
@@ -50,9 +53,10 @@ public class AppDbContext : IdentityUserContext<User>
             },
             new User
             {
-                Id = Guid.NewGuid().ToString(),
+                Id = 3,
                 FirstName = "User",
                 SecondName = "3",
+                Tenant = new Guid("f1d4515b-f201-4696-86b8-3080ad740ada"),
                 UserName = "user3@test.com",
                 NormalizedUserName = "user3@test.com".ToUpper(),
                 Email = "user3@test.com",

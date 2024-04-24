@@ -47,7 +47,7 @@ public class AuthenticationController : ControllerBase
     {
         var claims = new[]
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user?.Id!),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Tenant.ToString()),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
