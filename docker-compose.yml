@@ -30,6 +30,7 @@ services:
     ports:
       - '5161:80'
     depends_on:
+      - backend-migrations
       - backend-db
 
   backend-migrations:
