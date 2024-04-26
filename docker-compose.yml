@@ -1,4 +1,4 @@
-version: '2'
+version: '3.5'
 
 services:
   frontend:
@@ -6,6 +6,9 @@ services:
     build: ./source/frontend
     ports:
       - '4200:80'
+    depends_on:
+        - mock-server
+        - backend
 
   mock-server:
     container_name: money-mamagement-mock-server
@@ -19,14 +22,29 @@ services:
 
   backend:
     container_name: money-mamagement-backend
-    build: ./source/backend
+    build:
+      context: ./source/backend
+      dockerfile: Dockerfile
+      args:
+          ENV_TYPE: DockerCompose
     ports:
       - '5161:80'
+    depends_on:
+      - backend-db
 
-  db:
+  backend-migrations:
+    container_name: backend-migrations
+    build:
+      context: ./source/backend
+      dockerfile: DockerfileMigrations
+      args:
+          ENV_TYPE: DockerCompose
+    depends_on:
+      - backend-db
+
+  backend-db:
     container_name: backend-db
     image: postgres:16.2
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: DrOid-R2D2
-      POSTGRES_DB: mm-dev
