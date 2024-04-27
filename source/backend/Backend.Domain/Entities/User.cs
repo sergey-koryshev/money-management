@@ -1,5 +1,4 @@
-﻿
-namespace Backend.Domain.Entities;
+﻿namespace Backend.Domain.Entities;
 
 using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations.Schema;
