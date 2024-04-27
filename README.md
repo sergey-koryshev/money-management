@@ -127,6 +127,14 @@ npm run start
 
 It will be available under `http://localhost:4200/`
 
+#### Database
+
+You need to have deployed DB locally. Currently backend uses `Postgres 16.2`. To apply DB migrations, you nee to run the following command: 
+
+```bash
+dotnet-ef database update --project Backend.Infrastructure --startup-project Backend.WebApi
+```
+
 #### Docker
 
 As alternative, you can use docker to deploy the project, following the commands below:

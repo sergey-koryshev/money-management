@@ -2,17 +2,25 @@ import { environment } from '@environments/environment';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 import { BaseApiResponse } from '@models/base.model';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
+
+interface Endpoint {
+  type: 'GET' | 'POST' | 'DELETE' | 'PUT'
+  path: string
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class BaseHttpClientService {
   private readonly baseUrl = environment.baseApiUri;
+  private readonly mockServerBaseUrl = environment.mockServerUri;
   private readonly defaultHeaders = {
     'Content-Type': 'application/json'
   }
+
+  public migratedEndpoints: Endpoint[] = [];
 
   constructor(private httpClient: HttpClient) {}
 
@@ -31,7 +39,7 @@ export class BaseHttpClientService {
           [header: string]: string | string[];
       }
   ): Observable<T> {
-    const fullUrl = `${this.baseUrl}/${endpointPath}`;
+    const fullUrl = this.getFullEndpointUrl('GET', endpointPath);
     const fullHeaders = headers ? {...this.defaultHeaders, ...headers} : this.defaultHeaders
 
     return this.httpClient
@@ -58,7 +66,7 @@ export class BaseHttpClientService {
           [header: string]: string | string[];
       }
   ): Observable<T> {
-    const fullUrl = `${this.baseUrl}/${endpointPath}`;
+    const fullUrl = this.getFullEndpointUrl('POST', endpointPath);
     const fullHeaders = headers ? {...this.defaultHeaders, ...headers} : this.defaultHeaders
 
     return this.httpClient
@@ -84,7 +92,7 @@ export class BaseHttpClientService {
           [header: string]: string | string[];
       }
   ): Observable<T> {
-    const fullUrl = `${this.baseUrl}/${endpointPath}`;
+    const fullUrl = this.getFullEndpointUrl('DELETE', endpointPath);
     const fullHeaders = headers ? {...this.defaultHeaders, ...headers} : this.defaultHeaders
 
     return this.httpClient
@@ -111,7 +119,7 @@ export class BaseHttpClientService {
           [header: string]: string | string[];
       }
   ): Observable<T> {
-    const fullUrl = `${this.baseUrl}/${endpointPath}`;
+    const fullUrl = this.getFullEndpointUrl('PUT', endpointPath);
     const fullHeaders = headers ? {...this.defaultHeaders, ...headers} : this.defaultHeaders
 
     return this.httpClient
@@ -120,5 +128,10 @@ export class BaseHttpClientService {
         params,
       })
       .pipe(map((response: BaseApiResponse<T>) => response?.data));
+  }
+
+  getFullEndpointUrl(type: string, path: string) {
+    const isEndpointMigrated = this.migratedEndpoints.find((e) => e.path === path && e.type === type) != null;
+    return `${isEndpointMigrated ? this.baseUrl : this.mockServerBaseUrl}/${path}`;
   }
 }

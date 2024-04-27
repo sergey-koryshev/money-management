@@ -4,8 +4,9 @@ COPY . .
 RUN dotnet build "Backend.sln" -c Debug
 
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
+ARG ENV_TYPE=Docker
+ENV ASPNETCORE_ENVIRONMENT=${ENV_TYPE}
 WORKDIR /app
 COPY --from=build /src/Backend.WebApi/bin/Debug/net7.0 .
-ENV ASPNETCORE_ENVIRONMENT=Development
 EXPOSE 80
 ENTRYPOINT ["dotnet", "Backend.WebApi.dll"]

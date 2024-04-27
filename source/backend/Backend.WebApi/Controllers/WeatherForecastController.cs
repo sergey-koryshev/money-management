@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿namespace Backend.WebApi.Controllers;
 
-namespace Backend.WebApi.Controllers;
+using Microsoft.AspNetCore.Mvc;
+
 
 [ApiController]
 [Route("[controller]")]
