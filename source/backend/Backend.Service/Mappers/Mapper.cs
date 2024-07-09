@@ -8,6 +8,7 @@ public class Mapper : Profile
 {
     public Mapper()
     {
-        CreateMap<UserModel, UserDto>();
+        CreateMap<Person, PersonDto>();
+        CreateMap<Category, CategoryDto>();
     }
 }
