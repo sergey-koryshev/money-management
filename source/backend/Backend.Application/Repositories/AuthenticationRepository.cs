@@ -3,33 +3,33 @@
 using Backend.Domain.DTO;
 using Backend.Domain.Entities;
 using Backend.Domain.Models;
+using Backend.Infrastructure;
 using Microsoft.AspNetCore.Identity;
+using Models = Domain.Models;
 
 public class AuthenticationRepository
 {
     private readonly SignInManager<User> signInManager;
     private readonly UserManager<User> userManager;
+    private readonly AppDbContext dbContext;
 
-    public AuthenticationRepository(SignInManager<User> signInManager, UserManager<User> userManager)
-	{
+    public AuthenticationRepository(SignInManager<User> signInManager, UserManager<User> userManager, AppDbContext dbContext)
+    {
         this.signInManager = signInManager;
         this.userManager = userManager;
+        this.dbContext = dbContext;
     }
 
-    public async Task<UserModel> LoginAsync(LoginDto loginData)
+    public async Task<Models.Person> LoginAsync(LoginDto loginData)
     {
-        var user = await this.userManager.FindByNameAsync(loginData.UserName);
+        var user = await this.userManager.FindByNameAsync(loginData.UserName)
+            ?? throw new InvalidOperationException("Invalid credentials.");
 
-        if (user == null)
+        var checkResult = await this.signInManager.CheckPasswordSignInAsync(user, loginData.Password, true);
+
+        if (!checkResult.Succeeded)
         {
-            throw new InvalidOperationException("Invalid credentials.");
-        }
-
-        var result = await this.signInManager.CheckPasswordSignInAsync(user, loginData.Password, true);
-
-        if (!result.Succeeded)
-        {
-            if (result.IsLockedOut)
+            if (checkResult.IsLockedOut)
             {
                 throw new InvalidOperationException("Maximum number of login attempts is reached, please try again later.");
             }
@@ -37,13 +37,10 @@ public class AuthenticationRepository
             throw new InvalidOperationException("Invalid credentials.");
         }
 
-        return new UserModel
-        {
-            Id = user.Id,
-            FirstName = user.FirstName,
-            SecondName = user.SecondName,
-            Tenant = user.Tenant
-        };
+        var person = this.dbContext.Persons.FirstOrDefault(p => p.UserId == user.Id)
+            ?? throw new InvalidOperationException("Please contact administrator to proceed with login process.");
+
+        return person.ToModel();
     }
 }
 

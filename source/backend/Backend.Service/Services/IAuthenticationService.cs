@@ -4,5 +4,5 @@ using Backend.Domain.DTO;
 
 public interface IAuthenticationService
 {
-    public Task<UserDto> LoginAsync(LoginDto loginData);
+    public Task<PersonDto> LoginAsync(LoginDto loginData);
 }
