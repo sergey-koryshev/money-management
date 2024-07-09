@@ -33,7 +33,7 @@ export const users: UserEntity[] = [
   },
   {
     id: 3,
-    tenant: 'f1d4515b-f201-4696-86b8-3080ad740ada',
+    tenant: 'd9993c25-7587-4932-a903-5514aad80735',
     email: 'user3@test.com',
     firstName: 'User',
     secondName: '3',
