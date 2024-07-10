@@ -13,7 +13,7 @@ public class AuthenticationService : IAuthenticationService
     private readonly SignInManager<User> signInManager;
     private readonly UserManager<User> userManager;
     private readonly IMapper mapper;
-    IDbContextFactory<AppDbContext> dbContextFactory;
+    private readonly IDbContextFactory<AppDbContext> dbContextFactory;
 
     public AuthenticationService(SignInManager<User> signInManager, UserManager<User> userManager, IMapper mapper,  IDbContextFactory<AppDbContext> dbContextFactory)
     {

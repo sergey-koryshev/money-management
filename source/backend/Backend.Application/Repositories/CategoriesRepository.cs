@@ -8,7 +8,6 @@ using Entities = Domain.Entities;
 public class CategoriesRepository
 {
     private readonly AppDbContext dbContext;
-
     private readonly Entities.Person identity;
 
     public CategoriesRepository(AppDbContext dbContext, Entities.Person identity)
@@ -54,7 +53,7 @@ public class CategoriesRepository
     {
         if (model.CreatedBy == null)
         {
-            throw new InvalidOperationException("Category must contain a person who created it.");
+            throw new InvalidOperationException("Category must contain a reference to a person who created it.");
         }
 
         if (model.Name == null)
