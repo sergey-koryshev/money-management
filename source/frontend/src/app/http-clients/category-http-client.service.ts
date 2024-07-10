@@ -7,7 +7,12 @@ import { Category } from '@app/models/category.model';
 })
 export class CategoryHttpClient {
 
-  constructor(private baseHttpClient: BaseHttpClientService) { }
+  constructor(private baseHttpClient: BaseHttpClientService) {
+    baseHttpClient.migratedEndpoints.push({
+      type: 'GET',
+      path: 'categories'
+    });
+  }
 
   getAllCategories() {
     return this.baseHttpClient.get<Category[]>('categories');

@@ -22,6 +22,55 @@ namespace Backend.Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Backend.Domain.Entities.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedById");
+
+                    b.ToTable("Categories");
+                });
+
+            modelBuilder.Entity("Backend.Domain.Entities.Person", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("SecondName")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("Tenant")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Persons");
+                });
+
             modelBuilder.Entity("Backend.Domain.Entities.User", b =>
                 {
                     b.Property<int>("Id")
@@ -41,10 +90,6 @@ namespace Backend.Infrastructure.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("text");
-
                     b.Property<bool>("LockoutEnabled")
                         .HasColumnType("boolean");
 
@@ -62,14 +107,8 @@ namespace Backend.Infrastructure.Migrations
                     b.Property<string>("PasswordHash")
                         .HasColumnType("text");
 
-                    b.Property<string>("SecondName")
-                        .HasColumnType("text");
-
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("text");
-
-                    b.Property<Guid>("Tenant")
-                        .HasColumnType("uuid");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
@@ -85,56 +124,21 @@ namespace Backend.Infrastructure.Migrations
                         .HasDatabaseName("UserNameIndex");
 
                     b.ToTable("AspNetUsers", (string)null);
+                });
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "c824a837-3d13-4ffa-9d6f-c9968047e698",
-                            Email = "user1@test.com",
-                            FirstName = "User",
-                            LockoutEnabled = true,
-                            NormalizedEmail = "USER1@TEST.COM",
-                            NormalizedUserName = "USER1@TEST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGKSJpyLst59yBAmt6MXHpND7AhwsDUg4SvlCpkJWRTYcVnz0y1IowRarAAcqh56Dw==",
-                            SecondName = "1",
-                            SecurityStamp = "CMUFAZEZFW52LZORGCWV3KDELEEJ2K5J",
-                            Tenant = new Guid("22a11263-56da-4327-98b7-f99d6591ac3c"),
-                            UserName = "user1@test.com"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "471a9303-4888-482b-abcf-6bce1e025719",
-                            Email = "user2@test.com",
-                            FirstName = "User",
-                            LockoutEnabled = true,
-                            NormalizedEmail = "USER2@TEST.COM",
-                            NormalizedUserName = "USER2@TEST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEAuVFkmqPoNhEDW7Bxsrt8M+16VWYYnMtl47iKZjQccyUyXEIg027L9GVYxN39ekWg==",
-                            SecondName = "2",
-                            SecurityStamp = "EM3VWJZHCPH3MYEINTHQYHVCWEDDYCUV",
-                            Tenant = new Guid("f1d4515b-f201-4696-86b8-3580ad740ada"),
-                            UserName = "user2@test.com"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "1850ad70-8df7-4c8d-9f6b-9c83b2bf6241",
-                            Email = "user3@test.com",
-                            FirstName = "User",
-                            LockoutEnabled = true,
-                            NormalizedEmail = "USER3@TEST.COM",
-                            NormalizedUserName = "USER3@TEST.COM",
-                            PasswordHash = "AQAAAAIAAYagAAAAEGboD1FRWryugI0cZashzY9oX0HbYleTNgDuucjUHATdcsg596/Pvxgta8vgKy+ahw==",
-                            SecondName = "3",
-                            SecurityStamp = "2OCDPDEX2FEYQFBHYR2NPSVUXRJP7NZU",
-                            Tenant = new Guid("f1d4515b-f201-4696-86b8-3080ad740ada"),
-                            UserName = "user3@test.com"
-                        });
+            modelBuilder.Entity("CategoriesToPerson", b =>
+                {
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PersonId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("CategoryId", "PersonId");
+
+                    b.HasIndex("PersonId");
+
+                    b.ToTable("CategoriesToPerson");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
@@ -201,6 +205,32 @@ namespace Backend.Infrastructure.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Backend.Domain.Entities.Category", b =>
+                {
+                    b.HasOne("Backend.Domain.Entities.Person", "CreatedBy")
+                        .WithMany("CreatedCategories")
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CreatedBy");
+                });
+
+            modelBuilder.Entity("CategoriesToPerson", b =>
+                {
+                    b.HasOne("Backend.Domain.Entities.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Domain.Entities.Person", null)
+                        .WithMany()
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
                 {
                     b.HasOne("Backend.Domain.Entities.User", null)
@@ -226,6 +256,11 @@ namespace Backend.Infrastructure.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Backend.Domain.Entities.Person", b =>
+                {
+                    b.Navigation("CreatedCategories");
                 });
 #pragma warning restore 612, 618
         }

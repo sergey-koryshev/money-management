@@ -1,12 +1,12 @@
 ﻿namespace Backend.Domain.DTO;
 
-public class UserDto
+public class PersonDto
 {
-    public required int Id { get; set; }
+    public int Id { get; set; }
 
     public required string FirstName { get; set; }
 
     public required string SecondName { get; set; }
 
-    public required Guid Tenant { get; set; }
+    public Guid Tenant { get; set; }
 }

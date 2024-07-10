@@ -1,8 +1,10 @@
 ﻿using System.Text;
 using Backend.Domain.Entities;
 using Backend.Infrastructure;
+using Backend.Service;
 using Backend.Service.Mappers;
 using Backend.Service.Services;
+using Backend.WebApi;
 using Backend.WebApi.Filters;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -71,6 +73,7 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddAutoMapper(typeof(Mapper));
 
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<ICategoriesService, CategoriesService>();
 
 var app = builder.Build();
 
@@ -84,5 +87,6 @@ app.UseHttpsRedirection();
 app.UseCors("CorsPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<RequestUserIdentityMiddleware>();
 app.MapControllers();
 app.Run();

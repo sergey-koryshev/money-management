@@ -28,10 +28,10 @@ public class AuthenticationController : ControllerBase
     [Route("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto loginDto)
     {
-        var user = await this.authenticationService.LoginAsync(loginDto);
-        var token = this.GenerateJwtToken(user);
+        var person = await this.authenticationService.LoginAsync(loginDto);
+        var token = this.GenerateJwtToken(person);
         Response.Cookies.Append("access_token", new JwtSecurityTokenHandler().WriteToken(token));
-        return new AppActionResult(user);
+        return new AppActionResult(person);
     }
 
     [HttpPost]
@@ -43,11 +43,12 @@ public class AuthenticationController : ControllerBase
         return new AppActionResult();
     }
 
-    private JwtSecurityToken GenerateJwtToken(UserDto user)
+    private JwtSecurityToken GenerateJwtToken(PersonDto person)
     {
         var claims = new[]
         {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Tenant.ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub, person.Id.ToString()),
+            new Claim("user_tenant", person.Tenant.ToString()),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 

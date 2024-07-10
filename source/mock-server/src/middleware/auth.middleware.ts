@@ -16,8 +16,8 @@ export function auth(req: Request, res: Response, next: NextFunction) {
       return res.sendStatus(401);
     }
 
-    const { sub } = decoded as JwtToken
-    req.userTenant = sub;
+    const { user_tenant } = decoded as JwtToken
+    req.userTenant = user_tenant;
 
     next();
   });

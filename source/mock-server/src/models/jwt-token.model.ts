@@ -1,3 +1,3 @@
 export interface JwtToken {
-  sub: string
+  user_tenant: string
 }
