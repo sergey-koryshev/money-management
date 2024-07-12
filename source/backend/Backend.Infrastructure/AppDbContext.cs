@@ -6,9 +6,11 @@ using Microsoft.EntityFrameworkCore;
 
 public class AppDbContext : IdentityUserContext<User, int>
 {
-    public DbSet<Person> Persons { get; set; }
+    public virtual DbSet<Person> Persons { get; set; }
 
-    public DbSet<Category> Categories { get; set; }
+    public virtual DbSet<Category> Categories { get; set; }
+
+    public AppDbContext() {}
 
     public AppDbContext(DbContextOptions<AppDbContext> options): base(options) { }
 
