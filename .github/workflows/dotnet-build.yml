@@ -39,7 +39,7 @@ jobs:
         run: dotnet build ${{ inputs.solution-path }} -c ${{ inputs.build-configuration }}
       - name: Tests
         if: ${{ inputs.test-project-path != '' }}
-        run: dotnet test ${{ inputs.test-project-path }} -logger "trx;logfilename=TestResults-${{ inputs.build-configuration }}.trx"
+        run: dotnet test ${{ inputs.test-project-path }} --logger "trx;logfilename=TestResults-${{ inputs.build-configuration }}.trx"
       - name: Publish Test Results
         if: ${{ inputs.test-project-path != '' }}
         uses: EnricoMi/publish-unit-test-result-action@v2
