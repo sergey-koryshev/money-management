@@ -17,7 +17,7 @@ on:
         required: false
         type: string
         default: "Debug"
-      inputs.test-project-path:
+      test-project-path:
         required: false
         type: string
         default: ""
