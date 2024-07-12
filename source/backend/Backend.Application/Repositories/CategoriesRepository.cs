@@ -27,6 +27,7 @@ public class CategoriesRepository
 
         var newEntity = new Entities.Category();
         this.UpdateEntity(newEntity, categoryModel);
+        this.dbContext.Categories.Add(newEntity);
         this.dbContext.SaveChanges();
 
         categoryModel.Id = newEntity.Id;
@@ -56,7 +57,7 @@ public class CategoriesRepository
             throw new InvalidOperationException("Category must contain a reference to a person who created it.");
         }
 
-        if (model.Name == null)
+        if (string.IsNullOrWhiteSpace(model.Name))
         {
             throw new InvalidOperationException("Name cannot be empty.");
         }
