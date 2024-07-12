@@ -17,6 +17,10 @@ on:
         required: false
         type: string
         default: "Debug"
+      inputs.test-project-path:
+        required: false
+        type: string
+        default: ""
 
 jobs:
   build:
@@ -33,3 +37,11 @@ jobs:
           dotnet-version: ${{ inputs.dotnet-version }}
       - name: Build
         run: dotnet build ${{ inputs.solution-path }} -c ${{ inputs.build-configuration }}
+      - name: Tests
+        if: ${{ inputs.test-project-path != '' }}
+        run: dotnet test ${{ inputs.test-project-path }} -logger "trx;logfilename=TestResults-${{ inputs.build-configuration }}.trx"
+      - name: Publish Test Results
+        if: ${{ inputs.test-project-path != '' }}
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: ${{ inputs.root-path }}/**/*.trx
