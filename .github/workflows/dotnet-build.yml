@@ -37,6 +37,31 @@ jobs:
           dotnet-version: ${{ inputs.dotnet-version }}
       - name: Build
         run: dotnet build ${{ inputs.solution-path }} -c ${{ inputs.build-configuration }}
+      - name: Setup test DB
+        if: ${{ inputs.test-project-path != '' }}
+        run: |
+          POSTGRES_VERSION=9.6.11
+          CONTAINER_NAME=postgres-test-db
+
+          echo "Starting container with Postgres..."
+          docker run --rm \
+            --name $CONTAINER_NAME \
+            -e POSTGRES_USER=postgres \
+            -e POSTGRES_PASSWORD=mm-test-password \
+            -d \
+            -p 5432:5432 \
+            postgres:$POSTGRES_VERSION
+
+          echo "Waiting until Postgres is ready..."
+          until docker run \
+            --rm \
+            --link $CONTAINER_NAME:pg \
+            postgres:$POSTGRES_VERSION pg_isready \
+              -U postgres \
+              -h pg; do sleep 1; done
+          
+          echo "Applying migrations..."
+          dotnet ef database update --project Backend.Infrastructure --startup-project Backend.WebApi -- --environment Tests
       - name: Tests
         if: ${{ inputs.test-project-path != '' }}
         run: dotnet test ${{ inputs.test-project-path }} --logger "trx;logfilename=TestResults-${{ inputs.build-configuration }}.trx"
@@ -45,3 +70,6 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v2
         with:
           files: ${{ inputs.root-path }}/**/*.trx
+      - name: Stop postgres related container
+        if: ${{ always() && inputs.test-project-path != '' }}
+        run: docker stop $(docker ps -qf "name=postgres-test-db")
