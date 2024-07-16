@@ -40,7 +40,7 @@ jobs:
       - name: Setup test DB
         if: ${{ inputs.test-project-path != '' }}
         run: |
-          POSTGRES_VERSION=9.6.11
+          POSTGRES_VERSION=16.2
           CONTAINER_NAME=postgres-test-db
 
           echo "Starting container with Postgres..."
