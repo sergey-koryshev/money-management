@@ -60,6 +60,10 @@ jobs:
               -U postgres \
               -h pg; do sleep 1; done
           
+          echo "Installing dotnet-ef tool..."
+          dotnet tool install --global dotnet-ef --version 7.0.18
+          dotnet tool restore
+
           echo "Applying migrations..."
           dotnet ef database update --project Backend.Infrastructure --startup-project Backend.WebApi -- --environment Tests
       - name: Tests
