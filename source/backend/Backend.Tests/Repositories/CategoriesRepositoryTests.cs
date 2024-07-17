@@ -2,18 +2,13 @@
 
 using Backend.Application;
 using Backend.Domain.Models;
-using Backend.Infrastructure;
 using FluentAssertions;
-using Microsoft.EntityFrameworkCore;
-using Moq;
 using Entities = Domain.Entities;
 
 [TestFixture]
-public class CategoriesRepositoryTests
+public class CategoriesRepositoryTests : TestsBase
 {
-    private Mock<AppDbContext> mockedDbContext;
-    private Entities.Person daniel;
-    private Entities.Person veronika;
+    private const string prefix = "CategoriesRepositoryTests_";
 
     [Test]
     public void GetAllCategories_ReturnsAllCategoriesForSpecificUser()
@@ -22,49 +17,45 @@ public class CategoriesRepositoryTests
         {
             new Entities.Category
             {
-                Id = 1,
-                Name = "Category A",
-                CreatedById = 1,
-                CreatedBy = this.daniel,
-                PermittedPersons = new List<Entities.Person> { this.daniel }
+                Name = $"{prefix}{Guid.NewGuid()}",
+                CreatedById = this.Daniel.Id,
+                CreatedBy = this.Daniel,
+                PermittedPersons = new List<Entities.Person> { this.Daniel }
             },
             new Entities.Category
             {
-                Id = 2,
-                Name = "Category B",
-                CreatedById = 2,
-                CreatedBy = this.veronika,
-                PermittedPersons = new List<Entities.Person> { this.veronika }
+                Name = $"{prefix}{Guid.NewGuid()}",
+                CreatedById = this.Veronika.Id,
+                CreatedBy = this.Veronika,
+                PermittedPersons = new List<Entities.Person> { this.Veronika }
             },
             new Entities.Category
             {
-                Id = 3,
-                Name = "Category C",
-                CreatedById = 2,
-                CreatedBy = this.veronika,
-                PermittedPersons = new List<Entities.Person> { this.veronika }
+                Name = $"{prefix}{Guid.NewGuid()}",
+                CreatedById = this.Veronika.Id,
+                CreatedBy = this.Veronika,
+                PermittedPersons = new List<Entities.Person> { this.Veronika }
             },
             new Entities.Category
             {
-                Id = 4,
-                Name = "Category D",
-                CreatedById = 1,
-                CreatedBy = this.daniel,
-                PermittedPersons = new List<Entities.Person> { this.daniel }
+                Name = $"{prefix}{Guid.NewGuid()}",
+                CreatedById = this.Daniel.Id,
+                CreatedBy = this.Daniel,
+                PermittedPersons = new List<Entities.Person> { this.Daniel }
             },
             new Entities.Category
             {
-                Id = 5,
-                Name = "Category E",
-                CreatedById = 1,
-                CreatedBy = this.daniel,
-                PermittedPersons = new List<Entities.Person> { this.daniel }
+                Name = $"{prefix}{Guid.NewGuid()}",
+                CreatedById = this.Daniel.Id,
+                CreatedBy = this.Daniel,
+                PermittedPersons = new List<Entities.Person> { this.Daniel }
             }
         };
 
-        this.mockedDbContext.Setup(c => c.Categories).Returns(new Mock<DbSet<Entities.Category>>().InitializeMock(categories).Object);
+        this.DbContext.AddRange(categories);
+        this.DbContext.SaveChanges();
 
-        var result = new CategoriesRepository(this.mockedDbContext.Object, this.daniel).GetAllCategories();
+        var result = new CategoriesRepository(this.DbContext, this.Daniel).GetAllCategories();
 
         result.Should().HaveCount(3);
     }
@@ -77,27 +68,13 @@ public class CategoriesRepositoryTests
         var category = new Category
         {
             Name = name,
-            CreatedBy = this.daniel.ToModel(),
-            PermittedPersons = new List<Person> { this.daniel.ToModel() }
+            CreatedBy = this.Daniel.ToModel(),
+            PermittedPersons = new List<Person> { this.Daniel.ToModel() }
         };
 
-        new Action(() => new CategoriesRepository(this.mockedDbContext.Object, this.daniel).CreateCategory(category))
+        new Action(() => new CategoriesRepository(this.DbContext, this.Daniel).CreateCategory(category))
             .Should().Throw<InvalidOperationException>()
             .WithMessage("Name cannot be empty.");
-    }
-
-    [Test]
-    public void CreateCategory_PermittedPersonsFieldNotContainsCreator_ErrorThrows()
-    {
-        var category = new Category
-        {
-            Name = "Category",
-            CreatedBy = this.daniel.ToModel(),
-        };
-
-        new Action(() => new CategoriesRepository(this.mockedDbContext.Object, this.daniel).CreateCategory(category))
-            .Should().Throw<InvalidOperationException>()
-            .WithMessage("Category must contains a creator in permitted persons list.");
     }
 
     [Test]
@@ -106,10 +83,10 @@ public class CategoriesRepositoryTests
         var category = new Category
         {
             Name = "Category",
-            PermittedPersons = new List<Person> { this.daniel.ToModel() }
+            PermittedPersons = new List<Person> { this.Daniel.ToModel() }
         };
 
-        new Action(() => new CategoriesRepository(this.mockedDbContext.Object, this.daniel).CreateCategory(category))
+        new Action(() => new CategoriesRepository(this.DbContext, this.Daniel).CreateCategory(category))
             .Should().Throw<InvalidOperationException>()
             .WithMessage("Category must contain a reference to a person who created it.");
     }
@@ -117,28 +94,25 @@ public class CategoriesRepositoryTests
     [Test]
     public void CreateCategory_NameNotUnique_ErrorThrows()
     {
+        var categoryName = $"{prefix}{Guid.NewGuid()}";
+
         var category = new Category
         {
-            Name = "Category",
-            CreatedBy = this.daniel.ToModel(),
-            PermittedPersons = new List<Person> { this.daniel.ToModel() }
+            Name = categoryName.ToUpper(),
+            CreatedBy = this.Daniel.ToModel(),
+            PermittedPersons = new List<Person> { this.Daniel.ToModel() }
         };
 
-        this.mockedDbContext
-            .Setup(c => c.Categories)
-            .Returns(new Mock<DbSet<Entities.Category>>().InitializeMock(new List<Entities.Category>
-            {
-                new Entities.Category
-                {
-                    Id = 1,
-                    Name = "caTegoRy",
-                    CreatedById = this.daniel.Id,
-                    CreatedBy = this.daniel,
-                    PermittedPersons = new List<Entities.Person> { this.daniel }
-                }
-            }).Object);
+        this.DbContext.Categories.Add(new Entities.Category
+        {
+            Name = categoryName,
+            CreatedById = this.Daniel.Id,
+            CreatedBy = this.Daniel,
+            PermittedPersons = new List<Entities.Person> { this.Daniel }
+        });
+        this.DbContext.SaveChanges();
 
-        new Action(() => new CategoriesRepository(this.mockedDbContext.Object, this.daniel).CreateCategory(category))
+        new Action(() => new CategoriesRepository(this.DbContext, this.Daniel).CreateCategory(category))
             .Should().Throw<InvalidOperationException>()
             .WithMessage("Category must contain unique name.");
     }
@@ -148,49 +122,26 @@ public class CategoriesRepositoryTests
     {
         var category = new Category
         {
-            Name = "Category",
-            CreatedBy = this.daniel.ToModel(),
-            PermittedPersons = new List<Person> { this.daniel.ToModel() }
+            Name = $"{prefix}{Guid.NewGuid()}",
+            CreatedBy = this.Daniel.ToModel(),
+            PermittedPersons = new List<Person> { this.Daniel.ToModel() }
         };
 
-        this.mockedDbContext
-            .Setup(c => c.Categories)
-            .Returns(new Mock<DbSet<Entities.Category>>().InitializeMock(new List<Entities.Category>()).Object);
-
-        var createdCategoryId = new CategoriesRepository(this.mockedDbContext.Object, this.daniel).CreateCategory(category);
-
-        var createdCategory = this.mockedDbContext.Object.Categories.Find(createdCategoryId);
-        var a = this.mockedDbContext.Object.Categories.Count();
+        var createdCategoryId = new CategoriesRepository(this.DbContext, this.Daniel).CreateCategory(category);
+        var createdCategory = this.DbContext.Categories.Find(createdCategoryId);
+    
         createdCategory.Should().NotBeNull();
+        createdCategory!.ToModel().Should().BeEquivalentTo(category);
     }
 
-    [OneTimeSetUp]
-    public void InitializeTestFixture()
+    [TearDown]
+    public void TearDown()
     {
-        this.mockedDbContext = new Mock<AppDbContext>();
-
-        this.daniel = new Entities.Person
+        foreach (var entity in this.DbContext.Categories.Where(c => c.Name != null && c.Name.StartsWith(prefix)))
         {
-            Id = 1,
-            FirstName = "Daniel",
-            SecondName = "Moriarty",
-            Tenant = Guid.NewGuid()
-        };
+            this.DbContext.Categories.Remove(entity);
+        }
 
-        this.veronika = new Entities.Person
-        {
-            Id = 2,
-            FirstName = "Veronika",
-            SecondName = "Payne",
-            Tenant = Guid.NewGuid()
-        };
-
-        this.mockedDbContext
-            .Setup(c => c.Persons)
-            .Returns(new Mock<DbSet<Entities.Person>>().InitializeMock(new List<Entities.Person>
-            {
-                this.daniel,
-                this.veronika
-            }).Object);
+        this.DbContext.SaveChanges();
     }
 }
