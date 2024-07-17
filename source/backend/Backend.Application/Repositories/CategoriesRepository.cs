@@ -57,17 +57,31 @@ public class CategoriesRepository
             throw new InvalidOperationException("Category must contain a reference to a person who created it.");
         }
 
+        var creator = this.dbContext.Persons.Find(model.CreatedBy.Id);
+
+        if (creator == null)
+        {
+            throw new InvalidOperationException($"User with id '{model.CreatedBy.Id}' doesn't exist and cannot be set as creator.");
+        }
+
+        if (model.Id == 0 && model.CreatedBy.Id != this.identity.Id)
+        {
+            throw new InvalidOperationException($"You cannot create the category on behalf of another user.");
+        }
+
+        if (model.Id == 0 && !model.PermittedPersons.Any(p => p.Id == model.CreatedBy.Id))
+        {
+            model.PermittedPersons.Add(model.CreatedBy);
+        }
+
         if (string.IsNullOrWhiteSpace(model.Name))
         {
             throw new InvalidOperationException("Name cannot be empty.");
         }
 
-        if (!model.PermittedPersons.Any(p => p.Id == model.CreatedBy.Id))
-        {
-            throw new InvalidOperationException("Category must contains a creator in permitted persons list.");
-        }
+        var existingCategory = this.dbContext.Categories.FirstOrDefault(c => c.CreatedById == model.CreatedBy.Id && c.Name != null && c.Name.ToLower().Equals(model.Name.ToLower()));
 
-        if (this.dbContext.Categories.Any(c => c.CreatedById == model.CreatedBy.Id && c.Name != null && c.Name.Equals(model.Name, StringComparison.OrdinalIgnoreCase)))
+        if (existingCategory != null)
         {
             throw new InvalidOperationException("Category must contain unique name.");
         }
