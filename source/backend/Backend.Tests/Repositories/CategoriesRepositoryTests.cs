@@ -153,6 +153,38 @@ public class CategoriesRepositoryTests : TestsBase
             .WithMessage("Category must contain unique name.");
     }
 
+    [Test]
+    public void CreateCategory_NotExistingUsersInPermittedPersonsList_ErrorThrows()
+    {
+        var category = new Category
+        {
+            Name = $"{prefix}{Guid.NewGuid()}",
+            CreatedBy = this.Daniel.ToModel(),
+            PermittedPersons = new List<Person>
+            { 
+                this.Daniel.ToModel(),
+                new Person
+                {
+                    Id = -1,
+                    FirstName = "User",
+                    SecondName = "-1",
+                    Tenant = Guid.NewGuid()
+                },
+                new Person
+                {
+                    Id = -2,
+                    FirstName = "User",
+                    SecondName = "-2",
+                    Tenant = Guid.NewGuid()
+                }
+            }
+        };
+
+        new Action(() => new CategoriesRepository(this.DbContext, this.Daniel).CreateCategory(category))
+            .Should().Throw<InvalidOperationException>()
+            .WithMessage("Users with IDs '-1, -2' don't exist and cannot be associated with the category.");
+    }
+
     [Theory]
     public void CreateCategory_ModelIsCorrect_CategoryCreated(bool isPermittedPersonsSpecified)
     {
