@@ -66,7 +66,7 @@ public class CategoriesRepository
 
         if (model.Id == 0 && model.CreatedBy.Id != this.identity.Id)
         {
-            throw new InvalidOperationException($"You cannot create the category on behalf of another user.");
+            throw new InvalidOperationException($"Category cannot be created on behalf of another user.");
         }
 
         if (model.Id == 0 && !model.PermittedPersons.Any(p => p.Id == model.CreatedBy.Id))
