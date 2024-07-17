@@ -8,6 +8,7 @@ using Entities = Domain.Entities;
 public class CategoriesRepository
 {
     private readonly AppDbContext dbContext;
+
     private readonly Entities.Person identity;
 
     public CategoriesRepository(AppDbContext dbContext, Entities.Person identity)
@@ -27,6 +28,7 @@ public class CategoriesRepository
 
         var newEntity = new Entities.Category();
         this.UpdateEntity(newEntity, categoryModel);
+        this.dbContext.Categories.Add(newEntity);
         this.dbContext.SaveChanges();
 
         categoryModel.Id = newEntity.Id;
@@ -56,17 +58,40 @@ public class CategoriesRepository
             throw new InvalidOperationException("Category must contain a reference to a person who created it.");
         }
 
-        if (model.Name == null)
+        var creator = this.dbContext.Persons.Find(model.CreatedBy.Id);
+
+        if (creator == null)
+        {
+            throw new InvalidOperationException($"User with id '{model.CreatedBy.Id}' doesn't exist and cannot be set as creator.");
+        }
+
+        if (model.Id == 0 && model.CreatedBy.Id != this.identity.Id)
+        {
+            throw new InvalidOperationException($"Category cannot be created on behalf of another user.");
+        }
+
+        var permittedPersonsIds = model.PermittedPersons.Select(p => p.Id).ToHashSet();
+        var existingPermittedPersonsIds = this.dbContext.Persons.Where(p => permittedPersonsIds.Contains(p.Id)).Select(p => p.Id).ToHashSet();
+
+        if (permittedPersonsIds.Count > existingPermittedPersonsIds.Count)
+        {
+            var notExistingPersonIds = permittedPersonsIds.Where(id => !existingPermittedPersonsIds.Contains(id)).ToList();
+            throw new InvalidOperationException(string.Format("Users with IDs '{0}' don't exist and cannot be associated with the category.", string.Join(", ", notExistingPersonIds)));
+        }
+
+        if (model.Id == 0 && !model.PermittedPersons.Any(p => p.Id == model.CreatedBy.Id))
+        {
+            model.PermittedPersons.Add(model.CreatedBy);
+        }
+
+        if (string.IsNullOrWhiteSpace(model.Name))
         {
             throw new InvalidOperationException("Name cannot be empty.");
         }
 
-        if (!model.PermittedPersons.Any(p => p.Id == model.CreatedBy.Id))
-        {
-            throw new InvalidOperationException("Category must contains a creator in permitted persons list.");
-        }
+        var existingCategory = this.dbContext.Categories.FirstOrDefault(c => c.CreatedById == model.CreatedBy.Id && c.Name != null && c.Name.ToLower().Equals(model.Name.ToLower()));
 
-        if (this.dbContext.Categories.Any(c => c.CreatedById == model.CreatedBy.Id && c.Name != null && c.Name.Equals(model.Name, StringComparison.OrdinalIgnoreCase)))
+        if (existingCategory != null)
         {
             throw new InvalidOperationException("Category must contain unique name.");
         }

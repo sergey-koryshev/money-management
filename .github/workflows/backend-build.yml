@@ -32,8 +32,9 @@ jobs:
       dotnet-version: 7.0.x
       solution-path: Backend.sln
       build-configuration: Debug
+      test-project-path: Backend.Tests/Backend.Tests.csproj
   release-build:
-    if: ${{ github.event_name == 'pull_request' || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name != 'pull_request' && github.event.workflow_run.conclusion == 'success' }}
     name: Backend Release Build
     uses: ./.github/workflows/dotnet-build.yml
     with:
@@ -41,3 +42,4 @@ jobs:
       dotnet-version: 7.0.x
       solution-path: Backend.sln
       build-configuration: Release
+      test-project-path: Backend.Tests/Backend.Tests.csproj

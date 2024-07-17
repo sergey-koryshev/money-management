@@ -33,3 +33,6 @@ app/
 
 # Visual Studio 2015
 .vs/
+
+# Test files
+*.trx

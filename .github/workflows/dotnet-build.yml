@@ -17,6 +17,42 @@ on:
         required: false
         type: string
         default: "Debug"
+      test-project-path:
+        required: false
+        type: string
+        default: ""
+      test-db-postgres-version:
+        required: false
+        type: string
+        default: "16.2"
+      test-db-container-name:
+        required: false
+        type: string
+        default: "postgres-test-db"
+      test-db-username:
+        required: false
+        type: string
+        default: "postgres"
+      test-db-password:
+        required: false
+        type: string
+        default: "mm-test-password"
+      dotnet-ef-version:
+        required: false
+        type: string
+        default: "7.0.18"
+      migrations-project:
+        required: false
+        type: string
+        default: "Backend.Infrastructure"
+      startup-project:
+        required: false
+        type: string
+        default: "Backend.WebApi"
+      environment-name:
+        required: false
+        type: string
+        default: "Tests"
 
 jobs:
   build:
@@ -33,3 +69,43 @@ jobs:
           dotnet-version: ${{ inputs.dotnet-version }}
       - name: Build
         run: dotnet build ${{ inputs.solution-path }} -c ${{ inputs.build-configuration }}
+      - name: Setup test DB
+        if: ${{ inputs.test-project-path != '' }}
+        run: |
+          POSTGRES_VERSION=${{ inputs.test-db-postgres-version }}
+          CONTAINER_NAME=${{ inputs.test-db-container-name }}
+
+          echo "Starting container with Postgres..."
+          docker run --rm \
+            --name $CONTAINER_NAME \
+            -e POSTGRES_USER=${{ inputs.test-db-username }} \
+            -e POSTGRES_PASSWORD=${{ inputs.test-db-password}} \
+            -d \
+            -p 5432:5432 \
+            postgres:$POSTGRES_VERSION
+
+          echo "Waiting until Postgres is ready..."
+          until docker run \
+            --rm \
+            --link $CONTAINER_NAME:pg \
+            postgres:$POSTGRES_VERSION pg_isready \
+              -U postgres \
+              -h pg; do sleep 1; done
+          
+          echo "Installing dotnet-ef tool..."
+          dotnet tool install --global dotnet-ef --version ${{ inputs.dotnet-ef-version }}
+          dotnet tool restore
+
+          echo "Applying migrations..."
+          dotnet ef database update --project ${{ inputs.migrations-project }} --startup-project ${{ inputs.startup-project }} -- --environment ${{ inputs.environment-name }}
+      - name: Tests
+        if: ${{ inputs.test-project-path != '' }}
+        run: dotnet test ${{ inputs.test-project-path }} --logger "trx;logfilename=TestResults-${{ inputs.build-configuration }}.trx"
+      - name: Publish Test Results
+        if: ${{ always() && inputs.test-project-path != '' }}
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: ${{ inputs.root-path }}/**/*.trx
+      - name: Stop postgres related container
+        if: ${{ always() && inputs.test-project-path != '' }}
+        run: docker stop $(docker ps -qf "name=${{ inputs.test-db-container-name }}")

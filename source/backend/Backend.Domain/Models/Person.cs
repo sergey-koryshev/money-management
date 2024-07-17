@@ -8,5 +8,5 @@ public class Person
 
     public required string SecondName { get; set; }
 
-    public Guid Tenant { get; set; }
+    public required Guid Tenant { get; set; }
 }
