@@ -10,8 +10,9 @@ public class CategoriesRepositoryTests : TestsBase
 {
     private const string prefix = "CategoriesRepositoryTests_";
 
-    [Test]
-    public void GetAllCategories_ReturnsAllCategoriesForSpecificUser()
+    [TestCase(DanielTenant, ExpectedResult = 3)]
+    [TestCase(VeronikaTenant, ExpectedResult = 2)]
+    public int GetAllCategories_CategoriesExistForMultipleUsers_ReturnsAllCategoriesForSpecificUserOnly(string userTenant)
     {
         var categories = new List<Entities.Category>
         {
@@ -55,9 +56,58 @@ public class CategoriesRepositoryTests : TestsBase
         this.DbContext.AddRange(categories);
         this.DbContext.SaveChanges();
 
-        var result = new CategoriesRepository(this.DbContext, this.Daniel).GetAllCategories();
+        var user = this.DbContext.Persons.FirstOrDefault(p => p.Tenant.ToString() == userTenant);
 
-        result.Should().HaveCount(3);
+        var result = new CategoriesRepository(this.DbContext, user!).GetAllCategories();
+
+        return result.Count();
+    }
+
+    [Test]
+    public void CreateCategory_EmptyCreatedBy_ErrorThrows()
+    {
+        var category = new Category
+        {
+            Name = $"{prefix}{Guid.NewGuid()}"
+        };
+
+        new Action(() => new CategoriesRepository(this.DbContext, this.Daniel).CreateCategory(category))
+            .Should().Throw<InvalidOperationException>()
+            .WithMessage("Category must contain a reference to a person who created it.");
+    }
+
+    [Test]
+    public void CreateCategory_CreatorUserNotExist_ErrorThrows()
+    {
+        var category = new Category
+        {
+            Name = $"{prefix}{Guid.NewGuid()}",
+            CreatedBy = new Person
+            {
+                Id = -1,
+                FirstName = "User",
+                SecondName = "Not exist",
+                Tenant = Guid.NewGuid()
+            }
+        };
+
+        new Action(() => new CategoriesRepository(this.DbContext, this.Daniel).CreateCategory(category))
+            .Should().Throw<InvalidOperationException>()
+            .WithMessage("User with id '-1' doesn't exist and cannot be set as creator.");
+    }
+
+    [Test]
+    public void CreateCategory_CreatedByIsNotUserWhoCreateCategory_ErrorThrows()
+    {
+        var category = new Category
+        {
+            Name = $"{prefix}{Guid.NewGuid()}",
+            CreatedBy = this.Veronika.ToModel()
+        };
+
+        new Action(() => new CategoriesRepository(this.DbContext, this.Daniel).CreateCategory(category))
+            .Should().Throw<InvalidOperationException>()
+            .WithMessage("Category cannot be created on behalf of another user.");
     }
 
     [TestCase("")]
@@ -75,20 +125,6 @@ public class CategoriesRepositoryTests : TestsBase
         new Action(() => new CategoriesRepository(this.DbContext, this.Daniel).CreateCategory(category))
             .Should().Throw<InvalidOperationException>()
             .WithMessage("Name cannot be empty.");
-    }
-
-    [Test]
-    public void CreateCategory_EmptyCreatedBy_ErrorThrows()
-    {
-        var category = new Category
-        {
-            Name = "Category",
-            PermittedPersons = new List<Person> { this.Daniel.ToModel() }
-        };
-
-        new Action(() => new CategoriesRepository(this.DbContext, this.Daniel).CreateCategory(category))
-            .Should().Throw<InvalidOperationException>()
-            .WithMessage("Category must contain a reference to a person who created it.");
     }
 
     [Test]
@@ -117,17 +153,23 @@ public class CategoriesRepositoryTests : TestsBase
             .WithMessage("Category must contain unique name.");
     }
 
-    [Test]
-    public void CreateCategory_ModelIsCorrect_CategoryCreated()
+    [Theory]
+    public void CreateCategory_ModelIsCorrect_CategoryCreated(bool isPermittedPersonsSpecified)
     {
         var category = new Category
         {
             Name = $"{prefix}{Guid.NewGuid()}",
             CreatedBy = this.Daniel.ToModel(),
-            PermittedPersons = new List<Person> { this.Daniel.ToModel() }
+            PermittedPersons = isPermittedPersonsSpecified ? new List<Person> { this.Daniel.ToModel() } : new List<Person>()
         };
 
         var createdCategoryId = new CategoriesRepository(this.DbContext, this.Daniel).CreateCategory(category);
+
+        if (!isPermittedPersonsSpecified)
+        {
+            category.PermittedPersons = new List<Person> { this.Daniel.ToModel() };
+        }
+
         var createdCategory = this.DbContext.Categories.Find(createdCategoryId);
     
         createdCategory.Should().NotBeNull();

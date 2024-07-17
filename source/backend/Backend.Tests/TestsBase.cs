@@ -7,6 +7,10 @@ using Microsoft.Extensions.Configuration;
 
 public abstract class TestsBase
 {
+    protected const string DanielTenant = "1648284a-e4e2-43ad-8594-bcacc4bfef46";
+    
+    protected const string VeronikaTenant = "dda338a5-98b7-4975-bc41-f94ddac58e23";
+
     protected AppDbContext DbContext { get; }
 
     protected Person Daniel { get; }
@@ -28,14 +32,14 @@ public abstract class TestsBase
         {
             FirstName = "Daniel",
             SecondName = "Moriarty",
-            Tenant = Guid.NewGuid()
+            Tenant = new Guid(DanielTenant)
         };
 
         this.Veronika = new Person
         {
             FirstName = "Veronika",
             SecondName = "Payne",
-            Tenant = Guid.NewGuid()
+            Tenant = new Guid(VeronikaTenant)
         };
     }
 
