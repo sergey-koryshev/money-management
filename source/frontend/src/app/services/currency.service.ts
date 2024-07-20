@@ -42,8 +42,8 @@ export class CurrencyService {
     });
   }
 
-  setMainCurrency(params: SetMainCurrencyParams) {
-    this.currencyHttpClient.setMainCurrency(params)
+  setMainCurrency(currencyId: number) {
+    this.currencyHttpClient.setMainCurrency(currencyId)
       .subscribe((currency) => this.mainCurrency$.next(currency));
   }
 
