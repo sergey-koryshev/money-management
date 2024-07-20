@@ -10,5 +10,6 @@ public class Mapper : Profile
     {
         CreateMap<Person, PersonDto>();
         CreateMap<Category, CategoryDto>();
+        CreateMap<Currency, CurrencyDto>();
     }
 }
