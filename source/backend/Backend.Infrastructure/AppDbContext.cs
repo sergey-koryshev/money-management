@@ -10,6 +10,10 @@ public class AppDbContext : IdentityUserContext<User, int>
 
     public virtual DbSet<Category> Categories { get; set; }
 
+    public virtual DbSet<Currency> Currencies { get; set; }
+
+    public virtual DbSet<CurrencyMapping> CurrencyMappings { get; set; }
+
     public AppDbContext() {}
 
     public AppDbContext(DbContextOptions<AppDbContext> options): base(options) { }
