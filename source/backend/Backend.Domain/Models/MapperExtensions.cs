@@ -23,4 +23,16 @@ public static class MapperExtensions
             Tenant = entity.Tenant,
         };
     }
+
+    public static Currency ToModel(this Entities.Currency entity)
+    {
+        return new Currency
+        {
+            Id = entity.Id,
+            Name = entity.Name,
+            FriendlyName = entity.FriendlyName,
+            FlagCode = entity.FlagCode,
+            Sign = entity.Sign,
+        };
+    }
 }

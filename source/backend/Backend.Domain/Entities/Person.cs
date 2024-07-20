@@ -21,4 +21,6 @@ public class Person
     public virtual ICollection<Category> CreatedCategories { get; set; } = new List<Category>();
 
     public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
+
+    public virtual ICollection<CurrencyMapping> CurrencyMappings { get; set; } = new List<CurrencyMapping>();
 }
