@@ -72,7 +72,7 @@ namespace Backend.Infrastructure.Migrations
                     { 1, "RUB", "Russian ruble", "ru", "₽" },
                     { 2, "RSD", "Serbian dinar", "rs", null },
                     { 3, "USD", "American dollar", "us", "$" },
-                    { 4, "EUR", "Euro", "ue", "€" }
+                    { 4, "EUR", "Euro", "eu", "€" }
                 });
 
             migrationBuilder.InsertData(
