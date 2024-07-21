@@ -9,10 +9,9 @@ using Microsoft.EntityFrameworkCore;
 
 public class CurrenciesService : ServiseBase, ICurrenciesService
 {
-    public CurrenciesService(IHttpContextAccessor httpContextAccessor, IMapper mapper, IDbContextFactory<AppDbContext> dbContextFactory)
-        : base(httpContextAccessor, mapper, dbContextFactory) {}
-    
-    public List<CurrencyDto> GetAllCurrencies()
+  public CurrenciesService(IHttpContextAccessor httpContextAccessor, IMapper mapper, IDbContextFactory<AppDbContext> dbContextFactory) : base(httpContextAccessor, mapper, dbContextFactory) {}
+
+  public List<CurrencyDto> GetAllCurrencies()
     {
         return this.ExecuteActionInTransaction((dbContext) =>
         {
