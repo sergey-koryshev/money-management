@@ -203,7 +203,7 @@ namespace Backend.Infrastructure.Migrations
                 {
                     { 1, 1, "User", "1", "22a11263-56da-4327-98b7-f99d6591ac3c" },
                     { 2, 2, "User", "2", "f1d4515b-f201-4696-86b8-3580ad740ada" },
-                    { 3, 2, "User", "3", "d9993c25-7587-4932-a903-5514aad80735" }
+                    { 3, 3, "User", "3", "d9993c25-7587-4932-a903-5514aad80735" }
                 });
 
             migrationBuilder.InsertData(
