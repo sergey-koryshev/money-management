@@ -29,7 +29,7 @@ public abstract class ServiseBase
     {
         if (this.Identity == null)
         {
-            throw new Exception("Action is not authorized.");
+            throw new UnauthorizedAccessException("Action is not authorized.");
         }
     }
 
