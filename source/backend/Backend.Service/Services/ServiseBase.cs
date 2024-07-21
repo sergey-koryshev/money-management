@@ -32,4 +32,28 @@ public abstract class ServiseBase
             throw new Exception("Action is not authorized.");
         }
     }
+
+    protected void ExecuteActionInTransaction(Action<AppDbContext> action, bool authRequired = true) =>
+        this.ExecuteActionInTransaction<int>((dbContext) =>
+        {
+            action(dbContext);
+            return 0;
+        }, authRequired);
+        
+    protected T ExecuteActionInTransaction<T>(Func<AppDbContext, T> func, bool authRequired = true)
+    {
+        using (var dbContext = this.DbContextFactory.CreateDbContext())
+        {
+            if (authRequired)
+            {
+                this.ValidateUserIdentity();
+            }
+
+            dbContext.Database.BeginTransaction();
+            var result = func(dbContext);
+            dbContext.Database.CommitTransaction();
+
+            return result;
+        }
+    }
 }
