@@ -11,6 +11,8 @@ public abstract class TestsBase
     
     protected const string VeronikaTenant = "dda338a5-98b7-4975-bc41-f94ddac58e23";
 
+    private readonly DbContextOptionsBuilder<AppDbContext> dbContextOptionsBuilder;
+
     private int lastCurrencyMappingId;
 
     private int lastCurrencyId;
@@ -35,10 +37,10 @@ public abstract class TestsBase
             .AddJsonFile("appsettings.Tests.json")
             .Build();
             
-        var builder = new DbContextOptionsBuilder<AppDbContext>()
+        this.dbContextOptionsBuilder = new DbContextOptionsBuilder<AppDbContext>()
             .UseNpgsql(config.GetConnectionString("Postgres"));
 
-        this.DbContext = new AppDbContext(builder.Options);
+        this.DbContext = this.GetDbContext();
 
         this.Daniel = new Person
         {
@@ -123,4 +125,6 @@ public abstract class TestsBase
 
         this.DbContext.SaveChanges();
     }
+
+    protected AppDbContext GetDbContext() => new AppDbContext(this.dbContextOptionsBuilder.Options);
 }

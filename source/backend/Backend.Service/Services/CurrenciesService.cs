@@ -9,33 +9,40 @@ using Microsoft.EntityFrameworkCore;
 
 public class CurrenciesService : ServiseBase, ICurrenciesService
 {
-    public CurrenciesService(IHttpContextAccessor httpContextAccessor, IMapper mapper, IDbContextFactory<AppDbContext> dbContextFactory)
-        : base(httpContextAccessor, mapper, dbContextFactory) {}
-    
-    public List<CurrencyDto> GetAllCurrencies()
+  public CurrenciesService(IHttpContextAccessor httpContextAccessor, IMapper mapper, IDbContextFactory<AppDbContext> dbContextFactory) : base(httpContextAccessor, mapper, dbContextFactory) {}
+
+  public List<CurrencyDto> GetAllCurrencies()
     {
-        this.ValidateUserIdentity();
-        var result = new CurrenciesRepository(this.DbContextFactory.CreateDbContext(), this.Identity!).GetAllCurrencies();
-        return result.Select(c => this.Mapper.Map<CurrencyDto>(c)).ToList();;
+        return this.ExecuteActionInTransaction((dbContext) =>
+        {
+            var result = new CurrenciesRepository(dbContext, this.Identity!).GetAllCurrencies();
+            return result.Select(c => this.Mapper.Map<CurrencyDto>(c)).ToList();
+        });
     }
 
     public CurrencyDto? GetMainCurrency()
     {
-        this.ValidateUserIdentity();
-        var result = new CurrenciesRepository(this.DbContextFactory.CreateDbContext(), this.Identity!).GetMainCurrency();
-        return result != null ? this.Mapper.Map<CurrencyDto>(result) : null;
+        return this.ExecuteActionInTransaction((dbContext) =>
+        {
+            var result = new CurrenciesRepository(dbContext, this.Identity!).GetMainCurrency();
+            return result != null ? this.Mapper.Map<CurrencyDto>(result) : null;
+        });
     }
 
     public void DeleteMainCurrency()
     {
-        this.ValidateUserIdentity();
-        new CurrenciesRepository(this.DbContextFactory.CreateDbContext(), this.Identity!).DeleteMainCurrency();
+        this.ExecuteActionInTransaction((dbContext) =>
+        {
+            new CurrenciesRepository(dbContext, this.Identity!).DeleteMainCurrency();
+        });
     }
 
     public CurrencyDto SetMainCurrency(int currencyId)
     {
-        this.ValidateUserIdentity();
-        var result = new CurrenciesRepository(this.DbContextFactory.CreateDbContext(), this.Identity!).SetMainCurrency(currencyId);
-        return this.Mapper.Map<CurrencyDto>(result);
+        return this.ExecuteActionInTransaction((dbContext) =>
+        {
+            var result = new CurrenciesRepository(dbContext, this.Identity!).SetMainCurrency(currencyId);
+            return this.Mapper.Map<CurrencyDto>(result);
+        });
     }
 }
