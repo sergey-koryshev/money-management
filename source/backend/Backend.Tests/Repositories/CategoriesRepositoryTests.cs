@@ -1,4 +1,4 @@
-﻿namespace Backend.Tests;
+﻿namespace Backend.Tests.Repositories;
 
 using Backend.Application;
 using Backend.Domain.Models;

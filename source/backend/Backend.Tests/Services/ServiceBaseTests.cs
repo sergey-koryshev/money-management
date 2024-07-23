@@ -1,4 +1,4 @@
-﻿namespace Backend.Tests;
+﻿namespace Backend.Tests.Services;
 
 using AutoMapper;
 using Backend.Infrastructure;

@@ -17,6 +17,10 @@ public abstract class TestsBase
 
     private int lastCurrencyId;
 
+    private int lastConnectionId;
+
+    private int lastPersonId;
+
     protected AppDbContext DbContext { get; }
 
     protected Person Daniel { get; }
@@ -30,6 +34,14 @@ public abstract class TestsBase
     protected virtual bool ShouldCurrenciesBeDeletedInTearDown => false;
 
     protected virtual bool ShouldCurrenciesBeDeletedInOneTimeTearDown => false;
+
+    protected virtual bool ShouldConnectionsBeDeletedInTearDown => false;
+
+    protected virtual bool ShouldConnectionsBeDeletedInOneTimeTearDown => false;
+
+    protected virtual bool ShouldPersonsBeDeletedInTearDown => false;
+
+    protected virtual bool ShouldPersonsBeDeletedInOneTimeTearDown => false;
 
     protected TestsBase()
     {
@@ -70,6 +82,16 @@ public abstract class TestsBase
             this.lastCurrencyId = this.DbContext.Currencies.Select(e => e.Id).OrderByDescending(e => e).FirstOrDefault();
         }
 
+        if (this.ShouldConnectionsBeDeletedInTearDown || this.ShouldConnectionsBeDeletedInOneTimeTearDown)
+        {
+            this.lastConnectionId = this.DbContext.Connections.Select(e => e.Id).OrderByDescending(e => e).FirstOrDefault();
+        }
+
+        if (this.ShouldPersonsBeDeletedInTearDown || this.ShouldPersonsBeDeletedInOneTimeTearDown)
+        {
+            this.lastPersonId = this.DbContext.Persons.Select(e => e.Id).OrderByDescending(e => e).FirstOrDefault();
+        }
+
         this.DbContext.Persons.Add(this.Daniel);
         this.DbContext.Persons.Add(this.Veronika);
 
@@ -92,6 +114,22 @@ public abstract class TestsBase
             foreach (var entity in this.DbContext.Currencies.Where(c => c.Id > this.lastCurrencyId))
             {
                 this.DbContext.Currencies.Remove(entity);
+            }
+        }
+
+        if (this.ShouldConnectionsBeDeletedInOneTimeTearDown)
+        {
+            foreach (var entity in this.DbContext.Connections.Where(c => c.Id > this.lastConnectionId))
+            {
+                this.DbContext.Connections.Remove(entity);
+            }
+        }
+
+        if (this.ShouldConnectionsBeDeletedInOneTimeTearDown)
+        {
+            foreach (var entity in this.DbContext.Persons.Where(c => c.Id > this.lastPersonId))
+            {
+                this.DbContext.Persons.Remove(entity);
             }
         }
 
@@ -120,6 +158,22 @@ public abstract class TestsBase
             foreach (var entity in this.DbContext.Currencies.Where(c => c.Id > this.lastCurrencyId))
             {
                 this.DbContext.Currencies.Remove(entity);
+            }
+        }
+
+        if (this.ShouldConnectionsBeDeletedInTearDown)
+        {
+            foreach (var entity in this.DbContext.Connections.Where(c => c.Id > this.lastConnectionId))
+            {
+                this.DbContext.Connections.Remove(entity);
+            }
+        }
+
+        if (this.ShouldPersonsBeDeletedInTearDown)
+        {
+            foreach (var entity in this.DbContext.Persons.Where(c => c.Id > this.lastPersonId))
+            {
+                this.DbContext.Persons.Remove(entity);
             }
         }
 
