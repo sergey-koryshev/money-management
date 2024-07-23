@@ -24,6 +24,23 @@ public static class MapperExtensions
         };
     }
 
+    public static AmbiguousPerson ToModel(this Entities.Person entity, bool includeUserDetails)
+    {
+        var person = new AmbiguousPerson()
+        {
+            Id = entity.Id,
+        };
+
+        if (includeUserDetails)
+        {
+            person.FirstName = entity.FirstName;
+            person.SecondName = entity.SecondName;
+            person.Tenant = entity.Tenant;
+        }
+
+        return person;
+    }
+
     public static Currency ToModel(this Entities.Currency entity)
     {
         return new Currency
@@ -33,6 +50,26 @@ public static class MapperExtensions
             FriendlyName = entity.FriendlyName,
             FlagCode = entity.FlagCode,
             Sign = entity.Sign,
+        };
+    }
+
+    public static Connection ToModel(this Entities.Connection entity, Entities.Person identity)
+    {
+        var status = entity.IsAccepted
+            ? ConnectionStatus.Accepted
+            : entity.TargetPersonId == identity.Id
+                ? ConnectionStatus.Pending
+                : ConnectionStatus.PendingOnTarget;
+
+        var person = entity.RequestingPersonId == identity.Id
+            ? entity.TargetPerson
+            : entity.RequestingPerson;
+
+        return new Connection
+        {
+            Id = entity.Id,
+            Status = status,
+            Person = person!.ToModel(status == ConnectionStatus.Accepted || status == ConnectionStatus.Pending)
         };
     }
 }
