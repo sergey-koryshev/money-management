@@ -14,6 +14,8 @@ public class AppDbContext : IdentityUserContext<User, int>
 
     public virtual DbSet<CurrencyMapping> CurrencyMappings { get; set; }
 
+    public virtual DbSet<Connection> Connections { get; set; }
+
     public AppDbContext() {}
 
     public AppDbContext(DbContextOptions<AppDbContext> options): base(options) { }
