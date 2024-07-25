@@ -1,4 +1,4 @@
-﻿namespace Backend.Domain.Models;
+﻿namespace Backend.Domain.DTO;
 
 public enum ConnectionStatus
 {

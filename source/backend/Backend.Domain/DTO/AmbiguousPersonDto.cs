@@ -1,8 +1,8 @@
-﻿namespace Backend.Domain.Models;
+﻿namespace Backend.Domain.DTO;
 
-public class AmbiguousPerson
+public class AmbiguousPersonDto
 {
-    public int? Id { get; set; }
+    public int Id { get; set; }
 
     public string? FirstName { get; set; }
 

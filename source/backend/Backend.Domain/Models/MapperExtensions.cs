@@ -24,22 +24,6 @@ public static class MapperExtensions
         };
     }
 
-    public static AmbiguousPerson ToModel(this Entities.Person entity, bool includeUserDetails)
-    {
-        var person = new AmbiguousPerson()
-        {
-            Id = entity.Id,
-        };
-
-        if (includeUserDetails)
-        {
-            person.FirstName = entity.FirstName;
-            person.SecondName = entity.SecondName;
-            person.Tenant = entity.Tenant;
-        }
-
-        return person;
-    }
 
     public static Currency ToModel(this Entities.Currency entity)
     {
@@ -53,23 +37,25 @@ public static class MapperExtensions
         };
     }
 
-    public static Connection ToModel(this Entities.Connection entity, Entities.Person identity)
+    public static Connection ToModel(this Entities.Connection entity)
     {
-        var status = entity.IsAccepted
-            ? ConnectionStatus.Accepted
-            : entity.TargetPersonId == identity.Id
-                ? ConnectionStatus.Pending
-                : ConnectionStatus.PendingOnTarget;
+        if (entity.RequestingPerson == null)
+        {
+            throw new ArgumentNullException(nameof(entity.RequestingPerson), "Property RequestingPerson is required to convert Connection entity to model");
+        }
 
-        var person = entity.RequestingPersonId == identity.Id
-            ? entity.TargetPerson
-            : entity.RequestingPerson;
+        if (entity.TargetPerson == null)
+        {
+            throw new ArgumentNullException(nameof(entity.TargetPerson), "Property TargetPerson is required to convert Connection entity to model");
+        }
 
         return new Connection
         {
             Id = entity.Id,
-            Status = status,
-            Person = person!.ToModel(status == ConnectionStatus.Accepted || status == ConnectionStatus.Pending)
+            RequestingPerson = entity.RequestingPerson.ToModel(),
+            TargetPerson = entity.TargetPerson.ToModel(),
+            RequestedOn = entity.RequestedOn,
+            AcceptedOn = entity.AcceptedOn
         };
     }
 }
