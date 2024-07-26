@@ -125,15 +125,13 @@ public abstract class TestsBase
             }
         }
 
-        if (this.ShouldConnectionsBeDeletedInOneTimeTearDown)
+        if (this.ShouldPersonsBeDeletedInOneTimeTearDown)
         {
             foreach (var entity in this.DbContext.Persons.Where(c => c.Id > this.lastPersonId))
             {
                 this.DbContext.Persons.Remove(entity);
             }
         }
-
-        this.DbContext.SaveChanges();
 
         this.DbContext.Persons.Remove(this.Daniel);
         this.DbContext.Persons.Remove(this.Veronika);
@@ -179,6 +177,14 @@ public abstract class TestsBase
 
         this.DbContext.SaveChanges();
     }
+
+    [SetUp]
+    protected void TestBaseSetUp()
+    {
+        this.InvalidateDbContext();
+    }
+
+    protected void InvalidateDbContext() => this.DbContext?.ChangeTracker.Clear();
 
     protected AppDbContext GetDbContext() => new AppDbContext(this.dbContextOptionsBuilder.Options);
 }
