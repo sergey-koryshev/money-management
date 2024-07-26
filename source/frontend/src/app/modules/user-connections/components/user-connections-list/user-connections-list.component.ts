@@ -38,6 +38,7 @@ export class UserConnectionsListComponent {
       .deleteUserConnections(connection.id).subscribe({
         next: () => {
           const existingConnectionIndex = this.connections.findIndex((c) => c.id === connection.id);
+          this.authService.fetchPendingConnectionsCount();
           this.connections.splice(existingConnectionIndex, 1);
         }
       });
