@@ -39,7 +39,7 @@ public class AppMapper : Profile
   {
         if (context.TryGetItems(out var items) && items.TryGetValue("Identity", out var item) && item is Entities.Person identity)
         {
-            context.Items["IncludePersonDetails"] = src.IsAccepted || src.TargetPerson.Id == identity.Id;
+            items["IncludePersonDetails"] = src.IsAccepted || src.TargetPerson.Id == identity.Id;
 
             return src.RequestingPerson.Id == identity.Id
                 ? src.TargetPerson

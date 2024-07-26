@@ -75,6 +75,7 @@ builder.Services.AddAutoMapper(typeof(AppMapper));
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<ICategoriesService, CategoriesService>();
 builder.Services.AddScoped<ICurrenciesService, CurrenciesService>();
+builder.Services.AddScoped<IConnectionsService, ConnectionsService>();
 
 var app = builder.Build();
 
