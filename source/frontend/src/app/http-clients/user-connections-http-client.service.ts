@@ -1,35 +1,53 @@
 import { Injectable } from '@angular/core';
 import { BaseHttpClientService } from './base-http-client.service';
 import { UserConnection } from '@app/models/user-connection.model';
-import { CreateUserConnectionParams } from './user-connections-http-client.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserConnectionHttpClient {
-  constructor(private baseHttpClient: BaseHttpClientService) { }
+  constructor(private baseHttpClient: BaseHttpClientService) {
+    baseHttpClient.migratedEndpoints.push(
+      {
+        type: 'GET',
+        path: 'connections'
+      },
+      {
+        type: 'GET',
+        path: 'connections/pendingConnectionRequestsAmount'
+      },
+      {
+        type: 'POST',
+        path: 'connections'
+      },
+      {
+        type: 'POST',
+        path: /connections\/\d+\/accept/
+      },
+      {
+        type: 'DELETE',
+        path: /connections\/\d+/
+      }
+    );
+  }
 
   getPendingConnectionsCount() {
-    return this.baseHttpClient.get<number>('userConnections/pendingConnectionsCount');
+    return this.baseHttpClient.get<number>('connections/pendingConnectionRequestsAmount');
   }
 
   getUserConnections() {
-    return this.baseHttpClient.get<UserConnection[]>('userConnections');
+    return this.baseHttpClient.get<UserConnection[]>('connections');
   }
 
   acceptUserConnections(connectionId: number) {
-    return this.baseHttpClient.post<UserConnection>(`userConnections/${connectionId}/accept`);
-  }
-
-  declineUserConnections(connectionId: number) {
-    return this.baseHttpClient.post<void>(`userConnections/${connectionId}/decline`);
+    return this.baseHttpClient.post<UserConnection>(`connections/${connectionId}/accept`);
   }
 
   deleteUserConnections(connectionId: number) {
-    return this.baseHttpClient.delete<void>(`userConnections/${connectionId}`);
+    return this.baseHttpClient.delete<void>(`connections/${connectionId}`);
   }
 
-  createUserConnection(params: CreateUserConnectionParams) {
-    return this.baseHttpClient.post<UserConnection>(`userConnections`, params)
+  createUserConnection(userId: number) {
+    return this.baseHttpClient.post<UserConnection>(`connections`, userId)
   }
 }

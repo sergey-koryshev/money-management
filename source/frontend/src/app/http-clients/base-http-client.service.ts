@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
 
 interface Endpoint {
   type: 'GET' | 'POST' | 'DELETE' | 'PUT'
-  path: string
+  path: string | RegExp
 }
 
 @Injectable({
@@ -131,7 +131,15 @@ export class BaseHttpClientService {
   }
 
   getFullEndpointUrl(type: string, path: string) {
-    const isEndpointMigrated = this.migratedEndpoints.find((e) => e.path === path && e.type === type) != null;
+    const isEndpointMigrated = this.migratedEndpoints.find((e) => {
+      const isTypeMatched = e.type === type;
+      if (e.path instanceof RegExp) {
+        return e.path.test(path) && isTypeMatched;
+      }
+
+      return e.path === path && isTypeMatched;
+    }) != null;
+
     return `${isEndpointMigrated ? this.baseUrl : this.mockServerBaseUrl}/${path}`;
   }
 }

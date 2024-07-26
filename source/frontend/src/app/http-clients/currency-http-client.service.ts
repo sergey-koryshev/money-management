@@ -27,7 +27,6 @@ export class CurrencyHttpClientService {
         path: 'currencies/main'
       }
     );
-
   }
 
   getAllCurrencies() {
