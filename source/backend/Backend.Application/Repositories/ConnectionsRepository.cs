@@ -49,7 +49,9 @@ public class ConnectionsRepository
             RequestedOn = DateTime.UtcNow
         };
 
-        this.dbContext.Connections.Add(connectionEntity);
+        var entity = this.dbContext.Connections.Add(connectionEntity);
+        entity.Reference(c => c.RequestingPerson).Load();
+        entity.Reference(c => c.TargetPerson).Load();
         this.dbContext.SaveChanges();
 
         return connectionEntity.ToModel();
@@ -94,8 +96,7 @@ public class ConnectionsRepository
 
     private Entities.Connection FindConnection(int connectionId)
     {
-        var connection = this.GetConnectionsQuery().FirstOrDefault(c => c.Id == connectionId)
+        return this.GetConnectionsQuery().FirstOrDefault(c => c.Id == connectionId)
             ?? throw new InvalidOperationException($"Connection with id '{connectionId}' doesn't exist.");
-        return connection;
     }
 }
