@@ -7,7 +7,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { EditExpenseDialogComponent } from '../edit-expense-dialog/edit-expense-dialog.component';
 import { Month } from '@app/models/month.model';
 import { ItemChangedEventArgs } from './expenses-table.model';
-import { PolyUser } from '@app/models/user.model';
+import { AmbiguousUser } from '@app/models/user.model';
 import { ExpenseViewType } from '@app/models/enums/expense-view-type.enum';
 import { getUserFullName, getUserInitials } from '@app/helpers/users.helper';
 
@@ -159,11 +159,11 @@ export class ExpensesTableComponent implements OnInit {
     });
   }
 
-  getUserInitials(user: PolyUser): string {
+  getUserInitials(user: AmbiguousUser): string {
     return getUserInitials(user);
   }
 
-  getUserFullName(user: PolyUser): string {
+  getUserFullName(user: AmbiguousUser): string {
     return getUserFullName(user);
   }
 

@@ -1,7 +1,6 @@
 import { Currency } from '@models/currency.model';
 import { Injectable } from '@angular/core';
 import { BaseHttpClientService } from './base-http-client.service';
-import { SetMainCurrencyParams } from './currency-http-client.model';
 
 @Injectable({
   providedIn: 'root'

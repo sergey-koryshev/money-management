@@ -1,10 +1,8 @@
-import { map } from 'rxjs/operators';
 import { Currency } from '../models/currency.model';
 import { CurrencyHttpClientService } from '../http-clients/currency-http-client.service';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, forkJoin } from 'rxjs';
 import { AuthService } from './auth.service';
-import { SetMainCurrencyParams } from '@app/http-clients/currency-http-client.model';
 
 @Injectable({
   providedIn: 'root'

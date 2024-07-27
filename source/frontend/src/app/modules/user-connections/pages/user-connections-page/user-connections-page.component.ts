@@ -21,8 +21,8 @@ export class UserConnectionsPageComponent {
 
   sortConnections() {
     this.connections = this.connections.sort((first, second) => {
-      const firstLine = first.user.firstName ? first.user.firstName + first.user.secondName : first.user.id?.toString();
-      const secondLine = second.user.firstName ? second.user.firstName + second.user.secondName : second.user.id?.toString();
+      const firstLine = first.person.firstName ? first.person.firstName + first.person.secondName : first.person.id?.toString();
+      const secondLine = second.person.firstName ? second.person.firstName + second.person.secondName : second.person.id?.toString();
 
       return (first.status - second.status)
         || (firstLine && secondLine

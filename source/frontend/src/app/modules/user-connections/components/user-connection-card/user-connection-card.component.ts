@@ -6,7 +6,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 
 const userConnectionStatusToColor = {
   [UserConnectionStatus.pending]: '#E7DA69',
-  [UserConnectionStatus.pendingOnTargetUser]: '#E7DA69',
+  [UserConnectionStatus.pendingOnTarget]: '#E7DA69',
   [UserConnectionStatus.accepted]: '#87D599'
 }
 
@@ -41,7 +41,7 @@ export class UserConnectionCardComponent implements OnInit {
   constructor(private modalService: NgbModal) { }
 
   ngOnInit(): void {
-    this.initials = getUserInitials(this.connection.user);
+    this.initials = getUserInitials(this.connection.person);
     this.statusPinColor = userConnectionStatusToColor[this.connection.status];
   }
 

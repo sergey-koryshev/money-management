@@ -7,6 +7,6 @@ export function priceComparer(first: Expense, second: Expense) {
   return firstPrice.amount < secondPrice.amount
     ? -1
     : firstPrice.amount > secondPrice.amount
-    ? 1
-    : 0;
+      ? 1
+      : 0;
 }

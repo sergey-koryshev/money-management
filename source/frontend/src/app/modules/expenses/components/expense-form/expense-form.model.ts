@@ -1,5 +1,5 @@
 import { Category } from "@app/models/category.model"
-import { PolyUser } from "@app/models/user.model"
+import { AmbiguousUser } from "@app/models/user.model"
 import { NgbDate } from "@ng-bootstrap/ng-bootstrap"
 
 export interface ExpenseForm {
@@ -9,6 +9,6 @@ export interface ExpenseForm {
   priceAmount: number
   currencyId: number
   category?: Category
-  sharedWith?: PolyUser[]
+  sharedWith?: AmbiguousUser[]
   description?: string
 }
