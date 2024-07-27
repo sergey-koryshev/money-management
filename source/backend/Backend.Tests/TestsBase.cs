@@ -133,8 +133,12 @@ public abstract class TestsBase
             }
         }
 
-        this.DbContext.Persons.Remove(this.Daniel);
-        this.DbContext.Persons.Remove(this.Veronika);
+        var usersTenantsToDelete = new List<string> { DanielTenant, VeronikaTenant };
+        
+        foreach (var entity in this.DbContext.Persons.Where(p => usersTenantsToDelete.Contains(p.Tenant.ToString())))
+        {
+            this.DbContext.Persons.Remove(entity);
+        }
 
         this.DbContext.SaveChanges();
         this.DbContext.Dispose();
