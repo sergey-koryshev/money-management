@@ -134,7 +134,7 @@ public abstract class TestsBase
         }
 
         var usersTenantsToDelete = new List<string> { DanielTenant, VeronikaTenant };
-        
+
         foreach (var entity in this.DbContext.Persons.Where(p => usersTenantsToDelete.Contains(p.Tenant.ToString())))
         {
             this.DbContext.Persons.Remove(entity);
@@ -185,10 +185,12 @@ public abstract class TestsBase
     [SetUp]
     protected void TestBaseSetUp()
     {
-        this.InvalidateDbContext();
+        // to make DbContext behave more like in production, we need to clear change tracker
+        // to prevent having cached entities in navigation properties automatically
+        this.ClearChangeTracker();
     }
 
-    protected void InvalidateDbContext() => this.DbContext?.ChangeTracker.Clear();
+    protected void ClearChangeTracker() => this.DbContext?.ChangeTracker.Clear();
 
     protected AppDbContext GetDbContext() => new AppDbContext(this.dbContextOptionsBuilder.Options);
 }

@@ -54,6 +54,8 @@ public class CategoriesRepositoryTests : TestsBase
         this.DbContext.AddRange(categories);
         this.DbContext.SaveChanges();
 
+        this.ClearChangeTracker();
+
         var user = this.DbContext.Persons.FirstOrDefault(p => p.Tenant.ToString() == userTenant);
 
         var result = new CategoriesRepository(this.DbContext, user!).GetAllCategories();
@@ -146,6 +148,8 @@ public class CategoriesRepositoryTests : TestsBase
             PermittedPersons = new List<Entities.Person> { this.Daniel }
         });
         this.DbContext.SaveChanges();
+
+        this.ClearChangeTracker();
 
         new Action(() => new CategoriesRepository(this.DbContext, this.Daniel).CreateCategory(category))
             .Should().Throw<InvalidOperationException>()
