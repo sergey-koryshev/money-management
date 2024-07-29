@@ -133,6 +133,7 @@ export class BaseHttpClientService {
   getFullEndpointUrl(type: string, path: string) {
     const isEndpointMigrated = this.migratedEndpoints.find((e) => {
       const isTypeMatched = e.type === type;
+
       if (e.path instanceof RegExp) {
         return e.path.test(path) && isTypeMatched;
       }
