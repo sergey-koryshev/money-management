@@ -24,7 +24,6 @@ public static class MapperExtensions
         };
     }
 
-
     public static Currency ToModel(this Entities.Currency entity)
     {
         return new Currency
