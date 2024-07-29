@@ -23,7 +23,7 @@ export class UserConnectionsListComponent {
 
   onAcceptButtonClick(connection: UserConnection) {
     this.userConnectionsHttpClient
-      .acceptUserConnections(connection.id).subscribe({
+      .acceptUserConnection(connection.id).subscribe({
         next: (updatedConnection) => {
           const existingConnectionIndex = this.connections.findIndex((c) => c.id === connection.id);
           this.connections[existingConnectionIndex] = updatedConnection;
@@ -35,7 +35,7 @@ export class UserConnectionsListComponent {
 
   onDeleteButtonClick(connection: UserConnection) {
     this.userConnectionsHttpClient
-      .deleteUserConnections(connection.id).subscribe({
+      .deleteUserConnection(connection.id).subscribe({
         next: () => {
           const existingConnectionIndex = this.connections.findIndex((c) => c.id === connection.id);
           this.authService.fetchPendingConnectionsCount();

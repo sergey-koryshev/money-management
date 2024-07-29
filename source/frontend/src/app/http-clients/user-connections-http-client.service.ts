@@ -39,11 +39,11 @@ export class UserConnectionHttpClient {
     return this.baseHttpClient.get<UserConnection[]>('connections');
   }
 
-  acceptUserConnections(connectionId: number) {
+  acceptUserConnection(connectionId: number) {
     return this.baseHttpClient.post<UserConnection>(`connections/${connectionId}/accept`);
   }
 
-  deleteUserConnections(connectionId: number) {
+  deleteUserConnection(connectionId: number) {
     return this.baseHttpClient.delete<void>(`connections/${connectionId}`);
   }
 
