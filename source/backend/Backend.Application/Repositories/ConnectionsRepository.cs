@@ -41,6 +41,13 @@ public class ConnectionsRepository
             throw new InvalidOperationException($"You are already connected with the user with id '{personId}'.");
         }
 
+        var targetPerson = this.dbContext.Persons.Find(personId);
+
+        if (targetPerson == null)
+        {
+            throw new InvalidOperationException($"User with id '{personId}' doesn't exist.");
+        }
+
         var connectionEntity = new Entities.Connection
         {
             RequestingPersonId = this.identity.Id,

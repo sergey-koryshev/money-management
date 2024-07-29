@@ -103,6 +103,14 @@ public class ConnectionsRepositoryTests : TestsBase
     }
 
     [Test]
+    public void CreateConnectionRequest_TargetPersonNotExists_ErrorThrown()
+    {
+        new Action(() => new ConnectionsRepository(this.DbContext, this.Daniel).CreateConnectionRequest(-1))
+            .Should().Throw<InvalidOperationException>()
+            .WithMessage("User with id '-1' doesn't exist.");
+    }
+
+    [Test]
     public void CreateConnectionRequest_ConnectionNotExistYet_ConnectionCreated()
     {
         var createdConnectionModel = new ConnectionsRepository(this.DbContext, this.Daniel).CreateConnectionRequest(this.Veronika.Id);
