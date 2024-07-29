@@ -1,13 +1,19 @@
 ﻿namespace Backend.Tests.Repositories;
 
 using Backend.Application;
+using Backend.Domain.Models;
 using FluentAssertions;
+using FluentAssertions.Equivalency;
 using Entities = Domain.Entities;
 
 [TestFixture]
 public class ConnectionsRepositoryTests : TestsBase
 {
     private const string additionalPersonTenant = "13ed6ef2-9827-4528-b461-08eb76d8a6fc";
+
+    private readonly Func<EquivalencyAssertionOptions<Connection>, EquivalencyAssertionOptions<Connection>> connectionModelEquivalencyAssertionOptions = (o) => o
+        .Excluding(c => c.Id)
+        .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromSeconds(10))).WhenTypeIs<DateTime>();
 
     private Entities.Person additionalPerson;
 
@@ -113,22 +119,33 @@ public class ConnectionsRepositoryTests : TestsBase
     [Test]
     public void CreateConnectionRequest_ConnectionNotExistYet_ConnectionCreated()
     {
-        var createdConnectionModel = new ConnectionsRepository(this.DbContext, this.Daniel).CreateConnectionRequest(this.Veronika.Id);
-        createdConnectionModel.Should().NotBeNull();
-
-        var createdConnectionEntity = this.DbContext.Connections.FirstOrDefault(c => c.RequestingPersonId == this.Daniel.Id && c.TargetPersonId == this.Veronika.Id);
-        createdConnectionEntity.Should().BeEquivalentTo(new Entities.Connection
+        var expectedModel = new Connection
         {
-            RequestingPersonId = this.Daniel.Id,
-            TargetPersonId = this.Veronika.Id,
             IsAccepted = false,
+            RequestingPerson = new Person
+            {
+                Id = this.Daniel.Id,
+                FirstName = this.Daniel.FirstName,
+                SecondName = this.Daniel.SecondName,
+                Tenant = this.Daniel.Tenant
+            },
+            TargetPerson = new Person
+            {
+                Id = this.Veronika.Id,
+                FirstName = this.Veronika.FirstName,
+                SecondName = this.Veronika.SecondName,
+                Tenant = this.Veronika.Tenant
+            },
             RequestedOn = DateTime.UtcNow,
             AcceptedOn = null
-        }, o => o
-            .Excluding(c => c.RequestingPerson)
-            .Excluding(c => c.TargetPerson)
-            .Excluding(c => c.Id)
-            .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromSeconds(10))).WhenTypeIs<DateTime>());
+        };
+
+        var returnedModel = new ConnectionsRepository(this.DbContext, this.Daniel).CreateConnectionRequest(this.Veronika.Id);
+        returnedModel.Should().BeEquivalentTo(expectedModel, this.connectionModelEquivalencyAssertionOptions);
+
+        var createdConnection = this.DbContext.Connections.FirstOrDefault(c => c.RequestingPersonId == this.Daniel.Id && c.TargetPersonId == this.Veronika.Id);
+        createdConnection.Should().NotBeNull();
+        createdConnection!.ToModel().Should().BeEquivalentTo(expectedModel, this.connectionModelEquivalencyAssertionOptions);
     }
 
     [Test]
@@ -241,12 +258,33 @@ public class ConnectionsRepositoryTests : TestsBase
         this.DbContext.Connections.Add(connection);
         this.DbContext.SaveChanges();
 
-        new ConnectionsRepository(this.DbContext, this.Veronika).AcceptConnectionRequest(connection.Id);
+        var expectedModel = new Connection
+        {
+            IsAccepted = true,
+            RequestingPerson = new Person
+            {
+                Id = this.Daniel.Id,
+                FirstName = this.Daniel.FirstName,
+                SecondName = this.Daniel.SecondName,
+                Tenant = this.Daniel.Tenant
+            },
+            TargetPerson = new Person
+            {
+                Id = this.Veronika.Id,
+                FirstName = this.Veronika.FirstName,
+                SecondName = this.Veronika.SecondName,
+                Tenant = this.Veronika.Tenant
+            },
+            RequestedOn = DateTime.UtcNow,
+            AcceptedOn = DateTime.UtcNow
+        };
+
+        var returnedModel = new ConnectionsRepository(this.DbContext, this.Veronika).AcceptConnectionRequest(connection.Id);
+        returnedModel.Should().BeEquivalentTo(expectedModel, this.connectionModelEquivalencyAssertionOptions);
 
         var acceptedConnection = this.DbContext.Connections.Find(connection.Id);
-
-        acceptedConnection!.IsAccepted.Should().BeTrue();
-        acceptedConnection.AcceptedOn.Should().NotBeNull();
+        acceptedConnection.Should().NotBeNull();
+        acceptedConnection!.ToModel().Should().BeEquivalentTo(expectedModel, this.connectionModelEquivalencyAssertionOptions);
     }
 
     [OneTimeSetUp]
