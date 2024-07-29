@@ -12,7 +12,7 @@ import { Observable, Subject, catchError, of, switchMap, tap } from 'rxjs';
 import { ItemWithCategory } from '@app/http-clients/expenses-http-client.model';
 import { Expense } from '@app/models/expense.model';
 import { UserConnectionHttpClient } from '@app/http-clients/user-connections-http-client.service';
-import { PolyUser, User } from '@app/models/user.model';
+import { AmbiguousUser } from '@app/models/user.model';
 import { UserConnectionStatus } from '@app/models/enums/user-connection-status.enum';
 import { getUserFullName } from '@app/helpers/users.helper';
 
@@ -39,7 +39,7 @@ export class ExpenseFormComponent implements OnInit {
   searchEntry$ = new Subject<string>();
   loading: boolean;
   addItem: (item: string) => ItemWithCategoryForm;
-  friends: PolyUser[];
+  friends: AmbiguousUser[];
 
   get defaultCurrency(): number {
     const currencyId = localStorage.getItem(this.defaultCurrencyIdStorageName);
@@ -65,7 +65,7 @@ export class ExpenseFormComponent implements OnInit {
       .subscribe((connections) => {
         this.friends = connections
           .filter((c) => c.status === UserConnectionStatus.accepted)
-          .map((c) => c.user as User);
+          .map((c) => c.person as AmbiguousUser);
 
         if (this.item == null) {
           const lastUsers = this.lastUsersToShareExpense;
@@ -106,7 +106,7 @@ export class ExpenseFormComponent implements OnInit {
       }
     });
 
-    this.form.get('sharedWith')?.valueChanges.subscribe((value: PolyUser[]) => {
+    this.form.get('sharedWith')?.valueChanges.subscribe((value: AmbiguousUser[]) => {
       if (((this.item && !this.item.isShared) || (!this.item)) && value) {
         localStorage.setItem(this.lastUsersToShareExpenseStorageName, JSON.stringify(value.map((u) => u.id)));
       }
@@ -162,11 +162,11 @@ export class ExpenseFormComponent implements OnInit {
     });
   }
 
-  getUserFullName(user: PolyUser): string {
+  getUserFullName(user: AmbiguousUser): string {
     return getUserFullName(user);
   }
 
-  compareUsers(item: PolyUser, selected: PolyUser) {
+  compareUsers(item: AmbiguousUser, selected: AmbiguousUser) {
     return item.id === selected.id;
   }
 }

@@ -1,5 +1,5 @@
 export enum UserConnectionStatus {
   pending,
-  pendingOnTargetUser,
+  pendingOnTarget,
   accepted
 }

@@ -7,8 +7,6 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '@app/services/auth.service';
 import { LoginHttpClient } from '@app/http-clients/login-http-client.service';
-import { map, of, switchMap } from 'rxjs';
-import { UserConnectionHttpClient } from '@app/http-clients/user-connections-http-client.service';
 
 @Component({
   selector: 'app-navbar',

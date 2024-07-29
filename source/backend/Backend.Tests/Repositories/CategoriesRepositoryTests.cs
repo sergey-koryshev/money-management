@@ -1,4 +1,4 @@
-﻿namespace Backend.Tests;
+﻿namespace Backend.Tests.Repositories;
 
 using Backend.Application;
 using Backend.Domain.Models;
@@ -14,47 +14,47 @@ public class CategoriesRepositoryTests : TestsBase
     [TestCase(VeronikaTenant, ExpectedResult = 2)]
     public int GetAllCategories_CategoriesExistForMultipleUsers_ReturnsAllCategoriesForSpecificUserOnly(string userTenant)
     {
+        this.DbContext.Attach(this.Daniel);
+        this.DbContext.Attach(this.Veronika);
+
         var categories = new List<Entities.Category>
         {
             new Entities.Category
             {
                 Name = $"{prefix}{Guid.NewGuid()}",
                 CreatedById = this.Daniel.Id,
-                CreatedBy = this.Daniel,
                 PermittedPersons = new List<Entities.Person> { this.Daniel }
             },
             new Entities.Category
             {
                 Name = $"{prefix}{Guid.NewGuid()}",
                 CreatedById = this.Veronika.Id,
-                CreatedBy = this.Veronika,
                 PermittedPersons = new List<Entities.Person> { this.Veronika }
             },
             new Entities.Category
             {
                 Name = $"{prefix}{Guid.NewGuid()}",
                 CreatedById = this.Veronika.Id,
-                CreatedBy = this.Veronika,
                 PermittedPersons = new List<Entities.Person> { this.Veronika }
             },
             new Entities.Category
             {
                 Name = $"{prefix}{Guid.NewGuid()}",
                 CreatedById = this.Daniel.Id,
-                CreatedBy = this.Daniel,
                 PermittedPersons = new List<Entities.Person> { this.Daniel }
             },
             new Entities.Category
             {
                 Name = $"{prefix}{Guid.NewGuid()}",
                 CreatedById = this.Daniel.Id,
-                CreatedBy = this.Daniel,
                 PermittedPersons = new List<Entities.Person> { this.Daniel }
             }
         };
 
         this.DbContext.AddRange(categories);
         this.DbContext.SaveChanges();
+
+        this.ClearChangeTracker();
 
         var user = this.DbContext.Persons.FirstOrDefault(p => p.Tenant.ToString() == userTenant);
 
@@ -130,6 +130,8 @@ public class CategoriesRepositoryTests : TestsBase
     [Test]
     public void CreateCategory_NameNotUnique_ErrorThrows()
     {
+        this.DbContext.Attach(this.Daniel);
+
         var categoryName = $"{prefix}{Guid.NewGuid()}";
 
         var category = new Category
@@ -143,10 +145,11 @@ public class CategoriesRepositoryTests : TestsBase
         {
             Name = categoryName,
             CreatedById = this.Daniel.Id,
-            CreatedBy = this.Daniel,
             PermittedPersons = new List<Entities.Person> { this.Daniel }
         });
         this.DbContext.SaveChanges();
+
+        this.ClearChangeTracker();
 
         new Action(() => new CategoriesRepository(this.DbContext, this.Daniel).CreateCategory(category))
             .Should().Throw<InvalidOperationException>()

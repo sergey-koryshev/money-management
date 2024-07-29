@@ -17,6 +17,10 @@ public abstract class TestsBase
 
     private int lastCurrencyId;
 
+    private int lastConnectionId;
+
+    private int lastPersonId;
+
     protected AppDbContext DbContext { get; }
 
     protected Person Daniel { get; }
@@ -30,6 +34,14 @@ public abstract class TestsBase
     protected virtual bool ShouldCurrenciesBeDeletedInTearDown => false;
 
     protected virtual bool ShouldCurrenciesBeDeletedInOneTimeTearDown => false;
+
+    protected virtual bool ShouldConnectionsBeDeletedInTearDown => false;
+
+    protected virtual bool ShouldConnectionsBeDeletedInOneTimeTearDown => false;
+
+    protected virtual bool ShouldPersonsBeDeletedInTearDown => false;
+
+    protected virtual bool ShouldPersonsBeDeletedInOneTimeTearDown => false;
 
     protected TestsBase()
     {
@@ -70,6 +82,16 @@ public abstract class TestsBase
             this.lastCurrencyId = this.DbContext.Currencies.Select(e => e.Id).OrderByDescending(e => e).FirstOrDefault();
         }
 
+        if (this.ShouldConnectionsBeDeletedInTearDown || this.ShouldConnectionsBeDeletedInOneTimeTearDown)
+        {
+            this.lastConnectionId = this.DbContext.Connections.Select(e => e.Id).OrderByDescending(e => e).FirstOrDefault();
+        }
+
+        if (this.ShouldPersonsBeDeletedInTearDown || this.ShouldPersonsBeDeletedInOneTimeTearDown)
+        {
+            this.lastPersonId = this.DbContext.Persons.Select(e => e.Id).OrderByDescending(e => e).FirstOrDefault();
+        }
+
         this.DbContext.Persons.Add(this.Daniel);
         this.DbContext.Persons.Add(this.Veronika);
 
@@ -95,10 +117,28 @@ public abstract class TestsBase
             }
         }
 
-        this.DbContext.SaveChanges();
+        if (this.ShouldConnectionsBeDeletedInOneTimeTearDown)
+        {
+            foreach (var entity in this.DbContext.Connections.Where(c => c.Id > this.lastConnectionId))
+            {
+                this.DbContext.Connections.Remove(entity);
+            }
+        }
 
-        this.DbContext.Persons.Remove(this.Daniel);
-        this.DbContext.Persons.Remove(this.Veronika);
+        if (this.ShouldPersonsBeDeletedInOneTimeTearDown)
+        {
+            foreach (var entity in this.DbContext.Persons.Where(c => c.Id > this.lastPersonId))
+            {
+                this.DbContext.Persons.Remove(entity);
+            }
+        }
+
+        var usersTenantsToDelete = new List<string> { DanielTenant, VeronikaTenant };
+
+        foreach (var entity in this.DbContext.Persons.Where(p => usersTenantsToDelete.Contains(p.Tenant.ToString())))
+        {
+            this.DbContext.Persons.Remove(entity);
+        }
 
         this.DbContext.SaveChanges();
         this.DbContext.Dispose();
@@ -123,8 +163,34 @@ public abstract class TestsBase
             }
         }
 
+        if (this.ShouldConnectionsBeDeletedInTearDown)
+        {
+            foreach (var entity in this.DbContext.Connections.Where(c => c.Id > this.lastConnectionId))
+            {
+                this.DbContext.Connections.Remove(entity);
+            }
+        }
+
+        if (this.ShouldPersonsBeDeletedInTearDown)
+        {
+            foreach (var entity in this.DbContext.Persons.Where(c => c.Id > this.lastPersonId))
+            {
+                this.DbContext.Persons.Remove(entity);
+            }
+        }
+
         this.DbContext.SaveChanges();
     }
+
+    [SetUp]
+    protected void TestBaseSetUp()
+    {
+        // to make DbContext behave more like in production, we need to clear change tracker
+        // to prevent having cached entities in navigation properties automatically
+        this.ClearChangeTracker();
+    }
+
+    protected void ClearChangeTracker() => this.DbContext?.ChangeTracker.Clear();
 
     protected AppDbContext GetDbContext() => new AppDbContext(this.dbContextOptionsBuilder.Options);
 }

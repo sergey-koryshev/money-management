@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { UserConnectionHttpClient } from '@app/http-clients/user-connections-http-client.service';
 import { UserConnectionStatus } from '@app/models/enums/user-connection-status.enum';
 import { UserConnection } from '@app/models/user-connection.model';
@@ -9,7 +9,7 @@ import { AuthService } from '@app/services/auth.service';
   templateUrl: './user-connections-list.component.html',
   styleUrls: ['./user-connections-list.component.scss']
 })
-export class UserConnectionsListComponent implements OnInit {
+export class UserConnectionsListComponent {
   @Input()
   connections: UserConnection[]
 
@@ -20,16 +20,10 @@ export class UserConnectionsListComponent implements OnInit {
 
   constructor(private userConnectionsHttpClient: UserConnectionHttpClient, private authService: AuthService) { }
 
-  ngOnInit(): void {
-  }
 
   onAcceptButtonClick(connection: UserConnection) {
-    if (!connection.id) {
-      return;
-    }
-
     this.userConnectionsHttpClient
-      .acceptUserConnections(connection.id).subscribe({
+      .acceptUserConnection(connection.id).subscribe({
         next: (updatedConnection) => {
           const existingConnectionIndex = this.connections.findIndex((c) => c.id === connection.id);
           this.connections[existingConnectionIndex] = updatedConnection;
@@ -39,30 +33,12 @@ export class UserConnectionsListComponent implements OnInit {
       });
   }
 
-  onDeclineButtonClick(connection: UserConnection) {
-    if (!connection.id) {
-      return;
-    }
-
-    this.userConnectionsHttpClient
-      .declineUserConnections(connection.id).subscribe({
-        next: () => {
-          const existingConnectionIndex = this.connections.findIndex((c) => c.id === connection.id);
-          this.connections.splice(existingConnectionIndex, 1);
-          this.authService.fetchPendingConnectionsCount();
-        }
-      });
-  }
-
   onDeleteButtonClick(connection: UserConnection) {
-    if (!connection.id) {
-      return;
-    }
-
     this.userConnectionsHttpClient
-      .deleteUserConnections(connection.id).subscribe({
+      .deleteUserConnection(connection.id).subscribe({
         next: () => {
           const existingConnectionIndex = this.connections.findIndex((c) => c.id === connection.id);
+          this.authService.fetchPendingConnectionsCount();
           this.connections.splice(existingConnectionIndex, 1);
         }
       });

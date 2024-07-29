@@ -1,15 +1,15 @@
 <div class="d-flex flex-row justify-content-between user-connection-container">
   <div class="d-flex flex-row align-items-center user-tile-container me-3">
-    <app-user-avatar [tenant]="connection.user.tenant" [initials]="initials" class="me-2"></app-user-avatar>
+    <app-user-avatar [tenant]="connection.person.tenant" [initials]="initials" class="me-2"></app-user-avatar>
     <div class="d-flex flex-column user-name-container">
-      <div class="d-flex flex-row user-name" *ngIf="connection.user.firstName">
-        <div *ngIf="connection.user.firstName" class="me-1">{{ connection.user.firstName }}</div>
-        <div *ngIf="connection.user.secondName">{{ connection.user.secondName }}</div>
+      <div class="d-flex flex-row user-name" *ngIf="connection.person.firstName">
+        <div *ngIf="connection.person.firstName" class="me-1">{{ connection.person.firstName }}</div>
+        <div *ngIf="connection.person.secondName">{{ connection.person.secondName }}</div>
       </div>
-      <div *ngIf="connection.user.id" [ngClass]="{'small-id': connection.user.firstName}">
-        <span *ngIf="!connection.user.firstName" class="me-1">User ID:</span>
+      <div *ngIf="connection.person.id" [ngClass]="{'small-id': connection.person.firstName}">
+        <span *ngIf="!connection.person.firstName" class="me-1">User ID:</span>
         <span>#</span>
-        <span>{{ connection.user.id }}</span>
+        <span>{{ connection.person.id }}</span>
       </div>
     </div>
   </div>
@@ -21,7 +21,7 @@
           <app-pill-button class="me-1" backgroundColor="#CCF0D4" (click)="onAcceptButtonClick()">Accept</app-pill-button>
           <app-pill-button backgroundColor="#ECECEC" (click)="onDeclineButtonClick()">Decline</app-pill-button>
         </div>
-        <div *ngSwitchCase="userConnectionStatus.pendingOnTargetUser">
+        <div *ngSwitchCase="userConnectionStatus.pendingOnTarget">
           <app-pill-button backgroundColor="#FEBCB8" (click)="onCancelButtonClick()">Cancel</app-pill-button>
         </div>
         <div *ngSwitchCase="userConnectionStatus.accepted">

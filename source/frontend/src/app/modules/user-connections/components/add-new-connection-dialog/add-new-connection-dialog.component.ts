@@ -21,7 +21,7 @@ export class AddNewConnectionDialogComponent {
     this.error = undefined;
 
     this.userConnectionsHttpClient
-      .createUserConnection({userId: Number(this.userId)}).subscribe({
+      .createUserConnection(Number(this.userId)).subscribe({
         next: (createdConnection) => {
           event.modalRef.close(createdConnection);
         },

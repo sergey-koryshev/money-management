@@ -3,7 +3,7 @@
     *ngFor="let connection of connections; let first = first"
     [connection]="connection"
     (connectionAccepted)="onAcceptButtonClick($event)"
-    (connectionDeclined)="onDeclineButtonClick($event)"
+    (connectionDeclined)="onDeleteButtonClick($event)"
     (connectionCancelled)="onDeleteButtonClick($event)"
     (connectionRemoved)="onDeleteButtonClick($event)">
   </app-user-connection-card>

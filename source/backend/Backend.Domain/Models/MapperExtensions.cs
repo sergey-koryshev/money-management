@@ -35,4 +35,27 @@ public static class MapperExtensions
             Sign = entity.Sign,
         };
     }
+
+    public static Connection ToModel(this Entities.Connection entity)
+    {
+        if (entity.RequestingPerson == null)
+        {
+            throw new InvalidOperationException("Property RequestingPerson is required to convert Connection entity to model");
+        }
+
+        if (entity.TargetPerson == null)
+        {
+            throw new InvalidOperationException("Property TargetPerson is required to convert Connection entity to model");
+        }
+
+        return new Connection
+        {
+            Id = entity.Id,
+            RequestingPerson = entity.RequestingPerson.ToModel(),
+            TargetPerson = entity.TargetPerson.ToModel(),
+            IsAccepted = entity.IsAccepted,
+            RequestedOn = entity.RequestedOn,
+            AcceptedOn = entity.AcceptedOn
+        };
+    }
 }

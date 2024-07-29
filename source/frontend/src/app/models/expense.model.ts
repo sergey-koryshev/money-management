@@ -1,7 +1,7 @@
 import { Category } from "./category.model";
 import { ExchangedPrice } from "./exchanged-price.model";
 import { Price } from "./price.model";
-import { PolyUser } from "./user.model";
+import { AmbiguousUser } from "./user.model";
 
 export interface Expense {
   id?: number
@@ -10,7 +10,7 @@ export interface Expense {
   item: string
   price: Price
   exchangedPrice?: ExchangedPrice
-  sharedWith: PolyUser[]
+  sharedWith: AmbiguousUser[]
   isShared: boolean
   canBeEdited: boolean
   description?: string

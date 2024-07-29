@@ -5,8 +5,8 @@ export interface User {
   secondName?: string
 }
 
-export interface PolyUser {
-  id?: number
+export interface AmbiguousUser {
+  id: number
   tenant?: string
   firstName?: string
   secondName?: string

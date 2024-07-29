@@ -34,7 +34,7 @@ jobs:
       artifact-prefix: frontend-dev
       build-command: "npm run build:dev"
   prod-build:
-    if: ${{ github.event_name == 'pull_request' || github.event.workflow_run.conclusion == 'success' }}
+    if: ${{ github.event_name != 'pull_request' && github.event.workflow_run.conclusion == 'success' }}
     name: Frontend Prod Build
     uses: ./.github/workflows/node-build.yml
     with:
