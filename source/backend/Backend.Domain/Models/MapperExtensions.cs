@@ -1,4 +1,4 @@
-namespace Backend.Domain.Models;
+namespace Backend.Domain.Models.Mappers;
 
 public static class MapperExtensions
 {
@@ -56,6 +56,43 @@ public static class MapperExtensions
             IsAccepted = entity.IsAccepted,
             RequestedOn = entity.RequestedOn,
             AcceptedOn = entity.AcceptedOn
+        };
+    }
+
+    public static Expense ToModel(this Entities.Expense entity, Price? exchangedPrice)
+    {
+        if (entity.Category == null)
+        {
+            throw new InvalidOperationException("Property Category is required to convert Expense entity to model");
+        }
+
+        if (entity.Currency == null)
+        {
+            throw new InvalidOperationException("Property Currency is required to convert Expense entity to model");
+        }
+
+        if (entity.CreatedBy == null)
+        {
+            throw new InvalidOperationException("Property CreatedBy is required to convert Expense entity to model");
+        }
+
+        var originalPrice = new Price
+        {
+            Amount = entity.PriceAmount,
+            Currency = entity.Currency.ToModel()
+        };
+
+        return new Expense
+        {
+            Id = entity.Id,
+            CreatedOn = entity.CreatedOn,
+            Name = entity.Name,
+            Description = entity.Description,
+            Category = entity.Category.ToModel(),
+            Price = exchangedPrice ?? originalPrice,
+            OriginalPrice = exchangedPrice != null ? originalPrice : null,
+            CreatedBy = entity.CreatedBy.ToModel(),
+            PermittedPersons = entity.PermittedPersons.Select(p => p.ToModel()).ToList()
         };
     }
 }
