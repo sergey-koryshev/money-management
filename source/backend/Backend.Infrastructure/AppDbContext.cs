@@ -1,4 +1,4 @@
-﻿namespace Backend.Infrastructure;
+namespace Backend.Infrastructure;
 
 using Backend.Domain.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
@@ -16,6 +16,8 @@ public class AppDbContext : IdentityUserContext<User, int>
 
     public virtual DbSet<Connection> Connections { get; set; }
 
+    public virtual DbSet<Expense> Expenses { get; set; }
+
     public AppDbContext() {}
 
     public AppDbContext(DbContextOptions<AppDbContext> options): base(options) { }
@@ -32,5 +34,14 @@ public class AppDbContext : IdentityUserContext<User, int>
                 r => r.HasOne(typeof(Person)).WithMany().HasForeignKey("PersonId").HasPrincipalKey(nameof(Person.Id)),
                 l => l.HasOne(typeof(Category)).WithMany().HasForeignKey("CategoryId").HasPrincipalKey(nameof(Category.Id)),
                 j => j.HasKey("CategoryId", "PersonId"));
+
+        modelBuilder.Entity<Expense>()
+            .HasMany(s => s.PermittedPersons)
+            .WithMany(c => c.Expenses)
+            .UsingEntity(
+                "ExpensesToPerson",
+                r => r.HasOne(typeof(Person)).WithMany().HasForeignKey("PersonId").HasPrincipalKey(nameof(Person.Id)),
+                l => l.HasOne(typeof(Expense)).WithMany().HasForeignKey("ExpenseId").HasPrincipalKey(nameof(Expense.Id)),
+                j => j.HasKey("ExpenseId", "PersonId"));
     }
 }
