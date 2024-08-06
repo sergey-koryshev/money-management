@@ -2,7 +2,7 @@
 
 using Backend.Domain.DTO;
 using Backend.Domain.Entities;
-using Backend.Domain.Models;
+using Backend.Domain.Models.Mappers;
 using Backend.Infrastructure;
 using Microsoft.AspNetCore.Identity;
 using Models = Domain.Models;
