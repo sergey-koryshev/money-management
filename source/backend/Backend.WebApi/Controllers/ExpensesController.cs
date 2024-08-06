@@ -1,6 +1,6 @@
 ﻿namespace Backend.WebApi;
 
-using Backend.Domain.Models;
+using Backend.Domain.DTO;
 using Backend.Service;
 using Backend.WebApi.Results;
 using Microsoft.AspNetCore.Mvc;
@@ -19,7 +19,7 @@ public class ExpensesController
     [HttpGet]
     public IActionResult GetAllCurrencies(int month, int year)
     {
-        var categories = this.expensesService.GetExpenses(new ExpensesFilter
+        var categories = this.expensesService.GetExpenses(new ExpensesFilterDto
         {
             Month = month,
             Year = year

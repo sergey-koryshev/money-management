@@ -14,7 +14,7 @@ public class ExpensesService : ServiseBase, IExpensesService
     {
     }
 
-    public List<ExpenseDto> GetExpenses(ExpensesFilter filter)
+    public List<ExpenseDto> GetExpenses(ExpensesFilterDto filter)
     {
         return this.ExecuteActionInTransaction((dbContext) =>
         {
@@ -27,7 +27,7 @@ public class ExpensesService : ServiseBase, IExpensesService
             // need to add yourself to let mapper map your details correctly
             connectedPersonsIds.Add(this.Identity!.Id);
 
-            var result = new ExpensesRepository(dbContext, this.Identity!).GetExpenses(filter);
+            var result = new ExpensesRepository(dbContext, this.Identity!).GetExpenses(this.Mapper.Map<ExpensesFilter>(filter));
             return result.Select(e => this.Mapper.Map<ExpenseDto>(e, o => {
                 o.Items["Identity"] = this.Identity;
                 o.Items["ConnectedPersonsIds"] = connectedPersonsIds;

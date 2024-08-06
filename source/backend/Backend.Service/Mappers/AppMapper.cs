@@ -22,6 +22,8 @@ public class AppMapper : Profile
         CreateMap<Expense, ExpenseDto>()
             .ForMember(d => d.PermittedPersons, o => o.MapFrom(this.MapExpensePermittedPersons));
         CreateMap<Price, PriceDto>();
+
+        CreateMap<ExpensesFilterDto, ExpensesFilter>();
     }
 
     private ConnectionStatus MapConnectionStatus(Connection src, ConnectionDto _, ConnectionStatus __, ResolutionContext context)
