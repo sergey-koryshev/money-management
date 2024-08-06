@@ -1,6 +1,7 @@
 ﻿namespace Backend.Application;
 
 using Backend.Domain.Models;
+using Backend.Domain.Models.Mappers;
 using Backend.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Entities = Domain.Entities;
@@ -35,7 +36,7 @@ public class CategoriesRepository
         return newEntity.Id;
     }
 
-    private IQueryable<Entities.Category> GetCategoriesQuery() {
+    internal IQueryable<Entities.Category> GetCategoriesQuery() {
         return this.dbContext.Categories
             .Include(c => c.CreatedBy)
             .Where(c => c.PermittedPersons.Any(p => p.Id == this.identity.Id));
