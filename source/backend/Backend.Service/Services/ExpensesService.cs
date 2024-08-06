@@ -19,11 +19,8 @@ public class ExpensesService : ServiseBase, IExpensesService
         return this.ExecuteActionInTransaction((dbContext) =>
         {
             var connectedPersonsIds = new ConnectionsRepository(dbContext, this.Identity!)
-                .GetAllConnections()
-                .Where(c => c.IsAccepted)
-                .SelectMany(c => new[] { c.TargetPerson.Id, c.RequestingPerson.Id })
-                .ToHashSet();
-            
+                .GetConnectedPersonsIds(true);
+
             // need to add yourself to let mapper map your details correctly
             connectedPersonsIds.Add(this.Identity!.Id);
 

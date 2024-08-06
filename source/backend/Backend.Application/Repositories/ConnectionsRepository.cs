@@ -94,6 +94,14 @@ public class ConnectionsRepository
         return acceptingConnection.ToModel();
     }
 
+    public HashSet<int> GetConnectedPersonsIds(bool onlyAccepted)
+    {
+        return this.GetConnectionsQuery()
+            .Where(c => onlyAccepted ? c.IsAccepted == true : true)
+            .SelectMany(c => new [] { c.RequestingPersonId, c.TargetPersonId })
+            .ToHashSet();
+    }
+
     internal IQueryable<Entities.Connection> GetConnectionsQuery()
     {
         return this.dbContext.Connections
