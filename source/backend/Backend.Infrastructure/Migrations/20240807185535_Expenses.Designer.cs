@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Backend.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240807063800_Expenses")]
+    [Migration("20240807185535_Expenses")]
     partial class Expenses
     {
         /// <inheritdoc />
@@ -141,7 +141,7 @@ namespace Backend.Infrastructure.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CategoryId")
+                    b.Property<int?>("CategoryId")
                         .HasColumnType("integer");
 
                     b.Property<int>("CreatedById")
@@ -403,9 +403,7 @@ namespace Backend.Infrastructure.Migrations
                 {
                     b.HasOne("Backend.Domain.Entities.Category", "Category")
                         .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CategoryId");
 
                     b.HasOne("Backend.Domain.Entities.Person", "CreatedBy")
                         .WithMany("CreatedExpenses")

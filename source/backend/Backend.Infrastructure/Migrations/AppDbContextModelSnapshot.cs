@@ -130,6 +130,47 @@ namespace Backend.Infrastructure.Migrations
                     b.ToTable("CurrencyMappings");
                 });
 
+            modelBuilder.Entity("Backend.Domain.Entities.Expense", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CreatedById")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("CurrencyId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<double>("PriceAmount")
+                        .HasColumnType("double precision");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("CurrencyId");
+
+                    b.ToTable("Expenses");
+                });
+
             modelBuilder.Entity("Backend.Domain.Entities.Person", b =>
                 {
                     b.Property<int>("Id")
@@ -225,6 +266,21 @@ namespace Backend.Infrastructure.Migrations
                     b.HasIndex("PersonId");
 
                     b.ToTable("CategoriesToPerson");
+                });
+
+            modelBuilder.Entity("ExpensesToPerson", b =>
+                {
+                    b.Property<int>("ExpenseId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PersonId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ExpenseId", "PersonId");
+
+                    b.HasIndex("PersonId");
+
+                    b.ToTable("ExpensesToPerson");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<int>", b =>
@@ -340,11 +396,51 @@ namespace Backend.Infrastructure.Migrations
                     b.Navigation("Person");
                 });
 
+            modelBuilder.Entity("Backend.Domain.Entities.Expense", b =>
+                {
+                    b.HasOne("Backend.Domain.Entities.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId");
+
+                    b.HasOne("Backend.Domain.Entities.Person", "CreatedBy")
+                        .WithMany("CreatedExpenses")
+                        .HasForeignKey("CreatedById")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Domain.Entities.Currency", "Currency")
+                        .WithMany()
+                        .HasForeignKey("CurrencyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("Currency");
+                });
+
             modelBuilder.Entity("CategoriesToPerson", b =>
                 {
                     b.HasOne("Backend.Domain.Entities.Category", null)
                         .WithMany()
                         .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Backend.Domain.Entities.Person", null)
+                        .WithMany()
+                        .HasForeignKey("PersonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("ExpensesToPerson", b =>
+                {
+                    b.HasOne("Backend.Domain.Entities.Expense", null)
+                        .WithMany()
+                        .HasForeignKey("ExpenseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -390,6 +486,8 @@ namespace Backend.Infrastructure.Migrations
             modelBuilder.Entity("Backend.Domain.Entities.Person", b =>
                 {
                     b.Navigation("CreatedCategories");
+
+                    b.Navigation("CreatedExpenses");
 
                     b.Navigation("CurrencyMappings");
                 });

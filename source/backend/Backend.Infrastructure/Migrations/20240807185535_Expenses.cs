@@ -21,7 +21,7 @@ namespace Backend.Infrastructure.Migrations
                     Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: true),
-                    CategoryId = table.Column<int>(type: "integer", nullable: false),
+                    CategoryId = table.Column<int>(type: "integer", nullable: true),
                     PriceAmount = table.Column<double>(type: "double precision", nullable: false),
                     CurrencyId = table.Column<int>(type: "integer", nullable: false),
                     CreatedById = table.Column<int>(type: "integer", nullable: false)
@@ -33,8 +33,7 @@ namespace Backend.Infrastructure.Migrations
                         name: "FK_Expenses_Categories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "Categories",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Expenses_Currencies_CurrencyId",
                         column: x => x.CurrencyId,
