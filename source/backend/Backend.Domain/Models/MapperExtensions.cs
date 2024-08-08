@@ -61,11 +61,6 @@ public static class MapperExtensions
 
     public static Expense ToModel(this Entities.Expense entity, Price? exchangedPrice)
     {
-        if (entity.Category == null)
-        {
-            throw new InvalidOperationException("Property Category is required to convert Expense entity to model");
-        }
-
         if (entity.Currency == null)
         {
             throw new InvalidOperationException("Property Currency is required to convert Expense entity to model");
@@ -85,10 +80,10 @@ public static class MapperExtensions
         return new Expense
         {
             Id = entity.Id,
-            CreatedOn = entity.CreatedOn,
+            Date = entity.Date,
             Name = entity.Name,
             Description = entity.Description,
-            Category = entity.Category.ToModel(),
+            Category = entity.Category?.ToModel(),
             Price = exchangedPrice ?? originalPrice,
             OriginalPrice = exchangedPrice != null ? originalPrice : null,
             CreatedBy = entity.CreatedBy.ToModel(),

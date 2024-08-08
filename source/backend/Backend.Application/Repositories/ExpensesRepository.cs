@@ -27,11 +27,11 @@ public class ExpensesRepository
         this.currenciesRepository = new CurrenciesRepository(dbContext, identity);
     }
 
-    public Expense CreateExpense(Expense model)
+    public Expense CreateExpense(ChangeExpenseParams changeParams)
     {
-        this.ValidateModel(model);
+        this.ValidateChangeParams(changeParams);
 
-        var entity = this.CreateEntity(model);
+        var entity = this.CreateEntity(changeParams);
         this.dbContext.Expenses.Add(entity);
         this.dbContext.SaveChanges();
 
@@ -76,35 +76,45 @@ public class ExpensesRepository
             {
                 var startDate = new DateTime(filter.Year.Value, filter.Month.Value, 1).ToUniversalTime();
                 var endDate = startDate.AddMonths(1);
-                query = query.Where(e => e.CreatedOn >= startDate && e.CreatedOn < endDate);
+                query = query.Where(e => e.Date >= startDate && e.Date < endDate);
             }
         }
 
         return query;
     }
 
-    private void ValidateModel(Expense model)
+    private void ValidateChangeParams(ChangeExpenseParams changeParams)
     {
-        if (model == null)
+        if (changeParams == null)
         {
-            throw new ArgumentNullException(nameof(model));
+            throw new ArgumentNullException(nameof(changeParams));
         }
 
-        if (model.Category.Id != 0)
+        if (changeParams.Category != null)
         {
-            var existingCategory = this.categoriesRepository.GetCategoriesQuery().Where(c => c.Id == model.Category.Id).FirstOrDefault();
-            
-            if (existingCategory == null)
+            if (changeParams.Category.Id != 0)
             {
-                throw new InvalidOperationException($"Category with id '{model.Category.Id}' doesn't exist.");
+                var existingCategory = this.categoriesRepository.GetCategoriesQuery().Where(c => c.Id == changeParams.Category.Id).FirstOrDefault();
+                
+                if (existingCategory == null)
+                {
+                    throw new InvalidOperationException($"Category with id '{changeParams.Category.Id}' doesn't exist.");
+                }
             }
         }
 
-        var permittedPersonsIds = model.PermittedPersons.Where(p => p.Id != this.identity.Id).Select(p => p.Id).ToHashSet();
+        var currency = this.dbContext.Currencies.Find(changeParams.CurrencyId);
+
+        if (currency == null)
+        {
+            throw new InvalidOperationException($"Currency with id '{changeParams.CurrencyId}' doesn't exist.");
+        }
+
+        var permittedPersonsIds = changeParams.PermittedPersonsIds.ToHashSet();
 
         if (permittedPersonsIds.Any())
         {
-            var connectedPermittedPersonsIds = this.connectionsRepository.GetConnectionsQuery().Where(c => c.IsAccepted).SelectMany(c => new [] { c.RequestingPersonId, c.TargetPersonId}).Where(id => permittedPersonsIds.Contains(id)).ToHashSet();
+            var connectedPermittedPersonsIds = this.connectionsRepository.GetConnectedPersonsIds(true).Where(permittedPersonsIds.Contains).ToHashSet();
             
             if (permittedPersonsIds.Count != connectedPermittedPersonsIds.Count)
             {
@@ -117,29 +127,34 @@ public class ExpensesRepository
         }
     }
 
-    private Entities.Expense CreateEntity(Expense model)
+    private Entities.Expense CreateEntity(ChangeExpenseParams changeParams)
     {
-        int categoryId = model.Category.Id;
+        int? categoryId = null;
 
-        if (model.Category.Id == 0)
+        if (changeParams.Category != null)
         {
-            var existingCategory = this.categoriesRepository.GetCategoriesQuery().FirstOrDefault(c => c.Name == model.Category.Name);
-            
-            if (existingCategory == null)
+            categoryId = changeParams.Category.Id;
+
+            if (changeParams.Category.Id == 0)
             {
-                categoryId = this.categoriesRepository.CreateCategory(new Category
+                var existingCategory = this.categoriesRepository.GetCategoriesQuery().FirstOrDefault(c => c.Name == changeParams.Category.Name);
+                
+                if (existingCategory == null)
                 {
-                    Name = model.Category.Name,
-                    CreatedBy = this.identity.ToModel()
-                });
-            }
-            else
-            {
-                categoryId = existingCategory.Id;
+                    categoryId = this.categoriesRepository.CreateCategory(new Category
+                    {
+                        Name = changeParams.Category.Name,
+                        CreatedBy = this.identity.ToModel()
+                    });
+                }
+                else
+                {
+                    categoryId = existingCategory.Id;
+                }
             }
         }
 
-        var permittedPersonsIds = model.PermittedPersons.Select(p => p.Id).ToHashSet();
+        var permittedPersonsIds = changeParams.PermittedPersonsIds.ToHashSet();
 
         if (!permittedPersonsIds.Contains(this.identity.Id))
         {
@@ -150,12 +165,12 @@ public class ExpensesRepository
 
         return new Entities.Expense
         {
-            CreatedOn = DateTime.UtcNow,
-            Name = model.Name,
-            Description = model.Description,
+            Date = changeParams.Date,
+            Name = changeParams.Name,
+            Description = changeParams.Description,
             CategoryId = categoryId,
-            PriceAmount = model.Price.Amount,
-            CurrencyId = model.Price.Currency.Id,
+            PriceAmount = changeParams.PriceAmount,
+            CurrencyId = changeParams.CurrencyId,
             CreatedById = this.identity.Id,
             PermittedPersons = permittedPersons
         };

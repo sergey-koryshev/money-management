@@ -4,13 +4,13 @@ public class Expense
 {
     public int Id { get; set; }
 
-    public DateTime CreatedOn { get; set; }
+    public DateTime Date { get; set; }
 
     public required string Name { get; set; }
 
     public string? Description { get; set; }
 
-    public required Category Category { get; set; }
+    public Category? Category { get; set; }
 
     public required Price Price { get; set; }
 

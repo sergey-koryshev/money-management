@@ -4,13 +4,13 @@ public class ExpenseDto
 {
     public int Id { get; set; }
 
-    public DateTime CreatedOn { get; set; }
+    public DateTime Date { get; set; }
 
     public required string Name { get; set; }
 
     public string? Description { get; set; }
 
-    public required CategoryDto Category { get; set; }
+    public CategoryDto? Category { get; set; }
 
     public required PriceDto Price { get; set; }
 

@@ -1,6 +1,7 @@
 ﻿namespace Backend.Service.Mappers;
 
 using AutoMapper;
+using Backend.Domain;
 using Backend.Domain.DTO;
 using Backend.Domain.Models;
 using Entities = Domain.Entities;
@@ -24,6 +25,8 @@ public class AppMapper : Profile
         CreateMap<Price, PriceDto>();
 
         CreateMap<ExpensesFilterDto, ExpensesFilter>();
+        CreateMap<LookupItemDto, LookupItem>();
+        CreateMap<ChangeExpenseParamsDto, ChangeExpenseParams>();
     }
 
     private ConnectionStatus MapConnectionStatus(Connection src, ConnectionDto _, ConnectionStatus __, ResolutionContext context)
