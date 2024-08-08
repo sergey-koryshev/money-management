@@ -98,6 +98,7 @@ public class ConnectionsRepository
     {
         return this.GetConnectionsQuery()
             .Where(c => onlyAccepted ? c.IsAccepted == true : true)
+            .AsEnumerable()
             .SelectMany(c => new [] { c.RequestingPersonId, c.TargetPersonId })
             .ToHashSet();
     }
