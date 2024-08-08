@@ -6,4 +6,6 @@ namespace Backend.Service;
 public interface IExpensesService
 {
     public List<ExpenseDto> GetExpenses(ExpensesFilterDto filter);
+
+    public ExpenseDto CreateExpense(ChangeExpenseParamsDto changeParams);
 }

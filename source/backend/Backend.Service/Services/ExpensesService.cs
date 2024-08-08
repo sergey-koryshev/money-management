@@ -18,11 +18,7 @@ public class ExpensesService : ServiseBase, IExpensesService
     {
         return this.ExecuteActionInTransaction((dbContext) =>
         {
-            var connectedPersonsIds = new ConnectionsRepository(dbContext, this.Identity!)
-                .GetConnectedPersonsIds(true);
-
-            // need to add yourself to let mapper map your details correctly
-            connectedPersonsIds.Add(this.Identity!.Id);
+            var connectedPersonsIds = this.GetConnectedPersonsIds(dbContext);
 
             var result = new ExpensesRepository(dbContext, this.Identity!).GetExpenses(this.Mapper.Map<ExpensesFilter>(filter));
             return result.Select(e => this.Mapper.Map<ExpenseDto>(e, o => {
@@ -30,5 +26,30 @@ public class ExpensesService : ServiseBase, IExpensesService
                 o.Items["ConnectedPersonsIds"] = connectedPersonsIds;
             })).ToList();
         });
+    }
+
+    public ExpenseDto CreateExpense(ChangeExpenseParamsDto changeParams)
+    {
+        return this.ExecuteActionInTransaction((dbContext) =>
+        {
+            var connectedPersonsIds = this.GetConnectedPersonsIds(dbContext);
+
+            var result = new ExpensesRepository(dbContext, this.Identity!).CreateExpense(this.Mapper.Map<ChangeExpenseParams>(changeParams));
+            return this.Mapper.Map<ExpenseDto>(result, o => {
+                o.Items["Identity"] = this.Identity;
+                o.Items["ConnectedPersonsIds"] = connectedPersonsIds;
+            });
+        });
+    }
+
+    private HashSet<int> GetConnectedPersonsIds(AppDbContext dbContext)
+    {
+        var connectedPersonsIds = new ConnectionsRepository(dbContext, this.Identity!)
+                .GetConnectedPersonsIds(true);
+
+        // need to add yourself to let mapper resolve your details correctly
+        connectedPersonsIds.Add(this.Identity!.Id);
+
+        return connectedPersonsIds;
     }
 }

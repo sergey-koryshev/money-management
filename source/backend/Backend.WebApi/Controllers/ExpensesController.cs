@@ -17,13 +17,20 @@ public class ExpensesController
     }
 
     [HttpGet]
-    public IActionResult GetAllCurrencies(int month, int year)
+    public IActionResult GetExpenses(int month, int year)
     {
-        var categories = this.expensesService.GetExpenses(new ExpensesFilterDto
+        var result = this.expensesService.GetExpenses(new ExpensesFilterDto
         {
             Month = month,
             Year = year
         });
-        return new AppActionResult(categories);
+        return new AppActionResult(result);
+    }
+
+    [HttpPost]
+    public IActionResult CreateExpense([FromBody] ChangeExpenseParamsDto changeParams)
+    {
+        var result = this.expensesService.CreateExpense(changeParams);
+        return new AppActionResult(result);
     }
 }
