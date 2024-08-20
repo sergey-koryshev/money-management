@@ -34,6 +34,14 @@ public class ExpensesController
         return new AppActionResult(result);
     }
 
+    [HttpDelete]
+    [Route("{expenseId}")]
+    public IActionResult DeleteExpense(int expenseId)
+    {
+        this.expensesService.DeleteExpense(expenseId);
+        return new AppActionResult();
+    }
+
     [HttpGet]
     [Route("search/expenseNames")]
     public IActionResult SearchExpenseNames(string term)

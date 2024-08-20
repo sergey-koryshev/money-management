@@ -9,5 +9,7 @@ public interface IExpensesService
 
     public ExpenseDto CreateExpense(ChangeExpenseParamsDto changeParams);
 
+    public void DeleteExpense(int expenseId);
+
     public List<ExtendedExpenseNameDto> SearchExpenseNames(string term);
 }

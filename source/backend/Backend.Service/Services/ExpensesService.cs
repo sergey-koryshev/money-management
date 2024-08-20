@@ -42,6 +42,14 @@ public class ExpensesService : ServiseBase, IExpensesService
         });
     }
 
+    public void DeleteExpense(int expenseId)
+    {
+        this.ExecuteActionInTransaction((dbContext) =>
+        {
+            new ExpensesRepository(dbContext, this.Identity!).DeleteExpense(expenseId);
+        });
+    }
+
     public List<ExtendedExpenseNameDto> SearchExpenseNames(string term)
     {
         return this.ExecuteActionInTransaction((dbContext) =>

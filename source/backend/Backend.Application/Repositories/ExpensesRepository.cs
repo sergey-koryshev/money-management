@@ -61,6 +61,22 @@ public class ExpensesRepository
         return filteredExpenses.Select(e => e.ToModel(mainCurrency != null && expenseIdToExchangedPrice.ContainsKey(e.Id) ? expenseIdToExchangedPrice[e.Id] : null)).ToList();
     }
 
+    public void DeleteExpense(int id)
+    {
+        var entity = this.GetExpenseEntityById(id);
+
+        if (entity.CreatedById == this.identity.Id)
+        {
+            this.dbContext.Expenses.Remove(entity);
+        }
+        else
+        {
+            entity.PermittedPersons = entity.PermittedPersons.Where(p => p.Id != this.identity.Id).ToList();
+        }
+        
+        this.dbContext.SaveChanges();
+    }
+
     public List<ExtendedExpenseName> FindExpenseNames(string term)
     {
         return this.GetExpensesQuery()
@@ -190,6 +206,18 @@ public class ExpensesRepository
             CreatedById = this.identity.Id,
             PermittedPersons = permittedPersons
         };
+    }
+
+    private Entities.Expense GetExpenseEntityById(int id)
+    {
+        var entity = this.GetExpensesQuery().FirstOrDefault(e => e.Id == id);
+
+        if (entity == null)
+        {
+            throw new InvalidOperationException($"Expense with id '{id}' doesn't exist.");
+        }
+
+        return entity;
     }
 
     /// <summary>
