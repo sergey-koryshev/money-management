@@ -8,7 +8,7 @@ public class ChangeExpenseParams
 
     public string? Description { get; set; }
 
-    public LookupItem? Category { get; set; }
+    public string? CategoryName { get; set; }
 
     public double PriceAmount { get; set; }
 
