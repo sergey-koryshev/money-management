@@ -12,6 +12,8 @@ public class AppMapper : Profile
     {
         CreateMap<Person, PersonDto>();
         CreateMap<Category, CategoryDto>();
+        CreateMap<Category, string>()
+            .ConvertUsing(o => o.Name!);;
         CreateMap<Currency, CurrencyDto>();
         CreateMap<Person, AmbiguousPersonDto>()
             .ForMember(d => d.FirstName, o => o.MapFrom((src, dest, obj, context) => this.MapPersonDetails(src, dest, obj, context, (person) => person.FirstName)))
@@ -23,6 +25,8 @@ public class AppMapper : Profile
         CreateMap<Expense, ExpenseDto>()
             .ForMember(d => d.PermittedPersons, o => o.MapFrom(this.MapExpensePermittedPersons));
         CreateMap<Price, PriceDto>();
+        CreateMap<LookupItem, LookupItemDto>();
+        CreateMap<ExtendedExpenseName, ExtendedExpenseNameDto>();
 
         CreateMap<ExpensesFilterDto, ExpensesFilter>();
         CreateMap<LookupItemDto, LookupItem>();

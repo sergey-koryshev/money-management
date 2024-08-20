@@ -8,6 +8,10 @@ using Entities = Domain.Entities;
 
 public class ExpensesRepository
 {
+    private const int maxNamesSearchResults = 5;
+
+    private const double minTrigramsSimilarity = 0.1;
+
     private readonly AppDbContext dbContext;
 
     private readonly Entities.Person identity;
@@ -31,7 +35,7 @@ public class ExpensesRepository
     {
         this.ValidateChangeParams(changeParams);
 
-        var entity = this.CreateEntity(changeParams);
+        var entity = this.CreateOrUpdateEntity(changeParams);
         this.dbContext.Expenses.Add(entity);
         this.dbContext.SaveChanges();
 
@@ -59,6 +63,26 @@ public class ExpensesRepository
         }
 
         return filteredExpenses.Select(e => e.ToModel(mainCurrency != null && expenseIdToExchangedPrice.ContainsKey(e.Id) ? expenseIdToExchangedPrice[e.Id] : null)).ToList();
+    }
+
+    public Expense UpdateExpense(int id, ChangeExpenseParams changeParams)
+    {
+        var entity = this.GetExpenseEntityById(id);
+
+        this.ValidateChangeParams(changeParams, entity);
+
+        this.CreateOrUpdateEntity(changeParams, entity);
+        this.dbContext.SaveChanges();
+
+        var mainCurrency = this.currenciesRepository.GetMainCurrency();
+        Price? convertedPrice = null;
+
+        if (mainCurrency != null)
+        {
+            convertedPrice = this.ConvertPrice(entity, mainCurrency);
+        }
+
+        return entity.ToModel(convertedPrice);
     }
 
     public void DeleteExpense(int id)
@@ -115,26 +139,22 @@ public class ExpensesRepository
         return query;
     }
 
-    private void ValidateChangeParams(ChangeExpenseParams changeParams)
+    private void ValidateChangeParams(ChangeExpenseParams changeParams, Entities.Expense? entity = null)
     {
         if (changeParams == null)
         {
             throw new ArgumentNullException(nameof(changeParams));
         }
 
-        if (changeParams.Category != null)
+        var connectedPersonsIds = this.connectionsRepository.GetConnectedPersonsIds(true);
+
+        // restrict edit action for users which are not connected to creator or not exist in permitted list
+        if (entity != null && entity.CreatedById != this.identity.Id && (!entity.PermittedPersons.Where(p => p.Id == this.identity.Id).Any() || !connectedPersonsIds.Contains(this.identity.Id)))
         {
-            if (changeParams.Category.Id != 0)
-            {
-                var existingCategory = this.categoriesRepository.GetCategoriesQuery().Where(c => c.Id == changeParams.Category.Id).FirstOrDefault();
-                
-                if (existingCategory == null)
-                {
-                    throw new InvalidOperationException($"Category with id '{changeParams.Category.Id}' doesn't exist.");
-                }
-            }
+            throw new InvalidOperationException("You don't have permissions to edit the expense.");
         }
 
+        // check if specified currency exists
         var currency = this.dbContext.Currencies.Find(changeParams.CurrencyId);
 
         if (currency == null)
@@ -142,58 +162,95 @@ public class ExpensesRepository
             throw new InvalidOperationException($"Currency with id '{changeParams.CurrencyId}' doesn't exist.");
         }
 
-        var permittedPersonsIds = changeParams.PermittedPersonsIds.ToHashSet();
-
-        if (permittedPersonsIds.Any())
+        // we need to validate list of permitted persons only if the expense is edited by creator or during creation new expense
+        if (entity == null || entity.CreatedById == this.identity.Id)
         {
-            var connectedPermittedPersonsIds = this.connectionsRepository.GetConnectedPersonsIds(true).Where(permittedPersonsIds.Contains).ToHashSet();
-            
-            if (permittedPersonsIds.Count != connectedPermittedPersonsIds.Count)
+            var permittedPersonsIds = changeParams.PermittedPersonsIds.ToHashSet();
+
+            if (permittedPersonsIds.Any())
             {
-                var notPermittedPersonsIds = permittedPersonsIds.Where(id => !connectedPermittedPersonsIds.Contains(id)).ToHashSet();
-                throw new InvalidOperationException(string.Format(
-                    "You cannot share this expense with users '{0}' since you don't have connections with them.",
-                    string.Join(", ", notPermittedPersonsIds)
-                ));
+                if (entity != null && entity.PermittedPersons.Any())
+                {
+                    // we need to exclude persons which already has permissions to manage this expense even they are not connected to the user anymore
+                    var existingPermittedPersons = entity.PermittedPersons.Select(p => p.Id).ToHashSet();
+                    permittedPersonsIds.RemoveWhere(existingPermittedPersons.Contains);
+                }
+
+                // check if all specified persons connected with the user
+                var connectedPermittedPersonsIds = this.connectionsRepository.GetConnectedPersonsIds(true).Where(permittedPersonsIds.Contains).ToHashSet();
+
+                if (permittedPersonsIds.Count != connectedPermittedPersonsIds.Count)
+                {
+                    var notPermittedPersonsIds = permittedPersonsIds.Where(id => !connectedPermittedPersonsIds.Contains(id)).ToHashSet();
+                    throw new InvalidOperationException(string.Format(
+                        "You cannot share this expense with users '{0}' since you don't have connections with them.",
+                        string.Join(", ", notPermittedPersonsIds)
+                    ));
+                }
             }
         }
     }
 
-    private Entities.Expense CreateEntity(ChangeExpenseParams changeParams)
+    private Entities.Expense CreateOrUpdateEntity(ChangeExpenseParams changeParams, Entities.Expense? entity = null)
     {
         int? categoryId = null;
 
-        if (changeParams.Category != null)
-        {
-            categoryId = changeParams.Category.Id;
-
-            if (changeParams.Category.Id == 0)
-            {
-                var existingCategory = this.categoriesRepository.GetCategoriesQuery().FirstOrDefault(c => c.Name == changeParams.Category.Name);
-                
-                if (existingCategory == null)
-                {
-                    categoryId = this.categoriesRepository.CreateCategory(new Category
-                    {
-                        Name = changeParams.Category.Name,
-                        CreatedBy = this.identity.ToModel()
-                    });
-                }
-                else
-                {
-                    categoryId = existingCategory.Id;
-                }
-            }
-        }
-
         var permittedPersonsIds = changeParams.PermittedPersonsIds.ToHashSet();
 
-        if (!permittedPersonsIds.Contains(this.identity.Id))
+        // need to ensure that creator is always in list of permitted users
+        if ((entity == null || entity.CreatedById == this.identity.Id) && !permittedPersonsIds.Contains(this.identity.Id))
         {
             permittedPersonsIds.Add(this.identity.Id);
         }
 
         var permittedPersons = this.dbContext.Persons.Where(p => permittedPersonsIds.Contains(p.Id)).ToList();
+
+        if (!string.IsNullOrWhiteSpace(changeParams.CategoryName))
+        {
+            // Category name resolves to category be the following rules:
+            // 1) Filtered by name
+            // 2) Placed categories created by entity's owner at the top
+            // 3) Sorted by amount of desired persons in permitted persons list
+            // 4) Take first found category
+            var resolvedCategory = this.categoriesRepository.GetCategoriesQuery()
+                .Where(c => c.Name == changeParams.CategoryName)
+                .OrderByDescending(i => i.CreatedById == (entity != null ? entity.CreatedById : this.identity.Id))
+                    .ThenBy(c => c.PermittedPersons.Where(p => permittedPersonsIds.Contains(p.Id)).Count())
+                .FirstOrDefault();
+
+            if (resolvedCategory == null)
+            {
+                categoryId = this.categoriesRepository.CreateCategory(new Category
+                {
+                    Name = changeParams.CategoryName,
+                    CreatedBy = this.identity.ToModel(),
+                    PermittedPersons = permittedPersons.Select(p => p.ToModel()).ToList()
+                });
+            }
+            else
+            {
+                categoryId = resolvedCategory.Id;
+                this.categoriesRepository.UpdatePermittedPersonsList(resolvedCategory.Id, permittedPersonsIds);
+            }
+        }
+
+        if (entity != null)
+        {
+            entity.Date = changeParams.Date;
+            entity.Name = changeParams.Name;
+            entity.Description = changeParams.Description;
+            entity.CategoryId = categoryId;
+            entity.PriceAmount = changeParams.PriceAmount;
+            entity.CurrencyId = changeParams.CurrencyId;
+
+            // only creator can change list of permitted persons
+            if (entity.CreatedById == this.identity.Id)
+            {
+                entity.PermittedPersons = permittedPersons;
+            }
+
+            return entity;
+        }
 
         return new Entities.Expense
         {

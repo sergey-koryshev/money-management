@@ -34,6 +34,14 @@ public class ExpensesController
         return new AppActionResult(result);
     }
 
+    [HttpPut]
+    [Route("{expenseId}")]
+    public IActionResult UpdateExpense(int expenseId, [FromBody] ChangeExpenseParamsDto changeParams)
+    {
+        var result = this.expensesService.UpdateExpense(expenseId, changeParams);
+        return new AppActionResult(result);
+    }
+
     [HttpDelete]
     [Route("{expenseId}")]
     public IActionResult DeleteExpense(int expenseId)

@@ -1,4 +1,4 @@
-using AutoMapper;
+﻿using AutoMapper;
 using Backend.Application;
 using Backend.Domain.DTO;
 using Backend.Domain.Models;
@@ -18,9 +18,8 @@ public class ExpensesService : ServiseBase, IExpensesService
     {
         return this.ExecuteActionInTransaction((dbContext) =>
         {
-            var connectedPersonsIds = this.GetConnectedPersonsIds(dbContext);
-
             var result = new ExpensesRepository(dbContext, this.Identity!).GetExpenses(this.Mapper.Map<ExpensesFilter>(filter));
+            var connectedPersonsIds = this.GetConnectedPersonsIds(dbContext);
             return result.Select(e => this.Mapper.Map<ExpenseDto>(e, o => {
                 o.Items["Identity"] = this.Identity;
                 o.Items["ConnectedPersonsIds"] = connectedPersonsIds;
@@ -32,12 +31,23 @@ public class ExpensesService : ServiseBase, IExpensesService
     {
         return this.ExecuteActionInTransaction((dbContext) =>
         {
-            var connectedPersonsIds = this.GetConnectedPersonsIds(dbContext);
-
             var result = new ExpensesRepository(dbContext, this.Identity!).CreateExpense(this.Mapper.Map<ChangeExpenseParams>(changeParams));
             return this.Mapper.Map<ExpenseDto>(result, o => {
                 o.Items["Identity"] = this.Identity;
-                o.Items["ConnectedPersonsIds"] = connectedPersonsIds;
+                o.Items["ConnectedPersonsIds"] = this.GetConnectedPersonsIds(dbContext);;
+            });
+        });
+    }
+
+    public ExpenseDto UpdateExpense(int expenseId, ChangeExpenseParamsDto changeParams)
+    {
+        return this.ExecuteActionInTransaction((dbContext) =>
+        {
+            var result = new ExpensesRepository(dbContext, this.Identity!).UpdateExpense(expenseId, this.Mapper.Map<ChangeExpenseParams>(changeParams));
+            
+            return this.Mapper.Map<ExpenseDto>(result, o => {
+                o.Items["Identity"] = this.Identity;
+                o.Items["ConnectedPersonsIds"] = this.GetConnectedPersonsIds(dbContext);
             });
         });
     }
