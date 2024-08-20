@@ -1,6 +1,7 @@
-namespace Backend.Infrastructure;
+﻿namespace Backend.Infrastructure;
 
 using Backend.Domain.Entities;
+using Backend.Infrastructure.Converters;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,6 +27,9 @@ public class AppDbContext : IdentityUserContext<User, int>
     {
         base.OnModelCreating(modelBuilder);
 
+        modelBuilder.HasPostgresExtension("pg_trgm");
+        modelBuilder.HasPostgresExtension("unaccent");
+
         modelBuilder.Entity<Category>()
             .HasMany(s => s.PermittedPersons)
             .WithMany(c => c.Categories)
@@ -43,5 +47,12 @@ public class AppDbContext : IdentityUserContext<User, int>
                 r => r.HasOne(typeof(Person)).WithMany().HasForeignKey("PersonId").HasPrincipalKey(nameof(Person.Id)),
                 l => l.HasOne(typeof(Expense)).WithMany().HasForeignKey("ExpenseId").HasPrincipalKey(nameof(Expense.Id)),
                 j => j.HasKey("ExpenseId", "PersonId"));
+    }
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        base.ConfigureConventions(configurationBuilder);
+
+        configurationBuilder.Properties<DateTime>().HaveConversion<DateTimeUtcConverter>();
     }
 }

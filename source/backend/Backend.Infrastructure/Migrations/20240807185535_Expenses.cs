@@ -113,16 +113,28 @@ namespace Backend.Infrastructure.Migrations
                 {
                     { 1, 1 },
                     { 2, 1 },
+                    { 2, 2 },
+                    { 2, 3 },
                     { 3, 1 },
                     { 4, 1 },
                     { 5, 1 },
                     { 5, 2 },
-                    { 6, 2 },
                     { 6, 1 },
+                    { 6, 2 },
                     { 6, 3 },
-                    { 7, 2 },
-                    { 2, 2 },
-                    { 2, 3 },
+                    { 7, 2 }
+                });
+            
+            migrationBuilder.InsertData(
+                table: "CategoriesToPerson",
+                columns: new[] { "CategoryId", "PersonId" },
+                values: new object[,]
+                {
+                    { 3, 2 },
+                    { 3, 3 },
+                    { 4, 1 },
+                    { 5, 1 },
+                    { 5, 3 }
                 });
         }
 
