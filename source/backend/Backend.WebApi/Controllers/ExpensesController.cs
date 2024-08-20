@@ -1,4 +1,4 @@
-﻿namespace Backend.WebApi;
+namespace Backend.WebApi;
 
 using Backend.Domain.DTO;
 using Backend.Service;
@@ -33,4 +33,13 @@ public class ExpensesController
         var result = this.expensesService.CreateExpense(changeParams);
         return new AppActionResult(result);
     }
+
+    [HttpGet]
+    [Route("search/expenseNames")]
+    public IActionResult SearchExpenseNames(string term)
+    {
+        var result = this.expensesService.SearchExpenseNames(term);
+        return new AppActionResult(result);
+    }
+
 }

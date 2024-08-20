@@ -1,4 +1,4 @@
-﻿namespace Backend.Application;
+namespace Backend.Application;
 
 using Backend.Domain.Models;
 using Backend.Domain.Models.Mappers;
@@ -59,6 +59,22 @@ public class ExpensesRepository
         }
 
         return filteredExpenses.Select(e => e.ToModel(mainCurrency != null && expenseIdToExchangedPrice.ContainsKey(e.Id) ? expenseIdToExchangedPrice[e.Id] : null)).ToList();
+    }
+
+    public List<ExtendedExpenseName> FindExpenseNames(string term)
+    {
+        return this.GetExpensesQuery()
+            .Where(e => EF.Functions.TrigramsSimilarity(EF.Functions.Unaccent(e.Name), EF.Functions.Unaccent(term)) > minTrigramsSimilarity)
+            .Select(e => new { e.Name, CategoryName = e.CategoryId == null ? null : e.Category!.Name, Similarity = EF.Functions.TrigramsSimilarity(EF.Functions.Unaccent(e.Name), EF.Functions.Unaccent(term)) })
+            .Distinct()
+            .OrderByDescending(o => o.Similarity)
+            .Take(maxNamesSearchResults)
+            .Select(o => new ExtendedExpenseName
+            {
+                Name = o.Name,
+                CategoryName = o.CategoryName
+            })
+            .ToList();
     }
 
     internal IQueryable<Entities.Expense> GetExpensesQuery(ExpensesFilter? filter = null)

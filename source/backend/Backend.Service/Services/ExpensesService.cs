@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using Backend.Application;
 using Backend.Domain.DTO;
 using Backend.Domain.Models;
@@ -39,6 +39,15 @@ public class ExpensesService : ServiseBase, IExpensesService
                 o.Items["Identity"] = this.Identity;
                 o.Items["ConnectedPersonsIds"] = connectedPersonsIds;
             });
+        });
+    }
+
+    public List<ExtendedExpenseNameDto> SearchExpenseNames(string term)
+    {
+        return this.ExecuteActionInTransaction((dbContext) =>
+        {
+            var result = new ExpensesRepository(dbContext, this.Identity!).FindExpenseNames(term);
+            return result.Select(r => this.Mapper.Map<ExtendedExpenseNameDto>(r)).ToList();
         });
     }
 
