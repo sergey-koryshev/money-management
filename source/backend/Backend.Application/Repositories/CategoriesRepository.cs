@@ -1,5 +1,6 @@
 ﻿namespace Backend.Application;
 
+using Backend.Domain.Extensions;
 using Backend.Domain.Models;
 using Backend.Domain.Models.Mappers;
 using Backend.Infrastructure;
@@ -36,20 +37,63 @@ public class CategoriesRepository
         return newEntity.Id;
     }
 
-    internal IQueryable<Entities.Category> GetCategoriesQuery() {
-        return this.dbContext.Categories
+    /// <summary>
+    /// Adds persons to permitted persons list.
+    /// </summary>
+    /// <param name="entity">The category entity.</param>
+    /// <param name="personsIdsToAdd">The list of persons ids to grant permissions for.</param>
+    /// <remarks>
+    /// The method also check that creator is in permitted list.
+    /// </remarks>
+    internal void UpdatePermittedPersonsList(Entities.Category entity, HashSet<int> personsIdsToAdd)
+    {
+        // get existing permittees
+        var permittedPersonsIds = entity.PermittedPersons.Select(p => p.Id).ToHashSet();
+
+        // ensure that creator is in the permitted persons list
+        if (!permittedPersonsIds.Contains(entity.CreatedById))
+        {
+            permittedPersonsIds.Add(entity.CreatedById);
+        }
+
+        // adding desired persons
+        if (!personsIdsToAdd.IsEmpty())
+        {
+            foreach (var id in personsIdsToAdd)
+            {
+                permittedPersonsIds.Add(id);
+            }
+        }
+
+        // put final list of persons to entity's permitted persons list
+        var permittedPersons = this.dbContext.Persons.Where(p => permittedPersonsIds.Contains(p.Id)).ToList();
+        entity.PermittedPersons = permittedPersons;
+    }
+
+    internal void UpdatePermittedPersonsList(int categoryId, HashSet<int> personsIdsToAdd)
+    {
+        var entity = this.GeCategoryEntityById(categoryId);
+        this.UpdatePermittedPersonsList(entity, personsIdsToAdd);
+    }
+
+    internal IQueryable<Entities.Category> GetCategoriesQuery(bool includePermittedPersons = false) {
+        var query = this.dbContext.Categories
             .Include(c => c.CreatedBy)
-            .Where(c => c.PermittedPersons.Any(p => p.Id == this.identity.Id));
+            .AsQueryable();
+
+        if (includePermittedPersons)
+        {
+            query = query.Include(c => c.PermittedPersons);
+        }
+        
+        return query.Where(c => c.PermittedPersons.Any(p => p.Id == this.identity.Id));
     }
 
     private void UpdateEntity(Entities.Category entity, Category model)
     {
         entity.Name = model.Name;
-        entity.CreatedById = model.CreatedBy?.Id ?? this.identity.Id;
-
-        var permittedPersonsIds = model.PermittedPersons.Select(p => p.Id).ToHashSet();
-        var permittedPersons = this.dbContext.Persons.Where(p => permittedPersonsIds.Contains(p.Id)).ToList();
-        entity.PermittedPersons = permittedPersons;
+        entity.CreatedById = this.identity.Id;
+        this.UpdatePermittedPersonsList(entity, model.PermittedPersons.Select(p => p.Id).ToHashSet());
     }
 
     private void ValidateModel(Category model)
@@ -80,11 +124,6 @@ public class CategoriesRepository
             throw new InvalidOperationException(string.Format("Users with IDs '{0}' don't exist and cannot be associated with the category.", string.Join(", ", notExistingPersonIds)));
         }
 
-        if (model.Id == 0 && !model.PermittedPersons.Any(p => p.Id == model.CreatedBy.Id))
-        {
-            model.PermittedPersons.Add(model.CreatedBy);
-        }
-
         if (string.IsNullOrWhiteSpace(model.Name))
         {
             throw new InvalidOperationException("Name cannot be empty.");
@@ -96,5 +135,17 @@ public class CategoriesRepository
         {
             throw new InvalidOperationException("Category must contain unique name.");
         }
+    }
+
+    private Entities.Category GeCategoryEntityById(int id)
+    {
+        var entity = this.GetCategoriesQuery(true).FirstOrDefault(e => e.Id == id);
+
+        if (entity == null)
+        {
+            throw new InvalidOperationException($"Category with id '{id}' doesn't exist.");
+        }
+
+        return entity;
     }
 }
