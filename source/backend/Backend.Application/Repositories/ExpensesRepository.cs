@@ -1,4 +1,4 @@
-namespace Backend.Application;
+﻿namespace Backend.Application;
 
 using Backend.Domain.Models;
 using Backend.Domain.Models.Mappers;
@@ -133,6 +133,13 @@ public class ExpensesRepository
                 var startDate = new DateTime(filter.Year.Value, filter.Month.Value, 1).ToUniversalTime();
                 var endDate = startDate.AddMonths(1);
                 query = query.Where(e => e.Date >= startDate && e.Date < endDate);
+            }
+
+            if (!string.IsNullOrWhiteSpace(filter.SearchingTerm))
+            {
+                query = query.Where(e => EF.Functions.TrigramsSimilarity(EF.Functions.Unaccent(e.Name), EF.Functions.Unaccent(filter.SearchingTerm)) > minTrigramsSimilarity
+                    || (e.Description != null && EF.Functions.TrigramsSimilarity(EF.Functions.Unaccent(e.Description), EF.Functions.Unaccent(filter.SearchingTerm)) > minTrigramsSimilarity));
+
             }
         }
 

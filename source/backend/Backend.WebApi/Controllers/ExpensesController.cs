@@ -1,4 +1,4 @@
-namespace Backend.WebApi;
+﻿namespace Backend.WebApi;
 
 using Backend.Domain.DTO;
 using Backend.Service;
@@ -58,4 +58,14 @@ public class ExpensesController
         return new AppActionResult(result);
     }
 
+    [HttpGet]
+    [Route("search")]
+    public IActionResult SearchExpenses(string searchingTerm)
+    {
+        var result = this.expensesService.GetExpenses(new ExpensesFilterDto
+        {
+            SearchingTerm = searchingTerm
+        });
+        return new AppActionResult(result);
+    }
 }
