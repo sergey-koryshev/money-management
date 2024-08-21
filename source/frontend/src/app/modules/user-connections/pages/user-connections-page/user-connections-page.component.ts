@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { UserConnection } from '@app/models/user-connection.model';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddNewConnectionDialogComponent } from '../../components/add-new-connection-dialog/add-new-connection-dialog.component';
+import { UserService } from '@app/services/user.service';
 
 @Component({
   selector: 'app-user-connections-page',
@@ -12,9 +12,9 @@ import { AddNewConnectionDialogComponent } from '../../components/add-new-connec
 export class UserConnectionsPageComponent {
   connections: UserConnection[];
 
-  constructor(private route: ActivatedRoute, private modalService: NgbModal) {
-    this.route.data.subscribe((data) => {
-      this.connections = data.connections as UserConnection[];
+  constructor(userService: UserService, private modalService: NgbModal) {
+    userService.connections$.subscribe((connections) => {
+      this.connections = connections;
       this.sortConnections();
     });
   }

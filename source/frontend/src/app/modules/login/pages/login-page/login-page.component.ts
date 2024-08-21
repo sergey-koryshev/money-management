@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthService } from '@app/services/auth.service';
+import { UserService } from '@app/services/user.service';
 
 @Component({
   selector: 'app-login-page',
@@ -9,10 +9,10 @@ import { AuthService } from '@app/services/auth.service';
 })
 export class LoginPageComponent implements OnInit {
 
-  constructor(private router: Router, private authService: AuthService) { }
+  constructor(private router: Router, private userService: UserService) { }
 
   ngOnInit(): void {
-    if (this.authService.isLoggedIn) {
+    if (this.userService.isLoggedIn) {
       this.router.navigate(['expenses']);
     }
   }
