@@ -19,9 +19,9 @@ public class CategoriesRepository
         this.identity = identity;
     }
 
-    public List<Category> GetAllCategories()
+    public List<string> GetUniqueCategoryNames()
     {
-        return this.GetCategoriesQuery().Select(c => c.ToModel()).ToList();
+        return this.GetCategoriesQuery().Select(c => c.Name!).Distinct().ToList();
     }
 
     public int CreateCategory(Category categoryModel)

@@ -11,12 +11,11 @@ public class CategoriesService : ServiseBase, ICategoriesService
 {
     public CategoriesService(IHttpContextAccessor httpContextAccessor, IMapper mapper, IDbContextFactory<AppDbContext> dbContextFactory) : base(httpContextAccessor, mapper, dbContextFactory) {}
 
-    public List<CategoryDto> GetAllCategories()
+    public List<string> GetUniqueCategoryNames()
     {
         return this.ExecuteActionInTransaction((dbContext) =>
         {
-            var result = new CategoriesRepository(dbContext, this.Identity!).GetAllCategories();
-            return result.Select(c => this.Mapper.Map<CategoryDto>(c)).ToList();
+            return new CategoriesRepository(dbContext, this.Identity!).GetUniqueCategoryNames().ToList();
         });
     }
 }
