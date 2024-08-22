@@ -2,6 +2,7 @@
 
 using Backend.Application;
 using Backend.Domain.Models;
+using Backend.Domain.Models.Mappers;
 using FluentAssertions;
 using FluentAssertions.Equivalency;
 using Entities = Domain.Entities;

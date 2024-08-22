@@ -2,6 +2,7 @@
 
 using Backend.Application;
 using Backend.Domain.Models;
+using Backend.Domain.Models.Mappers;
 using FluentAssertions;
 using Entities = Domain.Entities;
 
@@ -10,12 +11,14 @@ public class CategoriesRepositoryTests : TestsBase
 {
     private const string prefix = "CategoriesRepositoryTests_";
 
-    [TestCase(DanielTenant, ExpectedResult = 3)]
+    [TestCase(DanielTenant, ExpectedResult = 4)]
     [TestCase(VeronikaTenant, ExpectedResult = 2)]
-    public int GetAllCategories_CategoriesExistForMultipleUsers_ReturnsAllCategoriesForSpecificUserOnly(string userTenant)
+    public int GetUniqueCategoryNames_CategoriesExistForMultipleUsers_ReturnsUniqueCategoriesForSpecificUserOnly(string userTenant)
     {
         this.DbContext.Attach(this.Daniel);
         this.DbContext.Attach(this.Veronika);
+
+        var categoryName = $"{prefix}{Guid.NewGuid()}";
 
         var categories = new List<Entities.Category>
         {
@@ -28,8 +31,8 @@ public class CategoriesRepositoryTests : TestsBase
             new Entities.Category
             {
                 Name = $"{prefix}{Guid.NewGuid()}",
-                CreatedById = this.Veronika.Id,
-                PermittedPersons = new List<Entities.Person> { this.Veronika }
+                CreatedById = this.Daniel.Id,
+                PermittedPersons = new List<Entities.Person> { this.Daniel }
             },
             new Entities.Category
             {
@@ -45,9 +48,15 @@ public class CategoriesRepositoryTests : TestsBase
             },
             new Entities.Category
             {
-                Name = $"{prefix}{Guid.NewGuid()}",
+                Name = categoryName,
                 CreatedById = this.Daniel.Id,
-                PermittedPersons = new List<Entities.Person> { this.Daniel }
+                PermittedPersons = new List<Entities.Person> { this.Daniel, this.Veronika }
+            },
+            new Entities.Category
+            {
+                Name = categoryName,
+                CreatedById = this.Veronika.Id,
+                PermittedPersons = new List<Entities.Person> { this.Veronika, this.Daniel }
             }
         };
 
@@ -58,7 +67,7 @@ public class CategoriesRepositoryTests : TestsBase
 
         var user = this.DbContext.Persons.FirstOrDefault(p => p.Tenant.ToString() == userTenant);
 
-        var result = new CategoriesRepository(this.DbContext, user!).GetAllCategories();
+        var result = new CategoriesRepository(this.DbContext, user!).GetUniqueCategoryNames();
 
         return result.Count();
     }
