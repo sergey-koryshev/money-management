@@ -7,9 +7,11 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { EditExpenseDialogComponent } from '../edit-expense-dialog/edit-expense-dialog.component';
 import { Month } from '@app/models/month.model';
 import { ItemChangedEventArgs } from './expenses-table.model';
-import { AmbiguousUser } from '@app/models/user.model';
+import { AmbiguousUser, User } from '@app/models/user.model';
 import { ExpenseViewType } from '@app/models/enums/expense-view-type.enum';
 import { getUserFullName, getUserInitials } from '@app/helpers/users.helper';
+import { UserConnectionStatus } from '@app/models/enums/user-connection-status.enum';
+import { UserService } from '@app/services/user.service';
 
 @Component({
   selector: 'app-expenses-table',
@@ -22,6 +24,7 @@ export class ExpensesTableComponent implements OnInit {
     column: 'date',
     direction: 'desc'
   }
+  private friends: AmbiguousUser[];
 
   @Input()
   selectedMonth?: Month;
@@ -36,6 +39,13 @@ export class ExpensesTableComponent implements OnInit {
   itemChanged = new EventEmitter<ItemChangedEventArgs>()
 
   columns: TableColumn<Expense>[] = [
+    {
+      name: 'createdBy',
+      ignorePadding: true,
+      disableSorting: true,
+      template: () => this.createdByTemplate,
+      hide: () => this.isCreatedByColumnVisible()
+    },
     {
       name: 'date',
       displayName: 'Date',
@@ -54,8 +64,8 @@ export class ExpensesTableComponent implements OnInit {
       }
     },
     {
-      name: 'item',
-      displayName: 'Item'
+      name: 'name',
+      displayName: 'Name'
     },
     {
       name: 'description',
@@ -69,7 +79,7 @@ export class ExpensesTableComponent implements OnInit {
       sortFunc: priceComparer
     },
     {
-      name: 'sharedWith',
+      name: 'permittedPersons',
       ignorePadding: true,
       disableSorting: true,
       template: () => this.sharedWithTemplate,
@@ -84,6 +94,7 @@ export class ExpensesTableComponent implements OnInit {
   ];
 
   sorting = this.defaultSorting;
+  currentUser: User | null;
 
   @ViewChild('price', { read: TemplateRef, static: true })
   price: TemplateRef<unknown>;
@@ -91,13 +102,20 @@ export class ExpensesTableComponent implements OnInit {
   @ViewChild('actions', { read: TemplateRef, static: true })
   actions: TemplateRef<unknown>;
 
+  @ViewChild('createdBy', { read: TemplateRef, static: true })
+  createdByTemplate: TemplateRef<unknown>;
+
   @ViewChild('sharedWith', { read: TemplateRef, static: true })
   sharedWithTemplate: TemplateRef<unknown>;
 
   @ViewChild('confirmationDialog', { read: TemplateRef, static: true })
   confirmationDialog: TemplateRef<unknown>;
 
-  constructor(private expensesHttpClient: ExpensesHttpClientService, private modalService: NgbModal) {}
+  constructor(private expensesHttpClient: ExpensesHttpClientService, private modalService: NgbModal, userService: UserService) {
+    this.currentUser = userService.user;
+    console.log(this.currentUser);
+    userService.connections$.subscribe((connections) => this.friends = connections.filter((c) => c.status === UserConnectionStatus.accepted).map((c) => c.person));
+  }
 
   ngOnInit(): void {
     var storedSorting = localStorage.getItem(this.sortingStorageName);
@@ -117,7 +135,7 @@ export class ExpensesTableComponent implements OnInit {
             complete: () => {
               this.data.splice(indexOfItem, 1);
               this.itemChanged.emit({
-                oldValue: item.exchangedPrice?.amount ?? item.price.amount
+                oldValue: item.originalPrice?.amount ?? item.price.amount
               });
             },
             error: (ex) => {
@@ -142,17 +160,17 @@ export class ExpensesTableComponent implements OnInit {
           || (this.selectedMonth.month == date.getMonth() + 1
             && this.selectedMonth.year == date.getFullYear())
             && (this.viewType === ExpenseViewType.All
-              || (this.viewType === ExpenseViewType.OnlyShared && updatedItem.sharedWith.length > 0)
-              || (this.viewType === ExpenseViewType.OnlyNotShared && updatedItem.sharedWith.length === 0))) {
+              || (this.viewType === ExpenseViewType.OnlyShared && updatedItem.permittedPersons.length > 0)
+              || (this.viewType === ExpenseViewType.OnlyNotShared && updatedItem.permittedPersons.length === 0))) {
           this.data[indexOfItem] = updatedItem;
           this.itemChanged.emit({
-            oldValue: item.exchangedPrice?.amount ?? item.price.amount,
-            newValue: updatedItem.exchangedPrice?.amount ?? updatedItem.price.amount,
+            oldValue: item.originalPrice?.amount ?? item.price.amount,
+            newValue: updatedItem.originalPrice?.amount ?? updatedItem.price.amount,
           })
         } else {
           this.data.splice(indexOfItem, 1);
           this.itemChanged.emit({
-            oldValue: item.exchangedPrice?.amount ?? item.price.amount
+            oldValue: item.originalPrice?.amount ?? item.price.amount
           })
         }
       }
@@ -164,6 +182,10 @@ export class ExpensesTableComponent implements OnInit {
   }
 
   getUserFullName(user: AmbiguousUser): string {
+    if (user.id == this.currentUser?.id) {
+      return "You";
+    }
+
     return getUserFullName(user);
   }
 
@@ -171,7 +193,23 @@ export class ExpensesTableComponent implements OnInit {
     localStorage.setItem(this.sortingStorageName, JSON.stringify(sortingDescriptor));
   }
 
+  canRowBeEdited(row: Expense) {
+    if (this.currentUser == null) {
+      return false;
+    }
+
+    return row.createdBy.id == this.currentUser.id || this.friends.some((f) => f.id === row.createdBy.id)
+  }
+
+  private isCreatedByColumnVisible(): boolean {
+    if (this.currentUser == null) {
+      return false;
+    }
+
+    return this.data?.filter((e) => e.createdBy.id != this.currentUser!.id).length > 0;
+  }
+
   private isSharedWithColumnVisible() {
-    return this.data?.filter((e) => e.sharedWith.length > 0).length > 0;
+    return this.data?.filter((e) => e.permittedPersons.length > 0).length > 0;
   }
 }
