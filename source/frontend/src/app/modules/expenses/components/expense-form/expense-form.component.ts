@@ -1,22 +1,20 @@
 import { ExpensesHttpClientService } from '@http-clients/expenses-http-client.service';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { CurrencyService } from '@services/currency.service';
-import { CategoryHttpClient } from '@http-clients/category-http-client.service';
 import { Component, OnInit, Input } from '@angular/core';
-import { FormBuilder, FormGroup, NgSelectOption, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Currency } from '@app/models/currency.model';
 import { ExpensesMonthService } from '@app/services/expenses-month.service';
 import { Month } from '@app/models/month.model';
-import { Category } from '@app/models/category.model';
 import { Observable, Subject, catchError, of, switchMap, tap } from 'rxjs';
-import { ItemWithCategory } from '@app/http-clients/expenses-http-client.model';
+import { ExtendedExpenseName } from '@app/http-clients/expenses-http-client.model';
 import { Expense } from '@app/models/expense.model';
-import { UserConnectionHttpClient } from '@app/http-clients/user-connections-http-client.service';
-import { AmbiguousUser } from '@app/models/user.model';
+import { AmbiguousUser, User } from '@app/models/user.model';
 import { UserConnectionStatus } from '@app/models/enums/user-connection-status.enum';
 import { getUserFullName } from '@app/helpers/users.helper';
+import { UserService } from '@app/services/user.service';
 
-interface ItemWithCategoryForm extends ItemWithCategory {
+interface ExtendedExpenseNameForm extends ExtendedExpenseName {
   isNew: boolean
 }
 
@@ -29,16 +27,20 @@ export class ExpenseFormComponent implements OnInit {
   @Input()
   item?: Expense;
 
+  private readonly currentUser: User | null;
+
   private defaultCurrencyIdStorageName = 'default-currency';
   private lastUsedDateStorageName = 'last-date';
   private lastUsersToShareExpenseStorageName = 'last-users-to-share-expense';
+  private isItemShared = false;
+
   currencies: Currency[];
-  categories: Category[];
+  categories: string[];
   form: FormGroup;
-  items$: Observable<ItemWithCategory[]>;
+  names$: Observable<ExtendedExpenseName[]>;
   searchEntry$ = new Subject<string>();
   loading: boolean;
-  addItem: (item: string) => ItemWithCategoryForm;
+  addExpenseName = (name: string) => ({ name, isNew: true })
   friends: AmbiguousUser[];
 
   get defaultCurrency(): number {
@@ -55,59 +57,79 @@ export class ExpenseFormComponent implements OnInit {
     private fb: FormBuilder,
     currency: CurrencyService,
     expensesMonthService: ExpensesMonthService,
-    private categoriesHttpClient: CategoryHttpClient,
     private expensesHttpClient: ExpensesHttpClientService,
-    private userConnectionsHttpClient: UserConnectionHttpClient) {
+    userService: UserService) {
+    this.currentUser = userService.user;
+    this.isItemShared = this.checkIfItemShared(this.item);
     this.currencies = currency.currencies;
-    this.categoriesHttpClient.getAllCategories()
+    userService.categories$
       .subscribe((categories) => this.categories = categories)
-    this.userConnectionsHttpClient.getUserConnections()
+    userService.connections$
       .subscribe((connections) => {
         this.friends = connections
           .filter((c) => c.status === UserConnectionStatus.accepted)
           .map((c) => c.person as AmbiguousUser);
 
+        if (this.item != null) {
+          // we need to add missing persons from list of permitted ones to let user select them in lookup
+          if (!this.isItemShared && this.item.permittedPersons.length > 0) {
+            this.item.permittedPersons.forEach((p) => {
+              if (!this.friends.some(f => f.id === p.id)) {
+                this.friends.push(p);
+              }
+            })
+          }
+        }
+
         if (this.item == null) {
           const lastUsers = this.lastUsersToShareExpense;
           this.form?.patchValue({
-            sharedWith: this.friends.filter((u) => lastUsers?.includes(Number(u.id)))
+            permittedPersons: this.friends.filter((u) => lastUsers?.includes(Number(u.id)))
           });
         }
       });
-    this.items$ = this.searchEntry$.pipe(
+
+    this.names$ = this.searchEntry$.pipe(
       tap(() => this.loading = true),
-      switchMap(searchEntry => this.expensesHttpClient.getExistingItems(searchEntry).pipe(
+      switchMap(searchEntry => this.expensesHttpClient.getExistingNames(searchEntry).pipe(
         catchError(() => of([])),
         tap(() => this.loading = false)
     )));
-    this.addItem = (item) => ({ item, isNew: true });
 
     this.form = this.fb.group({
       'id': [null],
       'date': [this.getCurrentDate(expensesMonthService.month), Validators.required],
-      'item': [null, Validators.required],
+      'name': [null, Validators.required],
       'priceAmount': [null, Validators.required],
       'currencyId': [this.defaultCurrency, Validators.required],
-      'category': [null],
-      'sharedWith': [null],
+      'categoryName': [null],
+      'permittedPersons': [[]],
       'description': [null]
     });
-
-    this.form.controls['date'].valueChanges
-      .subscribe(value => sessionStorage.setItem(this.lastUsedDateStorageName, JSON.stringify(value)));
   }
 
   ngOnInit(): void {
+    // populate values before saving any values to local storage
     this.populateValues(this.item);
 
+    // save last date to local storage
+    this.form.controls['date'].valueChanges.subscribe(value => {
+      if (value) {
+        sessionStorage.setItem(this.lastUsedDateStorageName, JSON.stringify(value));
+      }
+    });
+
+    // save last currency to local storage
     this.form.get('currencyId')?.valueChanges.subscribe((value) => {
       if (value) {
         localStorage.setItem(this.defaultCurrencyIdStorageName, String(value));
       }
     });
 
-    this.form.get('sharedWith')?.valueChanges.subscribe((value: AmbiguousUser[]) => {
-      if (((this.item && !this.item.isShared) || (!this.item)) && value) {
+    // save last list of permitted persons ids to local storage
+    this.form.get('permittedPersons')?.valueChanges.subscribe((value: AmbiguousUser[]) => {
+      // we save it only if item is not shared or if item is being created
+      if (((this.item && !this.isItemShared) || (!this.item)) && value) {
         localStorage.setItem(this.lastUsersToShareExpenseStorageName, JSON.stringify(value.map((u) => u.id)));
       }
     });
@@ -118,6 +140,8 @@ export class ExpenseFormComponent implements OnInit {
     let resultDate: NgbDate;
 
     if (lastDate != null) {
+      // TODO: check UX when user change month and there is pre-populated date for another month
+      // do we need to clean it in this case or just not set it as a default value?
       resultDate = JSON.parse(lastDate) as NgbDate;
     } else {
       const currentDay = new Date().getDate();
@@ -128,20 +152,13 @@ export class ExpenseFormComponent implements OnInit {
     return resultDate;
   }
 
-  itemChanged(data: ItemWithCategoryForm) {
-    let category: Category | undefined;
-
-    if (data !== undefined) {
-      if (data.isNew) {
-        return;
-      }
-      category = data.category;
-    } else {
-      category = undefined;
+  nameChanged(data: ExtendedExpenseNameForm) {
+    if (data.isNew) {
+      return;
     }
 
     this.form.patchValue({
-      category: category
+      categoryName: data.categoryName
     });
   }
 
@@ -153,11 +170,11 @@ export class ExpenseFormComponent implements OnInit {
     this.form.patchValue({
       id: item.id,
       date: new NgbDate(item.date.getFullYear(), item.date.getMonth() + 1, item.date.getDate()),
-      item: item.item,
-      priceAmount: item.price.amount,
-      currencyId: item.price.currency.id,
-      category: item.category,
-      sharedWith: item.isShared ? null : item.sharedWith,
+      name: item.name,
+      priceAmount: item.originalPrice?.amount ?? item.price.amount,
+      currencyId: item.originalPrice?.currency.id ?? item.price.currency.id,
+      categoryName: item.category?.name,
+      permittedPersons: this.isItemShared ? [] : item.permittedPersons,
       description: item.description
     });
   }
@@ -168,5 +185,20 @@ export class ExpenseFormComponent implements OnInit {
 
   compareUsers(item: AmbiguousUser, selected: AmbiguousUser) {
     return item.id === selected.id;
+  }
+
+  checkIfItemShared(item?: Expense) {
+    if (item == null) {
+      return false;
+    }
+
+    return item.createdBy.id !== this.currentUser?.id;
+  }
+
+  isSharedWithLookupVisible(item?: Expense) {
+    const hasFriends = this.friends != null && this.friends.length > 0;
+
+    return (item == null && hasFriends) ||
+      (item != null && item.createdBy.id === this.currentUser?.id && (item!.permittedPersons.length > 0 || hasFriends))
   }
 }
