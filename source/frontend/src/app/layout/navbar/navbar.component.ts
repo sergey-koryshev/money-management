@@ -5,8 +5,9 @@ import { User } from '@models/user.model';
 import { emptyMainCurrency } from 'src/app/constants';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '@app/services/auth.service';
+import { UserService } from '@app/services/user.service';
 import { LoginHttpClient } from '@app/http-clients/login-http-client.service';
+import { UserConnectionStatus } from '@app/models/enums/user-connection-status.enum';
 
 @Component({
   selector: 'app-navbar',
@@ -33,17 +34,17 @@ export class NavbarComponent {
   constructor(private currencyService: CurrencyService,
     private router: Router,
     fb: FormBuilder,
-    private authService: AuthService,
+    private userService: UserService,
     private loginHttpClient: LoginHttpClient) {
     this.currencyService.currencies$.subscribe((currencies) => this.currencies = currencies);
     this.currencyService.mainCurrency$.subscribe((currency) => this.mainCurrency = currency)
-    this.authService.user$
+    this.userService.user$
       .subscribe({
         next: (user) => this.user = user
       });
-    this.authService.pendingConnectionsCount$
+    this.userService.connections$
       .subscribe({
-        next: (value) => this.pendingConnectionsCount = value
+        next: (value) => this.pendingConnectionsCount = value.filter((c) => c.status === UserConnectionStatus.pending).length
       });
     this.searchForm = fb.group({
       text: ['', Validators.required]
@@ -66,7 +67,7 @@ export class NavbarComponent {
 
   onLogout() {
     this.loginHttpClient.logout().subscribe(() => {
-      this.authService.removeUser();
+      this.userService.removeUser();
       this.router.navigate(['/']);
     });
   }
