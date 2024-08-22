@@ -58,12 +58,12 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
     this.currencyService.mainCurrency$
       .pipe(
         skip(1),
-        switchMap(() => this.expensesHttpClient.getAllExpenses(this.expensesMonthService.month, this.viewType)))
+        switchMap(() => this.expensesHttpClient.getExpenses(this.expensesMonthService.month, this.viewType)))
       .subscribe(data => this.populateData(data));
     this.expensesMonthService.month$
       .pipe(
         skip(1),
-        switchMap(() => this.expensesHttpClient.getAllExpenses(this.expensesMonthService.month, this.viewType)))
+        switchMap(() => this.expensesHttpClient.getExpenses(this.expensesMonthService.month, this.viewType)))
       .subscribe(data => this.populateData(data));
   }
 
@@ -74,11 +74,11 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
       if (this.expensesMonthService.month.month == date.getMonth() + 1
         && this.expensesMonthService.month.year == date.getFullYear()
         && (this.viewType === ExpenseViewType.All
-          || (this.viewType === ExpenseViewType.OnlyShared && addedExpanse.sharedWith.length > 0)
-          || (this.viewType === ExpenseViewType.OnlyNotShared && addedExpanse.sharedWith.length === 0))) {
+          || (this.viewType === ExpenseViewType.OnlyShared && addedExpanse.permittedPersons.length > 0)
+          || (this.viewType === ExpenseViewType.OnlyNotShared && addedExpanse.permittedPersons.length === 0))) {
           this.expenses.push(addedExpanse);
           this.onItemChange({
-            newValue: addedExpanse.exchangedPrice?.amount ?? addedExpanse.price.amount
+            newValue: addedExpanse.originalPrice?.amount ?? addedExpanse.price.amount
           })
         }
     });
@@ -107,7 +107,7 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
   }
 
   onViewTypeChanged(viewType: number) {
-    this.expensesHttpClient.getAllExpenses(this.expensesMonthService.month, viewType)
+    this.expensesHttpClient.getExpenses(this.expensesMonthService.month, viewType)
       .subscribe(data => {
         localStorage.setItem(defaultViewTypeStorageName, String(viewType));
         this.viewType = viewType;
@@ -120,7 +120,7 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
     const mainCurrency = this.currencyService.mainCurrency;
     if (mainCurrency) {
       this.totalAmount = {
-        amount: expenses.reduce((sum, current) => sum + (current.exchangedPrice?.amount ?? current.price.amount), 0),
+        amount: expenses.reduce((sum, current) => sum + current.price.amount, 0),
         currency: mainCurrency
       }
     } else {
