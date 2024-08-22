@@ -3,7 +3,7 @@ import { ModalSubmitEvent } from '@app/components/modal-dialog/modal-dialog.mode
 import { Expense } from '@app/models/expense.model';
 import { ExpenseForm } from '../expense-form/expense-form.model';
 import { ExpensesHttpClientService } from '@app/http-clients/expenses-http-client.service';
-import { EditExpenseParams } from '@app/http-clients/expenses-http-client.model';
+import { ChangeExpenseParams } from '@app/http-clients/expenses-http-client.model';
 
 @Component({
   selector: 'app-edit-expense-dialog',
@@ -22,16 +22,16 @@ export class EditExpenseDialogComponent {
     }
 
     this.error = undefined;
-    const { date, priceAmount, sharedWith, ...restParams } = event.value;
+    const { id, date, priceAmount, permittedPersons, ...restParams } = event.value;
 
-    const params: EditExpenseParams = {
+    const params: ChangeExpenseParams = {
       date: new Date(date.year, date.month - 1, date.day),
       priceAmount: Number(priceAmount),
-      sharedWith: sharedWith?.map((u) => Number(u.id)),
+      permittedPersonsIds: permittedPersons?.map((u) => Number(u.id)),
       ...restParams
     }
 
-    this.expensesHttpClient.editExpense(params).subscribe({
+    this.expensesHttpClient.editExpense(id, params).subscribe({
       next: (updatedItem: Expense) => {
         event.modalRef.close(updatedItem);
       },
