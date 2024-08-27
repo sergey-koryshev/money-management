@@ -36,7 +36,7 @@ public class ExpensesRepository
         this.ValidateChangeParams(changeParams);
 
         var entity = this.CreateOrUpdateEntity(changeParams);
-        this.dbContext.Expenses.Add(entity);
+        this.dbContext.Expenses.Add(entity).Reference(e => e.Category).Query().Include(c => c.PermittedPersons).Load();
         this.dbContext.SaveChanges();
 
         var mainCurrency = this.currenciesRepository.GetMainCurrency();
@@ -73,6 +73,8 @@ public class ExpensesRepository
 
         this.CreateOrUpdateEntity(changeParams, entity);
         this.dbContext.SaveChanges();
+
+        this.dbContext.Entry(entity).Reference(e => e.Category).Query().Include(c => c.PermittedPersons).Load();
 
         var mainCurrency = this.currenciesRepository.GetMainCurrency();
         Price? convertedPrice = null;
@@ -153,12 +155,9 @@ public class ExpensesRepository
             throw new ArgumentNullException(nameof(changeParams));
         }
 
-        var connectedPersonsIds = this.connectionsRepository.GetConnectedPersonsIds(true);
-
-        // restrict edit action for users which are not connected to creator or not exist in permitted list
-        if (entity != null && entity.CreatedById != this.identity.Id && (!entity.PermittedPersons.Where(p => p.Id == this.identity.Id).Any() || !connectedPersonsIds.Contains(this.identity.Id)))
+        if (string.IsNullOrWhiteSpace(changeParams.Name))
         {
-            throw new InvalidOperationException("You don't have permissions to edit the expense.");
+            throw new InvalidOperationException("Expense can't contain empty name.");
         }
 
         // check if specified currency exists
@@ -167,6 +166,14 @@ public class ExpensesRepository
         if (currency == null)
         {
             throw new InvalidOperationException($"Currency with id '{changeParams.CurrencyId}' doesn't exist.");
+        }
+
+        var connectedPersonsIds = this.connectionsRepository.GetConnectedPersonsIds(true);
+
+        // restrict edit action for users which are not connected to creator or not exist in permitted list
+        if (entity != null && entity.CreatedById != this.identity.Id && (!entity.PermittedPersons.Where(p => p.Id == this.identity.Id).Any() || !connectedPersonsIds.Contains(this.identity.Id)))
+        {
+            throw new InvalidOperationException("You don't have permissions to edit the expense.");
         }
 
         // we need to validate list of permitted persons only if the expense is edited by creator or during creation new expense
@@ -184,7 +191,7 @@ public class ExpensesRepository
                 }
 
                 // check if all specified persons connected with the user
-                var connectedPermittedPersonsIds = this.connectionsRepository.GetConnectedPersonsIds(true).Where(permittedPersonsIds.Contains).ToHashSet();
+                var connectedPermittedPersonsIds = connectedPersonsIds.Where(permittedPersonsIds.Contains).ToHashSet();
 
                 if (permittedPersonsIds.Count != connectedPermittedPersonsIds.Count)
                 {
@@ -202,7 +209,8 @@ public class ExpensesRepository
     {
         int? categoryId = null;
 
-        var permittedPersonsIds = changeParams.PermittedPersonsIds.ToHashSet();
+        // only creator can change list of permitted persons
+        var permittedPersonsIds = entity != null && entity.CreatedById != this.identity.Id ? entity.PermittedPersons.Select(p => p.Id).ToHashSet() : changeParams.PermittedPersonsIds.ToHashSet();
 
         // need to ensure that creator is always in list of permitted users
         if ((entity == null || entity.CreatedById == this.identity.Id) && !permittedPersonsIds.Contains(this.identity.Id))
@@ -214,15 +222,11 @@ public class ExpensesRepository
 
         if (!string.IsNullOrWhiteSpace(changeParams.CategoryName))
         {
-            // Category name resolves to category be the following rules:
-            // 1) Filtered by name
-            // 2) Placed categories created by entity's owner at the top
-            // 3) Sorted by amount of desired persons in permitted persons list
-            // 4) Take first found category
             var resolvedCategory = this.categoriesRepository.GetCategoriesQuery()
                 .Where(c => c.Name == changeParams.CategoryName)
-                .OrderByDescending(i => i.CreatedById == (entity != null ? entity.CreatedById : this.identity.Id))
-                    .ThenBy(c => c.PermittedPersons.Where(p => permittedPersonsIds.Contains(p.Id)).Count())
+                .Select(c => new { CategoryId = c.Id, c.CreatedById, MatchedPersonsAmount = c.PermittedPersons.Where(p => permittedPersonsIds.Contains(p.Id)).Count()}) // need to check if permittedPersonsIds.Contains(p.Id)).Count() works efficiently
+                .Where(o => o.CreatedById == this.identity.Id || o.MatchedPersonsAmount == permittedPersonsIds.Count)
+                .OrderByDescending(o => o.CreatedById == (entity != null ? entity.CreatedById : this.identity.Id))
                 .FirstOrDefault();
 
             if (resolvedCategory == null)
@@ -236,8 +240,12 @@ public class ExpensesRepository
             }
             else
             {
-                categoryId = resolvedCategory.Id;
-                this.categoriesRepository.UpdatePermittedPersonsList(resolvedCategory.Id, permittedPersonsIds);
+                categoryId = resolvedCategory.CategoryId;
+
+                if (resolvedCategory.CreatedById == this.identity.Id)
+                {
+                    this.categoriesRepository.UpdatePermittedPersonsList(resolvedCategory.CategoryId, permittedPersonsIds);
+                }
             }
         }
 
@@ -249,12 +257,7 @@ public class ExpensesRepository
             entity.CategoryId = categoryId;
             entity.PriceAmount = changeParams.PriceAmount;
             entity.CurrencyId = changeParams.CurrencyId;
-
-            // only creator can change list of permitted persons
-            if (entity.CreatedById == this.identity.Id)
-            {
-                entity.PermittedPersons = permittedPersons;
-            }
+            entity.PermittedPersons = permittedPersons;
 
             return entity;
         }
@@ -274,7 +277,7 @@ public class ExpensesRepository
 
     private Entities.Expense GetExpenseEntityById(int id)
     {
-        var entity = this.GetExpensesQuery().FirstOrDefault(e => e.Id == id);
+        var entity = this.GetExpensesQuery().Include(e => e.Category).FirstOrDefault(e => e.Id == id);
 
         if (entity == null)
         {

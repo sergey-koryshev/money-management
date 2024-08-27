@@ -47,6 +47,11 @@ public class CategoriesRepository
     /// </remarks>
     internal void UpdatePermittedPersonsList(Entities.Category entity, HashSet<int> personsIdsToAdd)
     {
+        if (entity.CreatedById != this.identity.Id)
+        {
+            throw new InvalidOperationException($"You don't have permissions to grand access to the category with id '{entity.Id}'");
+        }
+
         // get existing permittees
         var permittedPersonsIds = entity.PermittedPersons.Select(p => p.Id).ToHashSet();
 
