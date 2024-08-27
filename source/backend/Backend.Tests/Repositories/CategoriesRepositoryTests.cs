@@ -9,7 +9,7 @@ using Entities = Domain.Entities;
 [TestFixture]
 public class CategoriesRepositoryTests : TestsBase
 {
-    private const string prefix = "CategoriesRepositoryTests_";
+    protected override bool ShouldCategoriesBeDeletedInTearDown => true;
 
     [TestCase(DanielTenant, ExpectedResult = 4)]
     [TestCase(VeronikaTenant, ExpectedResult = 2)]
@@ -18,31 +18,31 @@ public class CategoriesRepositoryTests : TestsBase
         this.DbContext.Attach(this.Daniel);
         this.DbContext.Attach(this.Veronika);
 
-        var categoryName = $"{prefix}{Guid.NewGuid()}";
+        var categoryName = Guid.NewGuid().ToString();
 
         var categories = new List<Entities.Category>
         {
             new Entities.Category
             {
-                Name = $"{prefix}{Guid.NewGuid()}",
+                Name = Guid.NewGuid().ToString(),
                 CreatedById = this.Daniel.Id,
                 PermittedPersons = new List<Entities.Person> { this.Daniel }
             },
             new Entities.Category
             {
-                Name = $"{prefix}{Guid.NewGuid()}",
+                Name = Guid.NewGuid().ToString(),
                 CreatedById = this.Daniel.Id,
                 PermittedPersons = new List<Entities.Person> { this.Daniel }
             },
             new Entities.Category
             {
-                Name = $"{prefix}{Guid.NewGuid()}",
+                Name = Guid.NewGuid().ToString(),
                 CreatedById = this.Veronika.Id,
                 PermittedPersons = new List<Entities.Person> { this.Veronika }
             },
             new Entities.Category
             {
-                Name = $"{prefix}{Guid.NewGuid()}",
+                Name = Guid.NewGuid().ToString(),
                 CreatedById = this.Daniel.Id,
                 PermittedPersons = new List<Entities.Person> { this.Daniel }
             },
@@ -77,7 +77,7 @@ public class CategoriesRepositoryTests : TestsBase
     {
         var category = new Category
         {
-            Name = $"{prefix}{Guid.NewGuid()}"
+            Name = Guid.NewGuid().ToString()
         };
 
         new Action(() => new CategoriesRepository(this.DbContext, this.Daniel).CreateCategory(category))
@@ -90,7 +90,7 @@ public class CategoriesRepositoryTests : TestsBase
     {
         var category = new Category
         {
-            Name = $"{prefix}{Guid.NewGuid()}",
+            Name = Guid.NewGuid().ToString(),
             CreatedBy = new Person
             {
                 Id = -1,
@@ -110,7 +110,7 @@ public class CategoriesRepositoryTests : TestsBase
     {
         var category = new Category
         {
-            Name = $"{prefix}{Guid.NewGuid()}",
+            Name = Guid.NewGuid().ToString(),
             CreatedBy = this.Veronika.ToModel()
         };
 
@@ -141,7 +141,7 @@ public class CategoriesRepositoryTests : TestsBase
     {
         this.DbContext.Attach(this.Daniel);
 
-        var categoryName = $"{prefix}{Guid.NewGuid()}";
+        var categoryName = Guid.NewGuid().ToString();
 
         var category = new Category
         {
@@ -170,7 +170,7 @@ public class CategoriesRepositoryTests : TestsBase
     {
         var category = new Category
         {
-            Name = $"{prefix}{Guid.NewGuid()}",
+            Name = Guid.NewGuid().ToString(),
             CreatedBy = this.Daniel.ToModel(),
             PermittedPersons = new List<Person>
             { 
@@ -202,7 +202,7 @@ public class CategoriesRepositoryTests : TestsBase
     {
         var category = new Category
         {
-            Name = $"{prefix}{Guid.NewGuid()}",
+            Name = Guid.NewGuid().ToString(),
             CreatedBy = this.Daniel.ToModel(),
             PermittedPersons = isPermittedPersonsSpecified ? new List<Person> { this.Daniel.ToModel() } : new List<Person>()
         };
@@ -218,16 +218,5 @@ public class CategoriesRepositoryTests : TestsBase
     
         createdCategory.Should().NotBeNull();
         createdCategory!.ToModel().Should().BeEquivalentTo(category);
-    }
-
-    [TearDown]
-    public void TearDown()
-    {
-        foreach (var entity in this.DbContext.Categories.Where(c => c.Name != null && c.Name.StartsWith(prefix)))
-        {
-            this.DbContext.Categories.Remove(entity);
-        }
-
-        this.DbContext.SaveChanges();
     }
 }

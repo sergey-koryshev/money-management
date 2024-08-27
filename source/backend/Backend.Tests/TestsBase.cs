@@ -11,6 +11,8 @@ public abstract class TestsBase
     
     protected const string VeronikaTenant = "dda338a5-98b7-4975-bc41-f94ddac58e23";
 
+    protected const string ChuckTenant = "e8df1978-77ca-4cd8-8db6-c1058f2ba359";
+
     private readonly DbContextOptionsBuilder<AppDbContext> dbContextOptionsBuilder;
 
     private int lastCurrencyMappingId;
@@ -21,11 +23,17 @@ public abstract class TestsBase
 
     private int lastPersonId;
 
+    private int lastCategoryId;
+
+    private int lastExpenseId;
+
     protected AppDbContext DbContext { get; }
 
     protected Person Daniel { get; }
 
     protected Person Veronika { get; }
+
+    protected Person Chuck { get; }
 
     protected virtual bool ShouldCurrencyMappingsBeDeletedInTearDown => false;
 
@@ -42,6 +50,14 @@ public abstract class TestsBase
     protected virtual bool ShouldPersonsBeDeletedInTearDown => false;
 
     protected virtual bool ShouldPersonsBeDeletedInOneTimeTearDown => false;
+
+    protected virtual bool ShouldCategoriesBeDeletedInTearDown => false;
+
+    protected virtual bool ShouldCategoriesBeDeletedInOneTimeTearDown => false;
+
+    protected virtual bool ShouldExpensesBeDeletedInTearDown => false;
+
+    protected virtual bool ShouldExpensesBeDeletedInOneTimeTearDown => false;
 
     protected TestsBase()
     {
@@ -66,6 +82,13 @@ public abstract class TestsBase
             FirstName = "Veronika",
             SecondName = "Payne",
             Tenant = new Guid(VeronikaTenant)
+        };
+
+        this.Chuck = new Person
+        {
+            FirstName = "Chuck",
+            SecondName = "Norris",
+            Tenant = new Guid(ChuckTenant)
         };
     }
 
@@ -92,8 +115,19 @@ public abstract class TestsBase
             this.lastPersonId = this.DbContext.Persons.Select(e => e.Id).OrderByDescending(e => e).FirstOrDefault();
         }
 
+        if (this.ShouldCategoriesBeDeletedInTearDown || this.ShouldCategoriesBeDeletedInOneTimeTearDown)
+        {
+            this.lastCategoryId = this.DbContext.Categories.Select(e => e.Id).OrderByDescending(e => e).FirstOrDefault();
+        }
+
+        if (this.ShouldExpensesBeDeletedInTearDown || this.ShouldExpensesBeDeletedInOneTimeTearDown)
+        {
+            this.lastExpenseId = this.DbContext.Expenses.Select(e => e.Id).OrderByDescending(e => e).FirstOrDefault();
+        }
+
         this.DbContext.Persons.Add(this.Daniel);
         this.DbContext.Persons.Add(this.Veronika);
+        this.DbContext.Persons.Add(this.Chuck);
 
         this.DbContext.SaveChanges();
     }
@@ -133,7 +167,23 @@ public abstract class TestsBase
             }
         }
 
-        var usersTenantsToDelete = new List<string> { DanielTenant, VeronikaTenant };
+        if (this.ShouldCategoriesBeDeletedInOneTimeTearDown)
+        {
+            foreach (var entity in this.DbContext.Categories.Where(c => c.Id > this.lastCategoryId))
+            {
+                this.DbContext.Categories.Remove(entity);
+            }
+        }
+
+        if (this.ShouldExpensesBeDeletedInOneTimeTearDown)
+        {
+            foreach (var entity in this.DbContext.Expenses.Where(c => c.Id > this.lastExpenseId))
+            {
+                this.DbContext.Expenses.Remove(entity);
+            }
+        }
+
+        var usersTenantsToDelete = new List<string> { DanielTenant, VeronikaTenant, ChuckTenant };
 
         foreach (var entity in this.DbContext.Persons.Where(p => usersTenantsToDelete.Contains(p.Tenant.ToString())))
         {
@@ -176,6 +226,22 @@ public abstract class TestsBase
             foreach (var entity in this.DbContext.Persons.Where(c => c.Id > this.lastPersonId))
             {
                 this.DbContext.Persons.Remove(entity);
+            }
+        }
+
+        if (this.ShouldCategoriesBeDeletedInTearDown)
+        {
+            foreach (var entity in this.DbContext.Categories.Where(c => c.Id > this.lastCategoryId))
+            {
+                this.DbContext.Categories.Remove(entity);
+            }
+        }
+
+        if (this.ShouldExpensesBeDeletedInTearDown)
+        {
+            foreach (var entity in this.DbContext.Expenses.Where(c => c.Id > this.lastExpenseId))
+            {
+                this.DbContext.Expenses.Remove(entity);
             }
         }
 

@@ -10,13 +10,9 @@ using Entities = Domain.Entities;
 [TestFixture]
 public class ConnectionsRepositoryTests : TestsBase
 {
-    private const string additionalPersonTenant = "13ed6ef2-9827-4528-b461-08eb76d8a6fc";
-
     private readonly Func<EquivalencyAssertionOptions<Connection>, EquivalencyAssertionOptions<Connection>> connectionModelEquivalencyAssertionOptions = (o) => o
         .Excluding(c => c.Id)
         .Using<DateTime>(ctx => ctx.Subject.Should().BeCloseTo(ctx.Expectation, TimeSpan.FromSeconds(10))).WhenTypeIs<DateTime>();
-
-    private Entities.Person additionalPerson;
 
     protected override bool ShouldConnectionsBeDeletedInTearDown => true;
 
@@ -38,7 +34,7 @@ public class ConnectionsRepositoryTests : TestsBase
             new()
             {
                 RequestingPersonId = this.Veronika.Id,
-                TargetPersonId = this.additionalPerson.Id,
+                TargetPersonId = this.Chuck.Id,
                 IsAccepted = false,
                 RequestedOn = DateTime.UtcNow
             }
@@ -68,7 +64,7 @@ public class ConnectionsRepositoryTests : TestsBase
             },
             new()
             {
-                RequestingPersonId = this.additionalPerson.Id,
+                RequestingPersonId = this.Chuck.Id,
                 TargetPersonId = this.Daniel.Id,
                 IsAccepted = false,
                 RequestedOn = DateTime.UtcNow
@@ -191,7 +187,7 @@ public class ConnectionsRepositoryTests : TestsBase
         this.DbContext.Connections.Add(connection);
         this.DbContext.SaveChanges();
 
-        new Action(() => new ConnectionsRepository(this.DbContext, this.additionalPerson).DeleteConnection(connection.Id))
+        new Action(() => new ConnectionsRepository(this.DbContext, this.Chuck).DeleteConnection(connection.Id))
             .Should().Throw<InvalidOperationException>()
             .WithMessage($"Connection with id '{connection.Id}' doesn't exist.");
     }
@@ -199,13 +195,13 @@ public class ConnectionsRepositoryTests : TestsBase
     [Test]
     public void AcceptConnectionRequest_ConnectionNotExist_ErrorThrown()
     {
-        new Action(() => new ConnectionsRepository(this.DbContext, this.additionalPerson).AcceptConnectionRequest(-1))
+        new Action(() => new ConnectionsRepository(this.DbContext, this.Chuck).AcceptConnectionRequest(-1))
             .Should().Throw<InvalidOperationException>()
             .WithMessage("Connection with id '-1' doesn't exist.");
     }
 
     [TestCase(DanielTenant)]
-    [TestCase(additionalPersonTenant)]
+    [TestCase(ChuckTenant)]
     public void AcceptConnectionRequest_UserNotHavePendingConnection_ErrorThrown(string userTenant)
     {
         var connection = new Entities.Connection
@@ -286,19 +282,5 @@ public class ConnectionsRepositoryTests : TestsBase
         var acceptedConnection = this.DbContext.Connections.Find(connection.Id);
         acceptedConnection.Should().NotBeNull();
         acceptedConnection!.ToModel().Should().BeEquivalentTo(expectedModel, this.connectionModelEquivalencyAssertionOptions);
-    }
-
-    [OneTimeSetUp]
-    public void ConnectionsRepositoryTestsOneTimeSetUp()
-    {
-        this.additionalPerson = new Entities.Person
-        {
-            FirstName = "Third",
-            SecondName = "User",
-            Tenant = new Guid(additionalPersonTenant)
-        };
-
-        this.DbContext.Persons.Add(this.additionalPerson);
-        this.DbContext.SaveChanges();
     }
 }
