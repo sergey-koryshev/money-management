@@ -977,6 +977,57 @@ public class ExpensesRepositoryTests : TestsBase
     }
 
     [Test]
+    public void UpdateExpense_NotConnectedUserAlreadyInPermitteesList_ExpenseUpdated()
+    {
+        this.DbContext.Attach(this.Daniel);
+        this.DbContext.Attach(this.Veronika);
+
+        var expense = new Entities.Expense
+        {
+            Date = DateTime.Now.ToUniversalTime(),
+            Name = Guid.NewGuid().ToString(),
+            CategoryId = this.Categories[3].Id,
+            PriceAmount = 108,
+            CurrencyId = this.Currencies[0].Id,
+            CreatedById = this.Daniel.Id,
+            PermittedPersons = new List<Entities.Person> { this.Daniel, this.Veronika }
+        };
+
+        this.DbContext.Expenses.Add(expense);
+        this.DbContext.SaveChanges();
+
+        this.ClearChangeTracker();
+
+        var changeParams = new ChangeExpenseParams
+        {
+            Date = DateTime.Now.ToUniversalTime(),
+            Name = Guid.NewGuid().ToString(),
+            CategoryName = this.Categories[2].Name,
+            PriceAmount = 108108,
+            CurrencyId = this.Currencies[1].Id,
+            PermittedPersonsIds = new List<int> { this.Daniel.Id, this.Veronika.Id }
+        };
+
+        var result = new ExpensesRepository(this.DbContext, this.Daniel).UpdateExpense(expense.Id, changeParams);
+
+        result.Should().BeEquivalentTo(new Expense
+        {
+            Id = expense.Id,
+            Date = changeParams.Date,
+            Name = changeParams.Name,
+            Description = changeParams.Description,
+            Category = this.Categories[2],
+            Price = new Price
+            {
+                Amount = changeParams.PriceAmount,
+                Currency = this.Currencies[1]
+            },
+            CreatedBy = this.Daniel.ToModel(),
+            PermittedPersons = { this.Veronika.ToModel(), this.Daniel.ToModel() }
+        });
+    }
+
+    [Test]
     public void DeleteExpense_ExpenseNotExist_ErrorThrown()
     {
         new Action(() => new ExpensesRepository(this.DbContext, this.Veronika).DeleteExpense(-1)).Should().Throw<InvalidOperationException>()
@@ -1027,6 +1078,41 @@ public class ExpensesRepositoryTests : TestsBase
             CreatedBy = this.Daniel.ToModel(),
             PermittedPersons = new List<Person> { this.Daniel.ToModel() }
         });
+    }
+
+    [Theory]
+    public void DeleteExpense_ExpenseOwnerDeleting_ExpenseDeleted(bool isShared)
+    {
+        this.DbContext.Attach(this.Daniel);
+        this.DbContext.Attach(this.Veronika);
+
+        if (isShared)
+        {
+            var connection = new ConnectionsRepository(this.DbContext, this.Daniel).CreateConnectionRequest(this.Veronika.Id);
+            new ConnectionsRepository(this.DbContext, this.Veronika).AcceptConnectionRequest(connection.Id);
+        }
+
+        var expense = new Entities.Expense
+        {
+            Date = DateTime.Now.ToUniversalTime(),
+            Name = Guid.NewGuid().ToString(),
+            CategoryId = this.Categories[4].Id,
+            PriceAmount = 108,
+            CurrencyId = this.Currencies[0].Id,
+            CreatedById = this.Daniel.Id,
+            PermittedPersons = isShared ? new List<Entities.Person> { this.Daniel, this.Veronika } : new List<Entities.Person> { this.Daniel }
+        };
+
+        this.DbContext.Expenses.Add(expense);
+        this.DbContext.SaveChanges();
+
+        this.ClearChangeTracker();
+
+        new ExpensesRepository(this.DbContext, this.Daniel).DeleteExpense(expense.Id);
+
+        var existingExpense = this.DbContext.Expenses.Find(expense.Id);
+
+        existingExpense.Should().BeNull();
     }
 
     [TestCase("W", new [] { 1 })]
@@ -1104,41 +1190,6 @@ public class ExpensesRepositoryTests : TestsBase
         });
 
         result.Should().BeEquivalentTo(expected);
-    }
-
-    [Theory]
-    public void DeleteExpense_ExpenseOwnerDeleting_ExpenseDeleted(bool isShared)
-    {
-        this.DbContext.Attach(this.Daniel);
-        this.DbContext.Attach(this.Veronika);
-
-        if (isShared)
-        {
-            var connection = new ConnectionsRepository(this.DbContext, this.Daniel).CreateConnectionRequest(this.Veronika.Id);
-            new ConnectionsRepository(this.DbContext, this.Veronika).AcceptConnectionRequest(connection.Id);
-        }
-
-        var expense = new Entities.Expense
-        {
-            Date = DateTime.Now.ToUniversalTime(),
-            Name = Guid.NewGuid().ToString(),
-            CategoryId = this.Categories[4].Id,
-            PriceAmount = 108,
-            CurrencyId = this.Currencies[0].Id,
-            CreatedById = this.Daniel.Id,
-            PermittedPersons = isShared ? new List<Entities.Person> { this.Daniel, this.Veronika } : new List<Entities.Person> { this.Daniel }
-        };
-
-        this.DbContext.Expenses.Add(expense);
-        this.DbContext.SaveChanges();
-
-        this.ClearChangeTracker();
-
-        new ExpensesRepository(this.DbContext, this.Daniel).DeleteExpense(expense.Id);
-
-        var existingExpense = this.DbContext.Expenses.Find(expense.Id);
-
-        existingExpense.Should().BeNull();
     }
 
     [SetUp]
