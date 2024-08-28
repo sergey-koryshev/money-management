@@ -1,6 +1,6 @@
-﻿using Backend.Domain.DTO;
+﻿namespace Backend.Service;
 
-namespace Backend.Service;
+using Backend.Domain.DTO;
 
 public interface IExpensesService
 {

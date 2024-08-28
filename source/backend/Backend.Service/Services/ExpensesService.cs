@@ -1,12 +1,12 @@
-﻿using AutoMapper;
+﻿namespace Backend.Service;
+
+using AutoMapper;
 using Backend.Application;
 using Backend.Domain.DTO;
 using Backend.Domain.Models;
 using Backend.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-
-namespace Backend.Service;
 
 public class ExpensesService : ServiseBase, IExpensesService
 {
