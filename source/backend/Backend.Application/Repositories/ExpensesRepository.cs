@@ -120,7 +120,6 @@ public class ExpensesRepository
             {
                 query = query.Where(e => EF.Functions.TrigramsSimilarity(EF.Functions.Unaccent(e.Name), EF.Functions.Unaccent(filter.SearchingTerm)) > minTrigramsSimilarity
                     || (e.Description != null && EF.Functions.TrigramsSimilarity(EF.Functions.Unaccent(e.Description), EF.Functions.Unaccent(filter.SearchingTerm)) > minTrigramsSimilarity));
-
             }
         }
 
