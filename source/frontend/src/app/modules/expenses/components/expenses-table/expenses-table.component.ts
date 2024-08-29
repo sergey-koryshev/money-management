@@ -113,7 +113,6 @@ export class ExpensesTableComponent implements OnInit {
 
   constructor(private expensesHttpClient: ExpensesHttpClientService, private modalService: NgbModal, userService: UserService) {
     this.currentUser = userService.user;
-    console.log(this.currentUser);
     userService.connections$.subscribe((connections) => this.friends = connections.filter((c) => c.status === UserConnectionStatus.accepted).map((c) => c.person));
   }
 
