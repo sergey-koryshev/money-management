@@ -39,30 +39,16 @@ public class ExpensesRepository
         this.dbContext.Expenses.Add(entity).Reference(e => e.Category).Query().Include(c => c.PermittedPersons).Load();
         this.dbContext.SaveChanges();
 
-        var mainCurrency = this.currenciesRepository.GetMainCurrency();
-        Price? convertedPrice = null;
-
-        if (mainCurrency != null)
-        {
-            convertedPrice = this.ConvertPrice(entity, mainCurrency);
-        }
-
-        return entity.ToModel(convertedPrice);
+        var exchangedPrice = this.GetExchangedPrice(entity);
+        return entity.ToModel(exchangedPrice);
     }
 
     public List<Expense> GetExpenses(ExpensesFilter? filter = null)
     {
         var filteredExpenses = this.GetExpensesQuery(filter).ToList();
 
-        var mainCurrency = this.currenciesRepository.GetMainCurrency();
-        Dictionary<int, Price> expenseIdToExchangedPrice = new Dictionary<int, Price>();
-
-        if (mainCurrency != null)
-        {
-            expenseIdToExchangedPrice = this.ConvertPrices(filteredExpenses, mainCurrency);
-        }
-
-        return filteredExpenses.Select(e => e.ToModel(mainCurrency != null && expenseIdToExchangedPrice.ContainsKey(e.Id) ? expenseIdToExchangedPrice[e.Id] : null)).ToList();
+        Dictionary<int, Price> expenseIdToExchangedPrice = this.GetExchangedPrices(filteredExpenses);
+        return filteredExpenses.Select(e => e.ToModel(expenseIdToExchangedPrice.ContainsKey(e.Id) ? expenseIdToExchangedPrice[e.Id] : null)).ToList();
     }
 
     public Expense UpdateExpense(int id, ChangeExpenseParams changeParams)
@@ -76,15 +62,8 @@ public class ExpensesRepository
 
         this.dbContext.Entry(entity).Reference(e => e.Category).Query().Include(c => c.PermittedPersons).Load();
 
-        var mainCurrency = this.currenciesRepository.GetMainCurrency();
-        Price? convertedPrice = null;
-
-        if (mainCurrency != null)
-        {
-            convertedPrice = this.ConvertPrice(entity, mainCurrency);
-        }
-
-        return entity.ToModel(convertedPrice);
+        var exchangedPrice = this.GetExchangedPrice(entity);
+        return entity.ToModel(exchangedPrice);
     }
 
     public void DeleteExpense(int id)
@@ -287,16 +266,14 @@ public class ExpensesRepository
         return entity;
     }
 
-    /// <summary>
-    /// Fake method to convert prices.
-    /// </summary>
-    /// <param name="expenses">List of expenses.</param>
-    /// <param name="mainCurrency">Main currency.</param>
-    /// <returns>Dictionary which has expense id as key and exchanged price as value.</returns>
-    private Dictionary<int, Price> ConvertPrices(List<Entities.Expense> expenses, Currency mainCurrency)
+    private Dictionary<int, Price> GetExchangedPrices(List<Entities.Expense> expenses)
     {
-        //var dates = expenses.Select(e => e.CreatedOn.Date).Distinct().ToList();
-        //var currencies = expenses.Select(e => e.Currency!.Name).Distinct().ToList();
+        var mainCurrency = this.currenciesRepository.GetMainCurrency();
+
+        if (mainCurrency == null)
+        {
+            return new Dictionary<int, Price>();
+        }
 
         var random = new Random();
         var randomExchangeRate = random.NextDouble() + random.NextDouble();
@@ -308,15 +285,9 @@ public class ExpensesRepository
         });
     }
 
-    /// <summary>
-    /// Fake method to convert price.
-    /// </summary>
-    /// <param name="expense">The expense.</param>
-    /// <param name="mainCurrency">Main currency.</param>
-    /// <returns>Dictionary which has expense id as key and exchanged price as value.</returns>
-    private Price? ConvertPrice(Entities.Expense expense, Currency mainCurrency)
+    private Price? GetExchangedPrice(Entities.Expense expense)
     {
-        var result = this.ConvertPrices(new List<Entities.Expense>{ expense }, mainCurrency);
+        var result = this.GetExchangedPrices(new List<Entities.Expense>{ expense });
         return result.Count > 0 ? result.First().Value : null;
     }
 }
