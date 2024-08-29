@@ -97,7 +97,12 @@ public class CategoriesRepository
     private void UpdateEntity(Entities.Category entity, Category model)
     {
         entity.Name = model.Name;
-        entity.CreatedById = this.identity.Id;
+
+        if (entity.Id == 0)
+        {
+            entity.CreatedById = this.identity.Id;
+        }
+
         this.UpdatePermittedPersonsList(entity, model.PermittedPersons.Select(p => p.Id).ToHashSet());
     }
 
