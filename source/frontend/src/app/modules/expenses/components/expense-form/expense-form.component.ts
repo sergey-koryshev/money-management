@@ -1,12 +1,12 @@
 import { ExpensesHttpClientService } from '@http-clients/expenses-http-client.service';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { CurrencyService } from '@services/currency.service';
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Currency } from '@app/models/currency.model';
 import { ExpensesMonthService } from '@app/services/expenses-month.service';
 import { Month } from '@app/models/month.model';
-import { Observable, Subject, catchError, of, switchMap, tap } from 'rxjs';
+import { Observable, Subject, Subscription, catchError, of, switchMap, take, tap } from 'rxjs';
 import { ExtendedExpenseName } from '@app/http-clients/expenses-http-client.model';
 import { Expense } from '@app/models/expense.model';
 import { AmbiguousUser, User } from '@app/models/user.model';
@@ -23,7 +23,7 @@ interface ExtendedExpenseNameForm extends ExtendedExpenseName {
   templateUrl: './expense-form.component.html',
   styleUrls: ['./expense-form.component.scss']
 })
-export class ExpenseFormComponent implements OnInit {
+export class ExpenseFormComponent implements OnInit, OnChanges {
   @Input()
   item?: Expense;
 
@@ -58,28 +58,17 @@ export class ExpenseFormComponent implements OnInit {
     currency: CurrencyService,
     expensesMonthService: ExpensesMonthService,
     private expensesHttpClient: ExpensesHttpClientService,
-    userService: UserService) {
+    private userService: UserService) {
     this.currentUser = userService.user;
     this.isItemShared = this.checkIfItemShared(this.item);
     this.currencies = currency.currencies;
-    userService.categories$
+    this.userService.categories$
       .subscribe((categories) => this.categories = categories)
-    userService.connections$
+    this.userService.connections$
       .subscribe((connections) => {
         this.friends = connections
           .filter((c) => c.status === UserConnectionStatus.accepted)
           .map((c) => c.person as AmbiguousUser);
-
-        if (this.item != null) {
-          // we need to add missing persons from list of permitted ones to let user select them in lookup
-          if (!this.isItemShared && this.item.permittedPersons.length > 0) {
-            this.item.permittedPersons.forEach((p) => {
-              if (!this.friends.some(f => f.id === p.id)) {
-                this.friends.push(p);
-              }
-            })
-          }
-        }
 
         if (this.item == null) {
           const lastUsers = this.lastUsersToShareExpense;
@@ -108,10 +97,26 @@ export class ExpenseFormComponent implements OnInit {
     });
   }
 
-  ngOnInit(): void {
-    // populate values before saving any values to local storage
-    this.populateValues(this.item);
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.item && changes.item.firstChange) {
+      this.userService.connections$
+        .subscribe(() => {
+            if (this.item != null) {
+              if (!this.isItemShared && this.item.permittedPersons.length > 0) {
+                this.item.permittedPersons.forEach((p: AmbiguousUser) => {
+                  if (!this.friends.some(f => f.id === p.id)) {
+                    this.friends.push(p);
+                  }
+                });
+              }
+            }
+        });
 
+      this.populateValues(this.item);
+    }
+  }
+
+  ngOnInit(): void {
     // save last date to local storage
     this.form.controls['date'].valueChanges.subscribe(value => {
       if (value) {
