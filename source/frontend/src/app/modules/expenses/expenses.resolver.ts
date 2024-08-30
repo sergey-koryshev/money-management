@@ -12,6 +12,6 @@ export class ExpensesResolver implements Resolve<Expense[]> {
   constructor(private expensesHttpClient: ExpensesHttpClientService, private expensesMonthService: ExpensesMonthService) {}
   resolve(): Observable<Expense[]>  {
     const defaultViewType = localStorage.getItem(defaultViewTypeStorageName);
-    return this.expensesHttpClient.getAllExpenses(this.expensesMonthService.month, defaultViewType == null ? ExpenseViewType.All : Number(defaultViewType));
+    return this.expensesHttpClient.getExpenses(this.expensesMonthService.month, defaultViewType == null ? ExpenseViewType.All : Number(defaultViewType));
   }
 }

@@ -1,8 +1,6 @@
 ﻿namespace Backend.Service;
 
-using Backend.Domain.DTO;
-
 public interface ICategoriesService
 {
-    public List<CategoryDto> GetAllCategories();
+    public List<string> GetUniqueCategoryNames();
 }

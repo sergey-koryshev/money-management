@@ -7,7 +7,7 @@ import { AppComponent } from './app.component';
 import { APP_INITIALIZER } from '@angular/core';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { LayoutModule } from './layout/layout.module';
-import { AuthService } from './services/auth.service';
+import { UserService } from './services/user.service';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 
 @NgModule({
@@ -28,8 +28,8 @@ import { AuthInterceptor } from './interceptors/auth.interceptor';
     },
     {
       provide: APP_INITIALIZER,
-      useFactory: (authService: AuthService) => () => authService.initialize(),
-      deps: [AuthService],
+      useFactory: (userService: UserService) => () => userService.initialize(),
+      deps: [UserService],
       multi: true
     },
     {

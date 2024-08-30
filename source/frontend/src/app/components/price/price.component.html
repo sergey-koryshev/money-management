@@ -1,4 +1,4 @@
-<div [ngbPopover]="exchangedPrice ? popoverContent : null" triggers="mouseenter:mouseleave" class="price-container">
+<div [ngbPopover]="originalPrice != null ? popoverContent : null" triggers="mouseenter:mouseleave" class="price-container">
     <span>
         {{ price.amount | number : '1.0-2' }}
     </span>
@@ -13,10 +13,10 @@
     <div>
         <span>Original price:</span>
         <span>
-            {{ exchangedPrice.originalAmount | number : '1.0-2' }}
+            {{ originalPrice.amount | number : '1.0-2' }}
         </span>
         <app-currency
-            [currency]="exchangedPrice.originalCurrency"
+            [currency]="originalPrice.currency"
             appearance="omitFlag">
         </app-currency>
     </div>

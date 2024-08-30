@@ -1,4 +1,4 @@
-import { AuthService } from '@app/services/auth.service';
+import { UserService } from '@app/services/user.service';
 import { Injectable } from '@angular/core';
 import {
   HttpRequest,
@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private router: Router, private userService: UserService) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     request = request.clone({
@@ -25,7 +25,7 @@ export class AuthInterceptor implements HttpInterceptor {
       (err) => {
         if (err instanceof HttpErrorResponse) {
           if (err.status === 401) {
-            this.authService.removeUser();
+            this.userService.removeUser();
             this.router.navigate(['signin']);
           }
         }

@@ -1,6 +1,7 @@
 ﻿namespace Backend.Application;
 
 using Backend.Domain.Models;
+using Backend.Domain.Models.Mappers;
 using Backend.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Entities = Domain.Entities;

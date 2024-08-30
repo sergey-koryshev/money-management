@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { UserConnectionHttpClient } from '@app/http-clients/user-connections-http-client.service';
 import { UserConnectionStatus } from '@app/models/enums/user-connection-status.enum';
 import { UserConnection } from '@app/models/user-connection.model';
-import { AuthService } from '@app/services/auth.service';
+import { UserService } from '@app/services/user.service';
 
 @Component({
   selector: 'app-user-connections-list',
@@ -18,8 +18,7 @@ export class UserConnectionsListComponent {
 
   userConnectionStatus = UserConnectionStatus;
 
-  constructor(private userConnectionsHttpClient: UserConnectionHttpClient, private authService: AuthService) { }
-
+  constructor(private userConnectionsHttpClient: UserConnectionHttpClient, private userService: UserService) {}
 
   onAcceptButtonClick(connection: UserConnection) {
     this.userConnectionsHttpClient
@@ -27,7 +26,7 @@ export class UserConnectionsListComponent {
         next: (updatedConnection) => {
           const existingConnectionIndex = this.connections.findIndex((c) => c.id === connection.id);
           this.connections[existingConnectionIndex] = updatedConnection;
-          this.authService.fetchPendingConnectionsCount();
+          this.userService.connections$.next(this.connections);
           this.statusChanged.emit();
         }
       });
@@ -38,8 +37,8 @@ export class UserConnectionsListComponent {
       .deleteUserConnection(connection.id).subscribe({
         next: () => {
           const existingConnectionIndex = this.connections.findIndex((c) => c.id === connection.id);
-          this.authService.fetchPendingConnectionsCount();
           this.connections.splice(existingConnectionIndex, 1);
+          this.userService.connections$.next(this.connections);
         }
       });
   }

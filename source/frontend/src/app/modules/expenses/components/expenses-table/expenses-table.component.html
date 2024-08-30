@@ -1,12 +1,12 @@
 <app-table [columns]="columns" [data]="data" [defaultSorting]="sorting" (sortingChanged)="onSortingChanged($event)"></app-table>
 
 <ng-template #price let-row>
-    <app-price [price]="row.exchangedPrice ?? row.price" class="d-inline-block"></app-price>
+    <app-price [price]="row.price" [originalPrice]="row.originalPrice" class="d-inline-block"></app-price>
 </ng-template>
 
 <ng-template #actions let-row>
   <div class="mx-2">
-    <app-round-button *ngIf="row.canBeEdited" class="me-1" backgroundColor="#3498db" (click)="editItem(row)">
+    <app-round-button *ngIf="canRowBeEdited(row)" class="me-1" backgroundColor="#3498db" (click)="editItem(row)">
       <svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true" aria-hidden="true" focusable="false" width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
         <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168l10-10zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207 11.207 2.5zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293l6.5-6.5zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325z"/>
       </svg>
@@ -20,12 +20,21 @@
 </ng-template>
 
 <ng-template #sharedWith let-row>
-  <div *ngIf="row.sharedWith.length > 0" class="shared-with-container">
-    <app-user-avatar *ngFor="let user of row.sharedWith.slice(0, 3)"
-      class="user-avatar"
+  <div *ngIf="row.permittedPersons?.length > 0" class="shared-with-container user-avatar">
+    <app-user-avatar *ngFor="let user of row.permittedPersons.slice(0, 3)"
       [initials]="getUserInitials(user)"
       [tenant]="user.tenant"
       [ngbTooltip]="getUserFullName(user)">
+    </app-user-avatar>
+  </div>
+</ng-template>
+
+<ng-template #createdBy let-row>
+  <div class="ms-2 user-avatar">
+    <app-user-avatar
+      [initials]="getUserInitials(row.createdBy)"
+      [tenant]="row.createdBy.tenant"
+      [ngbTooltip]="getUserFullName(row.createdBy)">
     </app-user-avatar>
   </div>
 </ng-template>

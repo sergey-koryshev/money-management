@@ -2,7 +2,7 @@ import { Currency } from '../models/currency.model';
 import { CurrencyHttpClientService } from '../http-clients/currency-http-client.service';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, forkJoin } from 'rxjs';
-import { AuthService } from './auth.service';
+import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,13 +17,13 @@ export class CurrencyService {
     return this.mainCurrency$.value;
   }
 
-  constructor(private currencyHttpClient: CurrencyHttpClientService, private authService: AuthService) {
+  constructor(private currencyHttpClient: CurrencyHttpClientService, private userService: UserService) {
     this.currencies$ = new BehaviorSubject<Currency[]>([]);
     this.mainCurrency$ = new BehaviorSubject<Currency | null>(null);
   }
 
   initialize() {
-    this.authService.user$.subscribe((user) => {
+    this.userService.user$.subscribe((user) => {
       if (user) {
         this.fetchCategories();
       }

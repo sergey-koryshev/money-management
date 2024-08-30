@@ -16,9 +16,10 @@ public class CategoriesController
     }
 
     [HttpGet]
-    public IActionResult GetAllCategories()
+    [Route("uniqueNames")]
+    public IActionResult GetUniqueCategoryNames()
     {
-        var categories = this.categoryService.GetAllCategories();
+        var categories = this.categoryService.GetUniqueCategoryNames();
         return new AppActionResult(categories);
     }
 }

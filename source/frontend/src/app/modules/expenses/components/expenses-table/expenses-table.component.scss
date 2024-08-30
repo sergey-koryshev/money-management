@@ -1,4 +1,4 @@
-.shared-with-container {
+.user-avatar {
   app-user-avatar {
     display: inline-block;
     width: 30px;
@@ -6,7 +6,13 @@
     font-size: small;
     transition: 220ms all ease-in-out;
   }
+}
 
+.created-by-container {
+  margin-left: 0.25em;
+}
+
+.shared-with-container {
   app-user-avatar:not(:first-child) {
     margin-left: -20px;
   }

@@ -3,6 +3,7 @@
 using AutoMapper;
 using Backend.Domain.DTO;
 using Backend.Domain.Models;
+using Backend.Domain.Models.Mappers;
 using Backend.Service.Mappers;
 using FluentAssertions;
 using Entities = Domain.Entities;

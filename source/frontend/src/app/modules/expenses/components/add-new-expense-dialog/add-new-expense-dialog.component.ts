@@ -1,8 +1,7 @@
-import { NgbActiveModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { Component } from '@angular/core';
 import { ModalSubmitEvent } from '@app/components/modal-dialog/modal-dialog.model';
 import { ExpensesHttpClientService } from '@app/http-clients/expenses-http-client.service';
-import { AddExpenseParams } from '@app/http-clients/expenses-http-client.model';
+import { ChangeExpenseParams } from '@app/http-clients/expenses-http-client.model';
 import { ExpenseForm } from '../expense-form/expense-form.model';
 
 @Component({
@@ -21,12 +20,12 @@ export class AddNewExpenseDialogComponent {
     }
 
     this.error = undefined;
-    const { date, priceAmount, sharedWith, ...restParams } = event.value;
+    const { date, priceAmount, permittedPersons, ...restParams } = event.value;
 
-    const params: AddExpenseParams = {
+    const params: ChangeExpenseParams = {
       date: new Date(date.year, date.month - 1, date.day),
       priceAmount: Number(priceAmount),
-      sharedWith: sharedWith?.map((u) => Number(u.id)),
+      permittedPersonsIds: permittedPersons?.map((u) => Number(u.id)),
       ...restParams
     }
 

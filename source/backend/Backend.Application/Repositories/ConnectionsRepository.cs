@@ -1,6 +1,7 @@
 ﻿namespace Backend.Application;
 
 using Backend.Domain.Models;
+using Backend.Domain.Models.Mappers;
 using Backend.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Entities = Domain.Entities;
@@ -93,7 +94,16 @@ public class ConnectionsRepository
         return acceptingConnection.ToModel();
     }
 
-    private IQueryable<Entities.Connection> GetConnectionsQuery()
+    public HashSet<int> GetConnectedPersonsIds(bool onlyAccepted)
+    {
+        return this.GetConnectionsQuery()
+            .Where(c => onlyAccepted ? c.IsAccepted == true : true)
+            .AsEnumerable()
+            .SelectMany(c => new [] { c.RequestingPersonId, c.TargetPersonId })
+            .ToHashSet();
+    }
+
+    internal IQueryable<Entities.Connection> GetConnectionsQuery()
     {
         return this.dbContext.Connections
             .Include(c => c.RequestingPerson)

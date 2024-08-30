@@ -1,27 +1,14 @@
-import { Category } from "@app/models/category.model";
-
-export interface AddExpenseParams {
-  date: Date;
-  item: string;
-  priceAmount: number
-  currencyId: number
-  category?: Category
-  sharedWith?: number[]
-  description?: string
-}
-
-export interface EditExpenseParams {
-  id?: number
+export interface ChangeExpenseParams {
   date: Date
-  item: string
+  name: string
+  description?: string
   priceAmount: number
   currencyId: number
-  category?: Category
-  sharedWith?: number[]
-  description?: string
+  categoryName?: string
+  permittedPersonsIds?: number[]
 }
 
-export interface ItemWithCategory {
-  item: string
-  category?: Category
+export interface ExtendedExpenseName {
+  name: string
+  categoryName?: string
 }
