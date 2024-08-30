@@ -10,7 +10,6 @@ import { map } from 'rxjs/operators';
 })
 export class BaseHttpClientService {
   private readonly baseUrl = environment.baseApiUri;
-  private readonly mockServerBaseUrl = environment.mockServerUri;
   private readonly defaultHeaders = {
     'Content-Type': 'application/json'
   }
