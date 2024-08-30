@@ -7,16 +7,7 @@ import { User } from '@app/models/user.model';
 })
 export class LoginHttpClient {
 
-  constructor(private baseHttpClient: BaseHttpClientService) {
-    baseHttpClient.migratedEndpoints.push({
-      type: 'POST',
-      path: 'authentication/login'
-    });
-    baseHttpClient.migratedEndpoints.push({
-      type: 'POST',
-      path: 'authentication/logout'
-    });
-  }
+  constructor(private baseHttpClient: BaseHttpClientService) {}
 
   login(email: string, password: string) {
     return this.baseHttpClient.post<User>('authentication/login', {

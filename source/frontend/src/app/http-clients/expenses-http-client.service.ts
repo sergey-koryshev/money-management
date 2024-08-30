@@ -11,34 +11,7 @@ import { ExpenseViewType } from '@app/models/enums/expense-view-type.enum';
 })
 export class ExpensesHttpClientService {
 
-  constructor(private baseHttpClient: BaseHttpClientService) {
-    baseHttpClient.migratedEndpoints.push(
-      {
-        type: 'GET',
-        path: 'expenses'
-      },
-      {
-        type: 'POST',
-        path: 'expenses'
-      },
-      {
-        type: 'PUT',
-        path: /expenses\/\d+/
-      },
-      {
-        type: 'DELETE',
-        path: /expenses\/\d+/
-      },
-      {
-        type: 'GET',
-        path: 'expenses/search/expenseNames'
-      },
-      {
-        type: 'GET',
-        path: 'expenses/search'
-      }
-    )
-  }
+  constructor(private baseHttpClient: BaseHttpClientService) {}
 
   getExpenses(selectedMonth: Month, viewType?: number) {
     return this.baseHttpClient.get<Expense[]>('expenses', {
