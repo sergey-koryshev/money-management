@@ -33,7 +33,7 @@ public class ExpensesRepositoryTests : TestsBase
         {
             new Entities.Expense
             {
-                Date = DateTime.Now.ToUniversalTime(),
+                Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
                 Name = "Expense A",
                 CategoryId = this.Categories[0].Id,
                 PriceAmount = 108,
@@ -43,7 +43,7 @@ public class ExpensesRepositoryTests : TestsBase
             },
             new Entities.Expense
             {
-                Date = DateTime.Now.ToUniversalTime(),
+                Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
                 Name = "Expense B",
                 PriceAmount = 11,
                 CurrencyId = this.Currencies[1].Id,
@@ -52,7 +52,7 @@ public class ExpensesRepositoryTests : TestsBase
             },
             new Entities.Expense
             {
-                Date = DateTime.Now.ToUniversalTime(),
+                Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
                 Name = "Expense C",
                 CategoryId = this.Categories[1].Id,
                 PriceAmount = 99.9,
@@ -62,7 +62,7 @@ public class ExpensesRepositoryTests : TestsBase
             },
             new Entities.Expense
             {
-                Date = DateTime.Now.ToUniversalTime(),
+                Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
                 Name = "Expense D",
                 CategoryId = this.Categories[2].Id,
                 PriceAmount = 36.6,
@@ -93,7 +93,7 @@ public class ExpensesRepositoryTests : TestsBase
         {
             new Entities.Expense
             {
-                Date = new DateTime(2024, 08, 1).ToUniversalTime(),
+                Date = new DateTime(2024, 8, 1).ToUniversalTime(),
                 Name = "Expense A",
                 CategoryId = this.Categories[0].Id,
                 PriceAmount = 108,
@@ -122,7 +122,7 @@ public class ExpensesRepositoryTests : TestsBase
             },
             new Entities.Expense
             {
-                Date = new DateTime(2024, 08, 20).ToUniversalTime(),
+                Date = new DateTime(2024, 8, 20).ToUniversalTime(),
                 Name = "Expense D",
                 CategoryId = this.Categories[2].Id,
                 PriceAmount = 36.6,
@@ -157,7 +157,7 @@ public class ExpensesRepositoryTests : TestsBase
         {
             new Entities.Expense
             {
-                Date = new DateTime(2024, 08, 1).ToUniversalTime(),
+                Date = new DateTime(2024, 8, 1).ToUniversalTime(),
                 Name = "Expense A",
                 CategoryId = this.Categories[0].Id,
                 PriceAmount = 108,
@@ -202,7 +202,7 @@ public class ExpensesRepositoryTests : TestsBase
         {
             new Entities.Expense
             {
-                Date = new DateTime(2024, 08, 1).ToUniversalTime(),
+                Date = new DateTime(2024, 8, 1).ToUniversalTime(),
                 Name = "Wolt",
                 CategoryId = this.Categories[0].Id,
                 PriceAmount = 42,
@@ -259,7 +259,7 @@ public class ExpensesRepositoryTests : TestsBase
     {
         var createParams = new ChangeExpenseParams
         {
-            Date = DateTime.Now,
+            Date = new DateTime(2024, 8, 30, 17, 01, 8),
             Name = name,
             PriceAmount = 108,
             CurrencyId = this.Currencies[0].Id
@@ -274,7 +274,7 @@ public class ExpensesRepositoryTests : TestsBase
     {
         var createParams = new ChangeExpenseParams
         {
-            Date = DateTime.Now,
+            Date = new DateTime(2024, 8, 30, 17, 01, 8),
             Name = "Test expense",
             PriceAmount = 108,
             CurrencyId = -1
@@ -289,7 +289,7 @@ public class ExpensesRepositoryTests : TestsBase
     {
         var createParams = new ChangeExpenseParams
         {
-            Date = DateTime.Now,
+            Date = new DateTime(2024, 8, 30, 17, 01, 8),
             Name = "Test expense",
             PriceAmount = 108,
             CurrencyId = this.Currencies[0].Id,
@@ -316,7 +316,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var createParams = new ChangeExpenseParams
         {
-            Date = DateTime.Now,
+            Date = new DateTime(2024, 8, 30, 17, 01, 8),
             Name = "Test expense",
             Description = "Test description",
             CategoryName = this.Categories[0].Name,
@@ -359,7 +359,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var createParams = new ChangeExpenseParams
         {
-            Date = DateTime.Now,
+            Date = new DateTime(2024, 8, 30, 17, 01, 8),
             Name = "Test expense",
             Description = "Test description",
             PriceAmount = 108,
@@ -403,7 +403,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var createParams = new ChangeExpenseParams
         {
-            Date = DateTime.Now,
+            Date = new DateTime(2024, 8, 30, 17, 01, 8),
             Name = "Test expense",
             Description = "Test description",
             CategoryName = categoryName,
@@ -447,7 +447,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var createParams = new ChangeExpenseParams
         {
-            Date = DateTime.Now,
+            Date = new DateTime(2024, 8, 30, 17, 01, 8),
             Name = "Test expense",
             Description = "Test description",
             CategoryName = this.Categories[3].Name,
@@ -494,7 +494,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var createParams = new ChangeExpenseParams
         {
-            Date = DateTime.Now,
+            Date = new DateTime(2024, 8, 30, 17, 01, 8),
             Name = "Test expense",
             Description = "Test description",
             CategoryName = this.Categories[3].Name,
@@ -535,7 +535,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var createParams = new ChangeExpenseParams
         {
-            Date = DateTime.Now,
+            Date = new DateTime(2024, 8, 30, 17, 01, 8),
             Name = "Test expense",
             Description = "Test description",
             CategoryName = "SameCategory",
@@ -572,7 +572,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var expense = new Entities.Expense
         {
-            Date = DateTime.Now.ToUniversalTime(),
+            Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
             Name = Guid.NewGuid().ToString(),
             CategoryId = this.Categories[0].Id,
             PriceAmount = 108,
@@ -588,7 +588,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var changeParams = new ChangeExpenseParams
         {
-            Date = DateTime.Now.ToUniversalTime(),
+            Date = new DateTime(2024, 8, 1, 17, 01, 8, DateTimeKind.Utc),
             Name = name,
             PriceAmount = 108,
             CurrencyId = this.Currencies[0].Id
@@ -605,7 +605,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var expense = new Entities.Expense
         {
-            Date = DateTime.Now.ToUniversalTime(),
+            Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
             Name = Guid.NewGuid().ToString(),
             CategoryId = this.Categories[0].Id,
             PriceAmount = 108,
@@ -621,7 +621,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var createParams = new ChangeExpenseParams
         {
-            Date = DateTime.Now,
+            Date = new DateTime(2024, 8, 1, 17, 01, 8),
             Name = Guid.NewGuid().ToString(),
             PriceAmount = 108,
             CurrencyId = -1
@@ -639,7 +639,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var expense = new Entities.Expense
         {
-            Date = DateTime.Now.ToUniversalTime(),
+            Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
             Name = Guid.NewGuid().ToString(),
             CategoryId = this.Categories[0].Id,
             PriceAmount = 108,
@@ -655,7 +655,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var createParams = new ChangeExpenseParams
         {
-            Date = DateTime.Now,
+            Date = new DateTime(2024, 8, 1, 17, 01, 8),
             Name = Guid.NewGuid().ToString(),
             PriceAmount = 108,
             CurrencyId = this.Currencies[0].Id
@@ -676,7 +676,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var expense = new Entities.Expense
         {
-            Date = DateTime.Now.ToUniversalTime(),
+            Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
             Name = Guid.NewGuid().ToString(),
             CategoryId = this.Categories[3].Id,
             PriceAmount = 108,
@@ -692,7 +692,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var changeParams = new ChangeExpenseParams
         {
-            Date = DateTime.Now,
+            Date = new DateTime(2024, 8, 1, 17, 01, 8),
             Name = Guid.NewGuid().ToString(),
             PriceAmount = 108,
             CurrencyId = this.Currencies[0].Id,
@@ -730,7 +730,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var expense = new Entities.Expense
         {
-            Date = DateTime.Now.ToUniversalTime(),
+            Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
             Name = Guid.NewGuid().ToString(),
             CategoryId = this.Categories[4].Id,
             PriceAmount = 108,
@@ -748,7 +748,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var changeParams = new ChangeExpenseParams
         {
-            Date = DateTime.Now,
+            Date = new DateTime(2024, 8, 1, 17, 01, 8),
             Name = Guid.NewGuid().ToString(),
             CategoryName = newCategoryName,
             PriceAmount = 108,
@@ -795,7 +795,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var expense = new Entities.Expense
         {
-            Date = DateTime.Now.ToUniversalTime(),
+            Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
             Name = Guid.NewGuid().ToString(),
             CategoryId = this.Categories[0].Id,
             PriceAmount = 108,
@@ -811,7 +811,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var changeParams = new ChangeExpenseParams
         {
-            Date = DateTime.Now,
+            Date = new DateTime(2024, 8, 1, 17, 01, 8),
             Name = Guid.NewGuid().ToString(),
             CategoryName = this.Categories[4].Name,
             PriceAmount = 108,
@@ -852,7 +852,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var expense = new Entities.Expense
         {
-            Date = DateTime.Now.ToUniversalTime(),
+            Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
             Name = Guid.NewGuid().ToString(),
             CategoryId = arePermitteesChanged ? this.Categories[3].Id : this.Categories[4].Id,
             PriceAmount = 108,
@@ -868,7 +868,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var changeParams = new ChangeExpenseParams
         {
-            Date = DateTime.Now,
+            Date = new DateTime(2024, 8, 1, 17, 01, 8),
             Name = Guid.NewGuid().ToString(),
             CategoryName = this.Categories[3].Name,
             PriceAmount = 108,
@@ -930,7 +930,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var expense = new Entities.Expense
         {
-            Date = DateTime.Now.ToUniversalTime(),
+            Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
             Name = Guid.NewGuid().ToString(),
             CategoryId = this.Categories[4].Id,
             PriceAmount = 108,
@@ -946,7 +946,7 @@ public class ExpensesRepositoryTests : TestsBase
         
         var changeParams = new ChangeExpenseParams
         {
-            Date = DateTime.Now,
+            Date = new DateTime(2024, 8, 1, 17, 10, 8),
             Name = "Test expense",
             Description = "Test description",
             CategoryName = "SameCategory",
@@ -984,7 +984,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var expense = new Entities.Expense
         {
-            Date = DateTime.Now.ToUniversalTime(),
+            Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
             Name = Guid.NewGuid().ToString(),
             CategoryId = this.Categories[3].Id,
             PriceAmount = 108,
@@ -1000,7 +1000,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var changeParams = new ChangeExpenseParams
         {
-            Date = DateTime.Now.ToUniversalTime(),
+            Date = new DateTime(2024, 8, 1, 17, 01, 8, DateTimeKind.Utc),
             Name = Guid.NewGuid().ToString(),
             CategoryName = this.Categories[2].Name,
             PriceAmount = 108108,
@@ -1045,7 +1045,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var expense = new Entities.Expense
         {
-            Date = DateTime.Now.ToUniversalTime(),
+            Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
             Name = Guid.NewGuid().ToString(),
             CategoryId = this.Categories[4].Id,
             PriceAmount = 108,
@@ -1094,7 +1094,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var expense = new Entities.Expense
         {
-            Date = DateTime.Now.ToUniversalTime(),
+            Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
             Name = Guid.NewGuid().ToString(),
             CategoryId = this.Categories[4].Id,
             PriceAmount = 108,
@@ -1128,7 +1128,7 @@ public class ExpensesRepositoryTests : TestsBase
         {
             new Entities.Expense
             {
-                Date = new DateTime(2024, 08, 1).ToUniversalTime(),
+                Date = new DateTime(2024, 8, 1).ToUniversalTime(),
                 Name = "Wolt Test",
                 CategoryId = this.Categories[0].Id,
                 PriceAmount = 42,
@@ -1166,7 +1166,7 @@ public class ExpensesRepositoryTests : TestsBase
             },
             new Entities.Expense
             {
-                Date = new DateTime(2024, 06, 13).ToUniversalTime(),
+                Date = new DateTime(2024, 07, 10).ToUniversalTime(),
                 Name = "Konzum Test",
                 CategoryId = this.Categories[1].Id,
                 PriceAmount = 730,
