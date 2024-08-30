@@ -7,26 +7,7 @@ import { BaseHttpClientService } from './base-http-client.service';
 })
 export class CurrencyHttpClientService {
 
-  constructor(private baseHttpClient: BaseHttpClientService) {
-    baseHttpClient.migratedEndpoints.push(
-      {
-        type: 'GET',
-        path: 'currencies'
-      },
-      {
-        type: 'GET',
-        path: 'currencies/main'
-      },
-      {
-        type: 'POST',
-        path: 'currencies/main'
-      },
-      {
-        type: 'DELETE',
-        path: 'currencies/main'
-      }
-    );
-  }
+  constructor(private baseHttpClient: BaseHttpClientService) {}
 
   getAllCurrencies() {
     return this.baseHttpClient.get<Currency[]>('currencies');

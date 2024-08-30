@@ -5,11 +5,6 @@ import { BaseApiResponse } from '@models/base.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { map } from 'rxjs/operators';
 
-interface Endpoint {
-  type: 'GET' | 'POST' | 'DELETE' | 'PUT'
-  path: string | RegExp
-}
-
 @Injectable({
   providedIn: 'root'
 })
@@ -19,8 +14,6 @@ export class BaseHttpClientService {
   private readonly defaultHeaders = {
     'Content-Type': 'application/json'
   }
-
-  public migratedEndpoints: Endpoint[] = [];
 
   constructor(private httpClient: HttpClient) {}
 
@@ -39,7 +32,7 @@ export class BaseHttpClientService {
           [header: string]: string | string[];
       }
   ): Observable<T> {
-    const fullUrl = this.getFullEndpointUrl('GET', endpointPath);
+    const fullUrl = this.getFullEndpointUrl(endpointPath);
     const fullHeaders = headers ? {...this.defaultHeaders, ...headers} : this.defaultHeaders
 
     return this.httpClient
@@ -66,7 +59,7 @@ export class BaseHttpClientService {
           [header: string]: string | string[];
       }
   ): Observable<T> {
-    const fullUrl = this.getFullEndpointUrl('POST', endpointPath);
+    const fullUrl = this.getFullEndpointUrl(endpointPath);
     const fullHeaders = headers ? {...this.defaultHeaders, ...headers} : this.defaultHeaders
 
     return this.httpClient
@@ -92,7 +85,7 @@ export class BaseHttpClientService {
           [header: string]: string | string[];
       }
   ): Observable<T> {
-    const fullUrl = this.getFullEndpointUrl('DELETE', endpointPath);
+    const fullUrl = this.getFullEndpointUrl(endpointPath);
     const fullHeaders = headers ? {...this.defaultHeaders, ...headers} : this.defaultHeaders
 
     return this.httpClient
@@ -119,7 +112,7 @@ export class BaseHttpClientService {
           [header: string]: string | string[];
       }
   ): Observable<T> {
-    const fullUrl = this.getFullEndpointUrl('PUT', endpointPath);
+    const fullUrl = this.getFullEndpointUrl(endpointPath);
     const fullHeaders = headers ? {...this.defaultHeaders, ...headers} : this.defaultHeaders
 
     return this.httpClient
@@ -130,17 +123,8 @@ export class BaseHttpClientService {
       .pipe(map((response: BaseApiResponse<T>) => response?.data));
   }
 
-  getFullEndpointUrl(type: string, path: string) {
-    const isEndpointMigrated = this.migratedEndpoints.find((e) => {
-      const isTypeMatched = e.type === type;
-
-      if (e.path instanceof RegExp) {
-        return e.path.test(path) && isTypeMatched;
-      }
-
-      return e.path === path && isTypeMatched;
-    }) != null;
-
-    return `${isEndpointMigrated ? this.baseUrl : this.mockServerBaseUrl}/${path}`;
+  getFullEndpointUrl(path: string) {
+    var separator = path.startsWith('/') ? '' : '/';
+    return `${this.baseUrl}${separator}${path}`;
   }
 }

@@ -6,12 +6,7 @@ import { BaseHttpClientService } from './base-http-client.service';
 })
 export class CategoryHttpClient {
 
-  constructor(private baseHttpClient: BaseHttpClientService) {
-    baseHttpClient.migratedEndpoints.push({
-      type: 'GET',
-      path: 'categories/uniqueNames'
-    });
-  }
+  constructor(private baseHttpClient: BaseHttpClientService) {}
 
   getUniqueCategoryNames() {
     return this.baseHttpClient.get<string[]>('categories/uniqueNames');

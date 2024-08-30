@@ -6,30 +6,7 @@ import { UserConnection } from '@app/models/user-connection.model';
   providedIn: 'root'
 })
 export class UserConnectionHttpClient {
-  constructor(private baseHttpClient: BaseHttpClientService) {
-    baseHttpClient.migratedEndpoints.push(
-      {
-        type: 'GET',
-        path: 'connections'
-      },
-      {
-        type: 'GET',
-        path: 'connections/pendingConnectionRequestsAmount'
-      },
-      {
-        type: 'POST',
-        path: 'connections'
-      },
-      {
-        type: 'POST',
-        path: /connections\/\d+\/accept/
-      },
-      {
-        type: 'DELETE',
-        path: /connections\/\d+/
-      }
-    );
-  }
+  constructor(private baseHttpClient: BaseHttpClientService) {}
 
   getPendingConnectionsCount() {
     return this.baseHttpClient.get<number>('connections/pendingConnectionRequestsAmount');
