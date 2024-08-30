@@ -10,16 +10,6 @@ services:
         - mock-server
         - backend
 
-  mock-server:
-    container_name: money-mamagement-mock-server
-    build: ./source/mock-server
-    ports:
-      - '3000:${PORT}'
-    environment:
-      - ORIGIN=${ORIGIN}
-      - PORT=${PORT}
-      - AUTH_TOKEN_SECRET=${AUTH_TOKEN_SECRET}
-
   backend:
     container_name: money-mamagement-backend
     build:
