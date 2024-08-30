@@ -20,5 +20,5 @@ jobs:
       app-name: frontend
       root-path: source/frontend
       project-type: Node
-      version-configuration-path: source/mock-server/version-configuration.json
+      version-configuration-path: source/frontend/version-configuration.json
       scripts-ref: version-helper-v1.2.0
