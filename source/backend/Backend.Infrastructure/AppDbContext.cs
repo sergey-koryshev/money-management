@@ -47,12 +47,13 @@ public class AppDbContext : IdentityUserContext<User, int>
                 r => r.HasOne(typeof(Person)).WithMany().HasForeignKey("PersonId").HasPrincipalKey(nameof(Person.Id)),
                 l => l.HasOne(typeof(Expense)).WithMany().HasForeignKey("ExpenseId").HasPrincipalKey(nameof(Expense.Id)),
                 j => j.HasKey("ExpenseId", "PersonId"));
-    }
 
-    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
-    {
-        base.ConfigureConventions(configurationBuilder);
+        modelBuilder.Entity<Connection>()
+            .Property(e => e.RequestedOn)
+            .HasConversion<DateTimeUtcConverter>();
 
-        configurationBuilder.Properties<DateTime>().HaveConversion<DateTimeUtcConverter>();
+        modelBuilder.Entity<Connection>()
+            .Property(e => e.AcceptedOn)
+            .HasConversion<NullableDateTimeUtcConverter>();
     }
 }
