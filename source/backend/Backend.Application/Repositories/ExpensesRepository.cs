@@ -109,17 +109,12 @@ public class ExpensesRepository
         
         if (filter != null)
         {
-            if (filter.Month != null && filter.Year != null )
+            if (filter.Month != null && filter.Year != null && !string.IsNullOrWhiteSpace(filter.TimeZone))
             {
-                var startDate = new DateTime(filter.Year.Value, filter.Month.Value, 1);
+                var timeZone = TimeZoneInfo.FindSystemTimeZoneById(filter.TimeZone);
+                
+                var startDate = TimeZoneInfo.ConvertTimeToUtc(new DateTime(filter.Year.Value, filter.Month.Value, 1), timeZone);
                 var endDate = startDate.AddMonths(1);
-
-                if (!string.IsNullOrWhiteSpace(filter.TimeZone))
-                {
-                    var timeZone = TimeZoneInfo.FindSystemTimeZoneById(filter.TimeZone);
-                    startDate = TimeZoneInfo.ConvertTimeToUtc(startDate, timeZone);
-                    endDate = TimeZoneInfo.ConvertTimeToUtc(endDate, timeZone);
-                }
 
                 query = query.Where(e => e.Date >= startDate && e.Date < endDate);
             }

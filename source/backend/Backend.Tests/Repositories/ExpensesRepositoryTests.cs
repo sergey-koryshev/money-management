@@ -84,16 +84,20 @@ public class ExpensesRepositoryTests : TestsBase
         return result.Select(e => e.Name).ToArray();
     }
 
-    [Test]
-    public void GetExpenses_FilterByYearAndMonth_ExpensesForSpecifiedYearAnMontReturned()
+    [TestCase("Australia/Sydney", ExpectedResult = new [] { "Expense A", "Expense D" })]
+    [TestCase("UTC", ExpectedResult = new [] { "Expense A", "Expense D" })]
+    [TestCase("America/Los_Angeles", ExpectedResult = new [] { "Expense D" })]
+    public string[] GetExpenses_FilterByYearAndMonthAndTimeZone_ExpensesForSpecifiedYearAndMonthReturned(string timeZone)
     {
         this.DbContext.Attach(this.Daniel);
+
+        var timeZoneA = TimeZoneInfo.FindSystemTimeZoneById("UTC");
 
         var expenses = new List<Entities.Expense>
         {
             new Entities.Expense
             {
-                Date = new DateTime(2024, 8, 1).ToUniversalTime(),
+                Date = TimeZoneInfo.ConvertTimeToUtc(new DateTime(2024, 8, 1), timeZoneA),
                 Name = "Expense A",
                 CategoryId = this.Categories[0].Id,
                 PriceAmount = 108,
@@ -103,7 +107,7 @@ public class ExpensesRepositoryTests : TestsBase
             },
             new Entities.Expense
             {
-                Date = new DateTime(2024, 06, 13).ToUniversalTime(),
+                Date = TimeZoneInfo.ConvertTimeToUtc(new DateTime(2024, 06, 13), timeZoneA),
                 Name = "Expense B",
                 PriceAmount = 11,
                 CurrencyId = this.Currencies[1].Id,
@@ -112,7 +116,7 @@ public class ExpensesRepositoryTests : TestsBase
             },
             new Entities.Expense
             {
-                Date = new DateTime(2024, 07, 29).ToUniversalTime(),
+                Date = TimeZoneInfo.ConvertTimeToUtc(new DateTime(2024, 07, 29), timeZoneA),
                 Name = "Expense C",
                 CategoryId = this.Categories[1].Id,
                 PriceAmount = 99.9,
@@ -122,7 +126,7 @@ public class ExpensesRepositoryTests : TestsBase
             },
             new Entities.Expense
             {
-                Date = new DateTime(2024, 8, 20).ToUniversalTime(),
+                Date = TimeZoneInfo.ConvertTimeToUtc(new DateTime(2024, 8, 20), timeZoneA),
                 Name = "Expense D",
                 CategoryId = this.Categories[2].Id,
                 PriceAmount = 36.6,
@@ -140,16 +144,21 @@ public class ExpensesRepositoryTests : TestsBase
         var result = new ExpensesRepository(DbContext, this.Daniel).GetExpenses(new ExpensesFilter
         {
             Year = 2024,
-            Month = 8
+            Month = 8,
+            TimeZone = timeZone
         });
 
-        result.Select(e => e.Name).Should().BeEquivalentTo(new [] { "Expense A", "Expense D" });
+        return result.Select(e => e.Name).ToArray();
     }
 
-    [TestCase(2024, null)]
-    [TestCase(null, 8)]
-    [TestCase(null, null)]
-    public void GetExpenses_FilterWithMissingYearOrMonth_AllExpensesReturned(int? year, int? month)
+    [TestCase(null, null, null)]
+    [TestCase(2024, null, null)]
+    [TestCase(null, 8, null)]
+    [TestCase(null, null, "UTC")]
+    [TestCase(2024, 8, null)]
+    [TestCase(2024, null, "UTC")]
+    [TestCase(null, 8, "UTC")]
+    public void GetExpenses_FilterWithMissingYearOrMonth_AllExpensesReturned(int? year, int? month, string? timeZone)
     {
         this.DbContext.Attach(this.Daniel);
 
@@ -184,7 +193,8 @@ public class ExpensesRepositoryTests : TestsBase
         var result = new ExpensesRepository(DbContext, this.Daniel).GetExpenses(new ExpensesFilter
         {
             Year = year,
-            Month = month
+            Month = month,
+            TimeZone = timeZone
         });
 
         result.Select(e => e.Name).Should().BeEquivalentTo(new [] { "Expense A", "Expense B" });
