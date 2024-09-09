@@ -6,5 +6,7 @@ public class ExpensesFilterDto
 
     public int? Year { get; set; }
 
+    public string? TimeZone { get; set; }
+
     public string? SearchingTerm { get; set; }
 }
