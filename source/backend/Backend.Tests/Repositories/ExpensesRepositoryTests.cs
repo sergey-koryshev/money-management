@@ -91,13 +91,13 @@ public class ExpensesRepositoryTests : TestsBase
     {
         this.DbContext.Attach(this.Daniel);
 
-        var timeZoneA = TimeZoneInfo.FindSystemTimeZoneById("UTC");
+        var creatorTimeZone = TimeZoneInfo.FindSystemTimeZoneById("UTC");
 
         var expenses = new List<Entities.Expense>
         {
             new Entities.Expense
             {
-                Date = TimeZoneInfo.ConvertTimeToUtc(new DateTime(2024, 8, 1), timeZoneA),
+                Date = TimeZoneInfo.ConvertTimeToUtc(new DateTime(2024, 8, 1), creatorTimeZone),
                 Name = "Expense A",
                 CategoryId = this.Categories[0].Id,
                 PriceAmount = 108,
@@ -107,7 +107,7 @@ public class ExpensesRepositoryTests : TestsBase
             },
             new Entities.Expense
             {
-                Date = TimeZoneInfo.ConvertTimeToUtc(new DateTime(2024, 06, 13), timeZoneA),
+                Date = TimeZoneInfo.ConvertTimeToUtc(new DateTime(2024, 06, 13), creatorTimeZone),
                 Name = "Expense B",
                 PriceAmount = 11,
                 CurrencyId = this.Currencies[1].Id,
@@ -116,7 +116,7 @@ public class ExpensesRepositoryTests : TestsBase
             },
             new Entities.Expense
             {
-                Date = TimeZoneInfo.ConvertTimeToUtc(new DateTime(2024, 07, 29), timeZoneA),
+                Date = TimeZoneInfo.ConvertTimeToUtc(new DateTime(2024, 07, 29), creatorTimeZone),
                 Name = "Expense C",
                 CategoryId = this.Categories[1].Id,
                 PriceAmount = 99.9,
@@ -126,7 +126,7 @@ public class ExpensesRepositoryTests : TestsBase
             },
             new Entities.Expense
             {
-                Date = TimeZoneInfo.ConvertTimeToUtc(new DateTime(2024, 8, 20), timeZoneA),
+                Date = TimeZoneInfo.ConvertTimeToUtc(new DateTime(2024, 8, 20), creatorTimeZone),
                 Name = "Expense D",
                 CategoryId = this.Categories[2].Id,
                 PriceAmount = 36.6,
