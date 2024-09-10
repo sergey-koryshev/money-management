@@ -17,6 +17,7 @@ export class ExpensesHttpClientService {
     return this.baseHttpClient.get<Expense[]>('expenses', {
       month: selectedMonth.month,
       year: selectedMonth.year,
+      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       viewType: viewType == null ? ExpenseViewType.All : viewType
     });
   }

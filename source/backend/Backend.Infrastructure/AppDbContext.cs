@@ -54,5 +54,6 @@ public class AppDbContext : IdentityUserContext<User, int>
         base.ConfigureConventions(configurationBuilder);
 
         configurationBuilder.Properties<DateTime>().HaveConversion<DateTimeUtcConverter>();
+        configurationBuilder.Properties<DateTime?>().HaveConversion<NullableDateTimeUtcConverter>();
     }
 }
