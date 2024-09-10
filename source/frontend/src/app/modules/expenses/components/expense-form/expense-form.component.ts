@@ -6,13 +6,14 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Currency } from '@app/models/currency.model';
 import { ExpensesMonthService } from '@app/services/expenses-month.service';
 import { Month } from '@app/models/month.model';
-import { Observable, Subject, Subscription, catchError, of, switchMap, take, tap } from 'rxjs';
+import { Observable, Subject, catchError, defer, of, switchMap, tap } from 'rxjs';
 import { ExtendedExpenseName } from '@app/http-clients/expenses-http-client.model';
 import { Expense } from '@app/models/expense.model';
 import { AmbiguousUser, User } from '@app/models/user.model';
 import { UserConnectionStatus } from '@app/models/enums/user-connection-status.enum';
 import { getUserFullName } from '@app/helpers/users.helper';
 import { UserService } from '@app/services/user.service';
+import { CategoryHttpClient } from '@app/http-clients/category-http-client.service';
 
 interface ExtendedExpenseNameForm extends ExtendedExpenseName {
   isNew: boolean
@@ -38,8 +39,10 @@ export class ExpenseFormComponent implements OnInit, OnChanges {
   categories: string[];
   form: FormGroup;
   names$: Observable<ExtendedExpenseName[]>;
+  categories$: Observable<string[]>;
   searchEntry$ = new Subject<string>();
   loading: boolean;
+  categoriesLoading: boolean;
   addExpenseName = (name: string) => ({ name, isNew: true })
   friends: AmbiguousUser[];
 
@@ -58,12 +61,19 @@ export class ExpenseFormComponent implements OnInit, OnChanges {
     currency: CurrencyService,
     expensesMonthService: ExpensesMonthService,
     private expensesHttpClient: ExpensesHttpClientService,
-    private userService: UserService) {
+    private userService: UserService,
+    categoryHttpClient: CategoryHttpClient) {
     this.currentUser = userService.user;
     this.isItemShared = this.checkIfItemShared(this.item);
     this.currencies = currency.currencies;
-    this.userService.categories$
-      .subscribe((categories) => this.categories = categories)
+    this.categories$ = defer(() => {
+      this.categoriesLoading = true;
+      return categoryHttpClient.getUniqueCategoryNames()
+        .pipe(
+          catchError(() => of([])),
+          tap(() => this.categoriesLoading = false)
+        );
+    })
     this.userService.connections$
       .subscribe((connections) => {
         this.friends = connections
