@@ -13,7 +13,6 @@ export class UserService {
   storageName = "user-profile";
   user$ = new BehaviorSubject<User | null>(null);
   connections$ = new BehaviorSubject<UserConnection[]>([]);
-  categories$ = new BehaviorSubject<string[]>([]);
 
   get isLoggedIn() {
     return this.user$.value !== null;
@@ -23,14 +22,11 @@ export class UserService {
     return this.user$.value;
   }
 
-  constructor(private userConnectionsHttpClient: UserConnectionHttpClient, categoryHttpClient: CategoryHttpClient) {
+  constructor(private userConnectionsHttpClient: UserConnectionHttpClient) {
     this.user$
-      .pipe(switchMap((user) => zip(
-        user != null ? this.userConnectionsHttpClient.getUserConnections() : of([]),
-        user != null ? categoryHttpClient.getUniqueCategoryNames() : of([]))))
-      .subscribe(([connections, categories]) => {
+      .pipe(switchMap((user) => user != null ? this.userConnectionsHttpClient.getUserConnections() : of([])))
+      .subscribe((connections) => {
           this.connections$.next(connections);
-          this.categories$.next(categories);
       });
   }
 
