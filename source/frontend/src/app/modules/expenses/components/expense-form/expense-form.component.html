@@ -27,7 +27,7 @@
     <div class="row mt-3">
       <div class="col">
         <label for="categoryName">Category:</label>
-        <ng-select id="categoryName" formControlName="categoryName" [items]="categories" [addTag]="true" [hideSelected]="true"></ng-select>
+        <ng-select id="categoryName" formControlName="categoryName" [items]="categories$ | async" [addTag]="true" [hideSelected]="true" [loading]="categoriesLoading"></ng-select>
       </div>
       <div class="col">
         <label for="price">Price:</label>
