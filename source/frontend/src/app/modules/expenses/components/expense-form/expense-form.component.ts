@@ -73,20 +73,7 @@ export class ExpenseFormComponent implements OnInit, OnChanges {
           catchError(() => of([])),
           tap(() => this.categoriesLoading = false)
         );
-    })
-    this.userService.connections$
-      .subscribe((connections) => {
-        this.friends = connections
-          .filter((c) => c.status === UserConnectionStatus.accepted)
-          .map((c) => c.person as AmbiguousUser);
-
-        if (this.item == null) {
-          const lastUsers = this.lastUsersToShareExpense;
-          this.form?.patchValue({
-            permittedPersons: this.friends.filter((u) => lastUsers?.includes(Number(u.id)))
-          });
-        }
-      });
+    });
 
     this.names$ = this.searchEntry$.pipe(
       tap(() => this.loading = true),
@@ -105,6 +92,20 @@ export class ExpenseFormComponent implements OnInit, OnChanges {
       'permittedPersons': [[]],
       'description': [null]
     });
+
+    this.userService.connections$
+      .subscribe((connections) => {
+        this.friends = connections
+          .filter((c) => c.status === UserConnectionStatus.accepted)
+          .map((c) => c.person as AmbiguousUser);
+
+        if (this.item == null) {
+          const lastUsers = this.lastUsersToShareExpense;
+          this.form?.patchValue({
+            permittedPersons: this.friends.filter((u) => lastUsers?.includes(Number(u.id)))
+          });
+        }
+      });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
