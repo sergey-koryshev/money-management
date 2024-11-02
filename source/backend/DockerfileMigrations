@@ -1,8 +1,0 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0
-WORKDIR /src
-COPY . .
-ARG ENV_TYPE=Docker
-ENV ASPNETCORE_ENVIRONMENT=${ENV_TYPE}
-RUN dotnet tool install --version 7.0.18 --global dotnet-ef
-ENV PATH="$PATH:/root/.dotnet/tools"
-ENTRYPOINT dotnet-ef database update --project Backend.Infrastructure --startup-project Backend.WebApi
