@@ -7,7 +7,6 @@ services:
     ports:
       - '4200:80'
     depends_on:
-        - mock-server
         - backend
 
   backend:
@@ -20,21 +19,10 @@ services:
     ports:
       - '5161:80'
     depends_on:
-      - backend-migrations
-      - backend-db
-
-  backend-migrations:
-    container_name: backend-migrations
-    build:
-      context: ./source/backend
-      dockerfile: DockerfileMigrations
-      args:
-          ENV_TYPE: DockerCompose
-    depends_on:
       - backend-db
 
   backend-db:
-    container_name: backend-db
+    container_name: money-mamagement-backend-db
     image: postgres:16.2
     environment:
       POSTGRES_USER: postgres
