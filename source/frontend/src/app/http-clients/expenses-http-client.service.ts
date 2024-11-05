@@ -4,7 +4,9 @@ import { BaseHttpClientService } from './base-http-client.service';
 import { ChangeExpenseParams, ExtendedExpenseName } from './expenses-http-client.model';
 import { Month } from '@app/models/month.model';
 import { of } from 'rxjs';
-import { ExpenseViewType } from '@app/models/enums/expense-view-type.enum';
+import { defaultFilters } from '@app/modules/expenses/pages/expenses-page/expenses-page.component';
+import { ExpensesFilters } from '@app/modules/expenses/pages/expenses-page/expenses-filters.model';
+import { HttpParams } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
@@ -13,13 +15,23 @@ export class ExpensesHttpClientService {
 
   constructor(private baseHttpClient: BaseHttpClientService) {}
 
-  getExpenses(selectedMonth: Month, viewType?: number) {
-    return this.baseHttpClient.get<Expense[]>('expenses', {
-      month: selectedMonth.month,
-      year: selectedMonth.year,
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-      viewType: viewType == null ? ExpenseViewType.All : viewType
-    });
+  getExpenses(selectedMonth: Month, filters?: ExpensesFilters) {
+    const additionalFilters = filters ?? defaultFilters
+
+    let params = new HttpParams()
+      .set('month', selectedMonth.month)
+      .set('year', selectedMonth.year)
+      .set('timeZone', Intl.DateTimeFormat().resolvedOptions().timeZone);
+
+    if (additionalFilters.createdBy.value != null) {
+      params = params.set('createdById', additionalFilters.createdBy.value);
+    }
+
+    if (additionalFilters.shared.value != null) {
+      params = params.set('shared', !!additionalFilters.shared.value);
+    }
+
+    return this.baseHttpClient.get<Expense[]>('expenses', params);
   }
 
   addNewExpense(params: ChangeExpenseParams) {
