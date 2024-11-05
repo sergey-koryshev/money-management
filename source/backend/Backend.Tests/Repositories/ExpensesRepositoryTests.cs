@@ -263,6 +263,136 @@ public class ExpensesRepositoryTests : TestsBase
         return result.Select(e => e.Name).ToArray();
     }
 
+    [TestCase(null, ExpectedResult = new [] { "Expense B", "Expense C" })]
+    [TestCase(0, ExpectedResult = new [] { "Expense C" })]
+    [TestCase(-1, ExpectedResult = new [] { "Expense B" })]
+    public string[] GetExpenses_FilterCreatedBy_CorrectedResultReturned(int? createdByFilterOption)
+    {
+        this.DbContext.Attach(this.Daniel);
+        this.DbContext.Attach(this.Veronika);
+        this.DbContext.Attach(this.Chuck);
+
+        var expenses = new List<Entities.Expense>
+        {
+            new Entities.Expense
+            {
+                Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
+                Name = "Expense A",
+                CategoryId = this.Categories[0].Id,
+                PriceAmount = 108,
+                CurrencyId = this.Currencies[0].Id,
+                CreatedById = this.Daniel.Id,
+                PermittedPersons = new List<Entities.Person> { this.Daniel }
+            },
+            new Entities.Expense
+            {
+                Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
+                Name = "Expense B",
+                PriceAmount = 11,
+                CurrencyId = this.Currencies[1].Id,
+                CreatedById = this.Daniel.Id,
+                PermittedPersons = new List<Entities.Person> { this.Daniel, this.Veronika }
+            },
+            new Entities.Expense
+            {
+                Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
+                Name = "Expense C",
+                CategoryId = this.Categories[1].Id,
+                PriceAmount = 99.9,
+                CurrencyId = this.Currencies[0].Id,
+                CreatedById = this.Veronika.Id,
+                PermittedPersons = new List<Entities.Person> { this.Veronika }
+            },
+            new Entities.Expense
+            {
+                Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
+                Name = "Expense D",
+                CategoryId = this.Categories[2].Id,
+                PriceAmount = 36.6,
+                CurrencyId = this.Currencies[0].Id,
+                CreatedById = this.Chuck.Id,
+                PermittedPersons = new List<Entities.Person> { this.Chuck }
+            }
+        };
+
+        this.DbContext.AddRange(expenses);
+        this.DbContext.SaveChanges();
+
+        this.ClearChangeTracker();
+
+        var result = new ExpensesRepository(DbContext, this.Veronika).GetExpenses(new ExpensesFilter
+        {
+            CreatedById = createdByFilterOption
+        });
+
+        return result.Select(e => e.Name).ToArray();
+    }
+
+    [TestCase(null, ExpectedResult = new [] { "Expense B", "Expense C" })]
+    [TestCase(true, ExpectedResult = new [] { "Expense B" })]
+    [TestCase(false, ExpectedResult = new [] { "Expense C" })]
+    public string[] GetExpenses_FilterShared_CorrectedResultReturned(bool? sharedFilterOption)
+    {
+        this.DbContext.Attach(this.Daniel);
+        this.DbContext.Attach(this.Veronika);
+        this.DbContext.Attach(this.Chuck);
+
+        var expenses = new List<Entities.Expense>
+        {
+            new Entities.Expense
+            {
+                Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
+                Name = "Expense A",
+                CategoryId = this.Categories[0].Id,
+                PriceAmount = 108,
+                CurrencyId = this.Currencies[0].Id,
+                CreatedById = this.Daniel.Id,
+                PermittedPersons = new List<Entities.Person> { this.Daniel }
+            },
+            new Entities.Expense
+            {
+                Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
+                Name = "Expense B",
+                PriceAmount = 11,
+                CurrencyId = this.Currencies[1].Id,
+                CreatedById = this.Daniel.Id,
+                PermittedPersons = new List<Entities.Person> { this.Daniel, this.Veronika }
+            },
+            new Entities.Expense
+            {
+                Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
+                Name = "Expense C",
+                CategoryId = this.Categories[1].Id,
+                PriceAmount = 99.9,
+                CurrencyId = this.Currencies[0].Id,
+                CreatedById = this.Veronika.Id,
+                PermittedPersons = new List<Entities.Person> { this.Veronika }
+            },
+            new Entities.Expense
+            {
+                Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
+                Name = "Expense D",
+                CategoryId = this.Categories[2].Id,
+                PriceAmount = 36.6,
+                CurrencyId = this.Currencies[0].Id,
+                CreatedById = this.Chuck.Id,
+                PermittedPersons = new List<Entities.Person> { this.Chuck }
+            }
+        };
+
+        this.DbContext.AddRange(expenses);
+        this.DbContext.SaveChanges();
+
+        this.ClearChangeTracker();
+
+        var result = new ExpensesRepository(DbContext, this.Veronika).GetExpenses(new ExpensesFilter
+        {
+            Shared = sharedFilterOption
+        });
+
+        return result.Select(e => e.Name).ToArray();
+    }
+
     [TestCase("")]
     [TestCase("   ")]
     public void CreateExpense_EmptyName_ErrorThrown(string name)

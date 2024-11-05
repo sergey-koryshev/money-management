@@ -12,6 +12,10 @@ public class ExpensesRepository
 
     private const double minTrigramsSimilarity = 0.1;
 
+    private const int createdByFilterOptionMe = 0;
+
+    private const int createdByFilterOptionNotMe = -1;
+
     private readonly AppDbContext dbContext;
 
     private readonly Entities.Person identity;
@@ -125,6 +129,24 @@ public class ExpensesRepository
             {
                 query = query.Where(e => EF.Functions.TrigramsSimilarity(EF.Functions.Unaccent(e.Name), EF.Functions.Unaccent(filter.SearchingTerm)) > minTrigramsSimilarity
                     || (e.Description != null && EF.Functions.TrigramsSimilarity(EF.Functions.Unaccent(e.Description), EF.Functions.Unaccent(filter.SearchingTerm)) > minTrigramsSimilarity));
+            }
+
+            if (filter.CreatedById != null)
+            {
+                switch (filter.CreatedById)
+                {
+                    case createdByFilterOptionMe:
+                        query = query.Where(e => e.CreatedById == this.identity.Id);
+                        break;
+                    case createdByFilterOptionNotMe:
+                        query = query.Where(e => e.CreatedById != this.identity.Id);
+                        break;
+                }
+            }
+
+            if (filter.Shared != null)
+            {
+                query = query.Where(e => e.PermittedPersons.Any(p => p.Id != this.identity.Id) == filter.Shared);
             }
         }
 

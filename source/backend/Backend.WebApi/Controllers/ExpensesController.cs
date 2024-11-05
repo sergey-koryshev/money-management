@@ -17,14 +17,9 @@ public class ExpensesController
     }
 
     [HttpGet]
-    public IActionResult GetExpenses(int month, int year, string timeZone)
+    public IActionResult GetExpenses([FromQuery] ExpensesFilterDto filter)
     {
-        var result = this.expensesService.GetExpenses(new ExpensesFilterDto
-        {
-            Month = month,
-            Year = year,
-            TimeZone = timeZone
-        });
+        var result = this.expensesService.GetExpenses(filter);
         return new AppActionResult(result);
     }
 
