@@ -24,7 +24,7 @@ export class ExpensesHttpClientService {
       .set('timeZone', Intl.DateTimeFormat().resolvedOptions().timeZone);
 
     if (additionalFilters.createdBy.value != null) {
-      params = params.set('createdById', additionalFilters.createdBy.value);
+      params = params.set('createdById', additionalFilters.createdBy.value as number);
     }
 
     if (additionalFilters.shared.value != null) {
