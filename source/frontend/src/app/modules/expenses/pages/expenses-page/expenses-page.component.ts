@@ -10,9 +10,20 @@ import { Month } from '@app/models/month.model';
 import { AddNewExpenseDialogComponent } from '../../components/add-new-expense-dialog/add-new-expense-dialog.component';
 import { Price } from '@app/models/price.model';
 import { ItemChangedEventArgs } from '../../components/expenses-table/expenses-table.model';
-import { ExpenseViewType } from '@app/models/enums/expense-view-type.enum';
+import { ExpensesFilters } from './expenses-filters.model';
+import { ExtendedEnumItem } from '@app/models/enums/enums-base';
+import { SharedFilterOptions } from '@app/models/enums/shared-filter.enum';
+import { CreatedByFilterOptions } from '@app/models/enums/created-by-filter.enum';
 
-export const defaultViewTypeStorageName = 'default-view-type';
+export const emptyFilter: ExtendedEnumItem<any> = {
+  value: undefined,
+  name: 'All'
+};
+export const filtersStorageName = 'expenses-filters';
+export const defaultFilters: ExpensesFilters = {
+  createdBy: emptyFilter,
+  shared: emptyFilter
+};
 
 @Component({
   selector: 'app-expenses-page',
@@ -24,15 +35,10 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
   expenses: Expense[];
   selectedMonth: Month;
   totalAmount?: Price;
-  viewType: ExpenseViewType;
-  expenseViewTypes = ExpenseViewType
+  createdByFilterOptions: ExtendedEnumItem<CreatedByFilterOptions>[];
+  sharedFilterOptions: ExtendedEnumItem<SharedFilterOptions>[];
 
-  viewTypeEnumToLabel = {
-    [ExpenseViewType.All]: 'All',
-    [ExpenseViewType.OnlyNotShared]: 'Only not shared',
-    [ExpenseViewType.OnlyShared]: 'Only shared',
-    [ExpenseViewType.CreatedByMe]: 'Created by me'
-  }
+  filters: ExpensesFilters = defaultFilters;
 
   constructor(
     private route: ActivatedRoute,
@@ -40,12 +46,13 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
     private expensesHttpClient: ExpensesHttpClientService,
     private modalService: NgbModal,
     private expensesMonthService: ExpensesMonthService) {
-      this.viewType = ExpenseViewType.All;
+      this.createdByFilterOptions = [emptyFilter].concat(CreatedByFilterOptions.getAll());
+      this.sharedFilterOptions = [emptyFilter].concat(SharedFilterOptions.getAll());
 
-      const defaultViewType = localStorage.getItem(defaultViewTypeStorageName);
+      const savedFilters = localStorage.getItem(filtersStorageName);
 
-      if (defaultViewType != null) {
-        this.viewType = Number(defaultViewType);
+      if (savedFilters != null) {
+        this.filters = JSON.parse(savedFilters);
       }
     }
 
@@ -58,12 +65,12 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
     this.currencyService.mainCurrency$
       .pipe(
         skip(1),
-        switchMap(() => this.expensesHttpClient.getExpenses(this.expensesMonthService.month, this.viewType)))
+        switchMap(() => this.expensesHttpClient.getExpenses(this.expensesMonthService.month, this.filters)))
       .subscribe(data => this.populateData(data));
     this.expensesMonthService.month$
       .pipe(
         skip(1),
-        switchMap(() => this.expensesHttpClient.getExpenses(this.expensesMonthService.month, this.viewType)))
+        switchMap(() => this.expensesHttpClient.getExpenses(this.expensesMonthService.month, this.filters)))
       .subscribe(data => this.populateData(data));
   }
 
@@ -73,9 +80,10 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
       const date = new Date(addedExpanse.date);
       if (this.expensesMonthService.month.month == date.getMonth() + 1
         && this.expensesMonthService.month.year == date.getFullYear()
-        && (this.viewType === ExpenseViewType.All
-          || (this.viewType === ExpenseViewType.OnlyShared && addedExpanse.permittedPersons.length > 0)
-          || (this.viewType === ExpenseViewType.OnlyNotShared && addedExpanse.permittedPersons.length === 0))) {
+        && (this.filters.shared.value === emptyFilter.value
+          || (this.filters.shared.value === SharedFilterOptions.Yes && addedExpanse.permittedPersons.length > 0)
+          || (this.filters.shared.value === SharedFilterOptions.No && addedExpanse.permittedPersons.length === 0))
+        && this.filters.createdBy.value === CreatedByFilterOptions.Me) {
           this.expenses.push(addedExpanse);
           this.onItemChange({
             newValue: addedExpanse.originalPrice?.amount ?? addedExpanse.price.amount
@@ -106,11 +114,12 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
     }
   }
 
-  onViewTypeChanged(viewType: number) {
-    this.expensesHttpClient.getExpenses(this.expensesMonthService.month, viewType)
+  onFilterChanged(filterName: string, value: ExtendedEnumItem<any>) {
+    this.filters[filterName] = value;
+
+    this.expensesHttpClient.getExpenses(this.expensesMonthService.month, this.filters)
       .subscribe(data => {
-        localStorage.setItem(defaultViewTypeStorageName, String(viewType));
-        this.viewType = viewType;
+        localStorage.setItem(filtersStorageName, JSON.stringify(this.filters));
         this.populateData(data);
     });
   }
