@@ -18,7 +18,9 @@
       <div ngbDropdownMenu>
         <button *ngFor="let selectOption of createdByFilterOptions" ngbDropdownItem
           (click)="onFilterChanged('createdBy', selectOption)"
-          [disabled]="selectOption.value === filters.createdBy.value">{{ selectOption.name }}</button>
+          [disabled]="selectOption.value === filters.createdBy.value">
+          {{ selectOption.name }}
+        </button>
       </div>
     </div>
     <div ngbDropdown class="d-inline-block">
@@ -28,8 +30,9 @@
       </button>
       <div ngbDropdownMenu>
         <button *ngFor="let selectOption of sharedFilterOptions" ngbDropdownItem
-          (click)="onFilterChanged('shared', selectOption)" [disabled]="selectOption.value === filters.shared.value">{{
-          selectOption.name }}</button>
+          (click)="onFilterChanged('shared', selectOption)" [disabled]="selectOption.value === filters.shared.value">
+          {{ selectOption.name }}
+        </button>
       </div>
     </div>
   </div>
