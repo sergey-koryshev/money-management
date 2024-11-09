@@ -9,4 +9,8 @@ public class ExpensesFilter
     public string? TimeZone { get; set; }
 
     public string? SearchingTerm { get; set; }
+
+    public int? CreatedById { get; set; }
+
+    public bool? Shared { get; set; }
 }

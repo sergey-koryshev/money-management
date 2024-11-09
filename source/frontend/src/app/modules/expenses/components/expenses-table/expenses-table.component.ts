@@ -8,10 +8,12 @@ import { EditExpenseDialogComponent } from '../edit-expense-dialog/edit-expense-
 import { Month } from '@app/models/month.model';
 import { ItemChangedEventArgs } from './expenses-table.model';
 import { AmbiguousUser, User } from '@app/models/user.model';
-import { ExpenseViewType } from '@app/models/enums/expense-view-type.enum';
 import { getUserFullName, getUserInitials } from '@app/helpers/users.helper';
 import { UserConnectionStatus } from '@app/models/enums/user-connection-status.enum';
 import { UserService } from '@app/services/user.service';
+import { ExpensesFilters } from '../../pages/expenses-page/expenses-filters.model';
+import { emptyFilter } from '../../pages/expenses-page/expenses-page.component';
+import { SharedFilterOptions } from '@app/models/enums/shared-filter.enum';
 
 @Component({
   selector: 'app-expenses-table',
@@ -33,7 +35,7 @@ export class ExpensesTableComponent implements OnInit {
   data: Expense[];
 
   @Input()
-  viewType: ExpenseViewType;
+  filters: ExpensesFilters;
 
   @Output()
   itemChanged = new EventEmitter<ItemChangedEventArgs>()
@@ -158,9 +160,9 @@ export class ExpensesTableComponent implements OnInit {
         if (this.selectedMonth == null
           || (this.selectedMonth.month == date.getMonth() + 1
             && this.selectedMonth.year == date.getFullYear())
-            && (this.viewType === ExpenseViewType.All
-              || (this.viewType === ExpenseViewType.OnlyShared && updatedItem.permittedPersons.length > 0)
-              || (this.viewType === ExpenseViewType.OnlyNotShared && updatedItem.permittedPersons.length === 0))) {
+            && (this.filters.shared.value === emptyFilter.value
+              || (this.filters.shared.value === SharedFilterOptions.Yes && updatedItem.permittedPersons.length > 0)
+              || (this.filters.shared.value === SharedFilterOptions.No && updatedItem.permittedPersons.length === 0))) {
           this.data[indexOfItem] = updatedItem;
           this.itemChanged.emit({
             oldValue: item.originalPrice?.amount ?? item.price.amount,
