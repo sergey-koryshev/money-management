@@ -7,6 +7,7 @@ export interface TableColumn<T> {
   stretch?: boolean,
   ignorePadding?: boolean,
   disableSorting?: boolean,
+  snapToPrevious?: boolean,
   function?: (row: T) => string,
   template?: () => TemplateRef<unknown>;
   sortFunc?: (first: T, second: T) => number;
