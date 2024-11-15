@@ -2,23 +2,33 @@
 
 using AutoMapper;
 using Backend.Application;
+using Backend.Application.Clients;
 using Backend.Domain.DTO;
 using Backend.Domain.Models;
 using Backend.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
 public class ExpensesService : ServiseBase, IExpensesService
 {
-    public ExpensesService(IHttpContextAccessor httpContextAccessor, IMapper mapper, IDbContextFactory<AppDbContext> dbContextFactory) : base(httpContextAccessor, mapper, dbContextFactory)
+    protected ExchangeServerClient? ExchangeServerClient { get; }
+
+    public ExpensesService(IHttpContextAccessor httpContextAccessor, IMapper mapper, IDbContextFactory<AppDbContext> dbContextFactory, IConfiguration config) : base(httpContextAccessor, mapper, dbContextFactory)
     {
+        var exchangeServerBaseUrl = config["ExchangeServerBaseUrl"];
+
+        if (exchangeServerBaseUrl != null)
+        {
+            this.ExchangeServerClient = new ExchangeServerClient(new Uri(exchangeServerBaseUrl));
+        }
     }
 
     public List<ExpenseDto> GetExpenses(ExpensesFilterDto filter)
     {
         return this.ExecuteActionInTransaction((dbContext) =>
         {
-            var result = new ExpensesRepository(dbContext, this.Identity!).GetExpenses(this.Mapper.Map<ExpensesFilter>(filter));
+            var result = new ExpensesRepository(dbContext, this.Identity!, this.ExchangeServerClient).GetExpenses(this.Mapper.Map<ExpensesFilter>(filter));
             var connectedPersonsIds = this.GetConnectedPersonsIds(dbContext);
             return result.Select(e => this.Mapper.Map<ExpenseDto>(e, o => {
                 o.Items["Identity"] = this.Identity;
@@ -31,7 +41,7 @@ public class ExpensesService : ServiseBase, IExpensesService
     {
         return this.ExecuteActionInTransaction((dbContext) =>
         {
-            var result = new ExpensesRepository(dbContext, this.Identity!).CreateExpense(this.Mapper.Map<ChangeExpenseParams>(changeParams));
+            var result = new ExpensesRepository(dbContext, this.Identity!, this.ExchangeServerClient).CreateExpense(this.Mapper.Map<ChangeExpenseParams>(changeParams));
             return this.Mapper.Map<ExpenseDto>(result, o => {
                 o.Items["Identity"] = this.Identity;
                 o.Items["ConnectedPersonsIds"] = this.GetConnectedPersonsIds(dbContext);;
@@ -43,7 +53,7 @@ public class ExpensesService : ServiseBase, IExpensesService
     {
         return this.ExecuteActionInTransaction((dbContext) =>
         {
-            var result = new ExpensesRepository(dbContext, this.Identity!).UpdateExpense(expenseId, this.Mapper.Map<ChangeExpenseParams>(changeParams));
+            var result = new ExpensesRepository(dbContext, this.Identity!, this.ExchangeServerClient).UpdateExpense(expenseId, this.Mapper.Map<ChangeExpenseParams>(changeParams));
             
             return this.Mapper.Map<ExpenseDto>(result, o => {
                 o.Items["Identity"] = this.Identity;
@@ -56,7 +66,7 @@ public class ExpensesService : ServiseBase, IExpensesService
     {
         this.ExecuteActionInTransaction((dbContext) =>
         {
-            new ExpensesRepository(dbContext, this.Identity!).DeleteExpense(expenseId);
+            new ExpensesRepository(dbContext, this.Identity!, this.ExchangeServerClient).DeleteExpense(expenseId);
         });
     }
 
@@ -64,7 +74,7 @@ public class ExpensesService : ServiseBase, IExpensesService
     {
         return this.ExecuteActionInTransaction((dbContext) =>
         {
-            var result = new ExpensesRepository(dbContext, this.Identity!).FindExpenseNames(term);
+            var result = new ExpensesRepository(dbContext, this.Identity!, this.ExchangeServerClient).FindExpenseNames(term);
             return result.Select(r => this.Mapper.Map<ExtendedExpenseNameDto>(r)).ToList();
         });
     }
@@ -72,7 +82,7 @@ public class ExpensesService : ServiseBase, IExpensesService
     private HashSet<int> GetConnectedPersonsIds(AppDbContext dbContext)
     {
         var connectedPersonsIds = new ConnectionsRepository(dbContext, this.Identity!)
-                .GetConnectedPersonsIds(true);
+            .GetConnectedPersonsIds(true);
 
         // need to add yourself to let mapper resolve your details correctly
         connectedPersonsIds.Add(this.Identity!.Id);
