@@ -1,5 +1,3 @@
-using System;
-
 namespace Backend.Domain.Models;
 
 public class ExtendedExpenseName
