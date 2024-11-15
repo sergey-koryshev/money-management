@@ -1,5 +1,8 @@
 <div class="total-counter" *ngIf="totalAmount">
   <app-price [price]="totalAmount"></app-price>
+  <div *ngIf="isExchangeFaulted" class="faulted-exchange">
+    <li class="icon icon-error" [ngbPopover]="exchangeFaultedErrorMessage" triggers="mouseenter:mouseleave"></li>
+  </div>
 </div>
 <div class="d-flex align-items-center justify-content-center">
   <ngb-datepicker class="datepicker" [startDate]="selectedMonth" (navigate)="onMonthChange($event)">
