@@ -52,3 +52,24 @@
     <button type="button" class="btn btn-success" (click)="modal.close(true)">Delete</button>
   </div>
 </ng-template>
+
+<ng-template #exchangeResult let-model>
+  <div
+    *ngIf="model.originalPrice != null"
+    class="exchange-icon mx-1"
+    [ngClass]="{
+      'error': model.price.exchangeFailure?.type === failureType.Error,
+      'warning': model.price.exchangeFailure?.type === failureType.Warning
+    }">
+    <li class="icon icon-currency-exchange" [ngbPopover]="exchangeResultPopover" triggers="mouseenter:mouseleave"></li>
+  </div>
+
+  <ng-template #exchangeResultPopover>
+    <div *ngIf="model.price.exchangeRateDate != null">
+      <span>Exchange Rate Date: {{ model.price.exchangeRateDate | date: 'M/d/yyyy' }}</span>
+    </div>
+    <div *ngIf="model.price.exchangeFailure != null" [ngClass]="{ 'warning-message': model.price.exchangeRateDate != null }">
+      <span>{{ model.price.exchangeFailure.message }}</span>
+    </div>
+  </ng-template>
+</ng-template>

@@ -23,3 +23,32 @@
     }
   }
 }
+
+.exchange-icon {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+
+  .icon {
+    background-color: #27ae60;;
+  }
+}
+
+.error {
+  .icon {
+    background-color: #e74c3c;
+  }
+}
+
+.warning {
+  .icon {
+    background-color: #f39c12;
+  }
+}
+
+.warning-message {
+  margin-top: 0.5em;
+  font-size: small;
+  color: #95a5a6;
+  font-style: italic;
+}
