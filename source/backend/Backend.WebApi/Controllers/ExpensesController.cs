@@ -56,11 +56,12 @@ public class ExpensesController
 
     [HttpGet]
     [Route("search")]
-    public IActionResult SearchExpenses(string searchingTerm)
+    public IActionResult SearchExpenses(string searchingTerm, string timeZone)
     {
         var result = this.expensesService.GetExpenses(new ExpensesFilterDto
         {
-            SearchingTerm = searchingTerm
+            SearchingTerm = searchingTerm,
+            TimeZone = timeZone
         });
         return new AppActionResult(result);
     }
