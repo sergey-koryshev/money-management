@@ -1,6 +1,9 @@
 namespace Backend.Domain.Models;
 
+using System.Text.Json.Serialization;
+
 public class ExchangeServerResponseRoot
 {
-    public required Dictionary<DateTime, Dictionary<string, double>> rates { get; set; }
+    [JsonPropertyName("rates")]
+    public required Dictionary<DateTime, Dictionary<string, double>> Rates { get; set; }
 }
