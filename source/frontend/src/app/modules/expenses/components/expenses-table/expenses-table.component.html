@@ -65,8 +65,13 @@
   </div>
 
   <ng-template #exchangeResultPopover>
+    <div *ngIf="model.price.exchangeRate != null">
+      <span class="fw-bold me-1">Exchange Rate:</span>
+      <span>{{ model.price.exchangeRate | number : '1.0-4' }}</span>
+    </div>
     <div *ngIf="model.price.exchangeRateDate != null">
-      <span>Exchange Rate Date: {{ model.price.exchangeRateDate | date: 'M/d/yyyy' }}</span>
+      <span class="fw-bold me-1">Date:</span>
+      <span>{{ model.price.exchangeRateDate | date: 'M/d/yyyy' }}</span>
     </div>
     <div *ngIf="model.price.exchangeFailure != null" [ngClass]="{ 'warning-message': model.price.exchangeRateDate != null }">
       <span>{{ model.price.exchangeFailure.message }}</span>

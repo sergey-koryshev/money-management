@@ -6,6 +6,8 @@ public class Price
 
     public required Currency Currency { get; set; }
 
+    public double? ExchangeRate { get; set; }
+
     public DateTime? ExchangeRateDate { get; set; }
 
     public Failure? ExchangeFailure { get; set; }

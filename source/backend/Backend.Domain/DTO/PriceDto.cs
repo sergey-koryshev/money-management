@@ -6,6 +6,8 @@ public class PriceDto
 
     public required CurrencyDto Currency { get; set; }
 
+    public double? ExchangeRate { get; set; }
+
     public DateTime? ExchangeRateDate { get; set; }
 
     public FailureDto? ExchangeFailure { get; set; }
