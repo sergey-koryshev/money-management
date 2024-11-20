@@ -21,25 +21,10 @@ public class ExchangeServerClient : IExchangeServerClient
     public Dictionary<DateTime, Dictionary<string, double>> GetExchangeRates(DateTime from, DateTime to, string targetCurrency)
     {
         TimeZoneInfo cetTimeZone = TimeZoneInfo.FindSystemTimeZoneById("CET");
-        var convertedFrom = TimeZoneInfo.ConvertTimeFromUtc(from, cetTimeZone);
-        var convertedTo = TimeZoneInfo.ConvertTimeFromUtc(to, cetTimeZone);
-        var today = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, cetTimeZone);
+        var cetFrom = TimeZoneInfo.ConvertTimeFromUtc(from, cetTimeZone);
+        var cetTo = TimeZoneInfo.ConvertTimeFromUtc(to, cetTimeZone);
 
-        // workaround for https://github.com/hakanensari/frankfurter/issues/71
-        if (convertedFrom.DayOfWeek == DayOfWeek.Monday && convertedFrom.Date == today.Date && convertedFrom.Date == convertedTo.Date)
-        {
-            convertedFrom = from.AddDays(-3);
-        } 
-        else if (convertedFrom.DayOfWeek == DayOfWeek.Sunday)
-        {
-            convertedFrom = from.AddDays(-2);
-        }
-        else if (convertedFrom.DayOfWeek == DayOfWeek.Saturday)
-        {
-            convertedFrom = from.AddDays(-1);
-        }
-
-        string requestQuery = QueryHelpers.AddQueryString($"{convertedFrom:yyyy-MM-dd}..{convertedTo:yyyy-MM-dd}", new Dictionary<string, string>
+        string requestQuery = QueryHelpers.AddQueryString($"{cetFrom:yyyy-MM-dd}..{cetTo:yyyy-MM-dd}", new Dictionary<string, string>
         {
             { "base", targetCurrency }
         });
@@ -68,7 +53,7 @@ public class ExchangeServerClient : IExchangeServerClient
         }
         catch (Exception ex)
         {
-            Trace.TraceWarning($"Error has occurred during fetching exchange rates from server '{this.Client.BaseAddress}': {ex}");
+            Trace.TraceError($"Error has occurred during fetching exchange rates from server '{this.Client.BaseAddress}': {ex}");
         }
 
         return result;
