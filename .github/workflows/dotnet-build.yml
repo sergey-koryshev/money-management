@@ -36,7 +36,7 @@ on:
       test-db-password:
         required: false
         type: string
-        default: "mm-test-password"
+        default: "DrOid-R2D2"
       dotnet-ef-version:
         required: false
         type: string
