@@ -6,6 +6,7 @@ using Backend.Domain.Models;
 using Backend.Domain.Models.Mappers;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
+using Moq;
 using Entities = Domain.Entities;
 
 [TestFixture]
@@ -25,7 +26,7 @@ public class ExpensesRepositoryTests : TestsBase
 
     protected override bool ShouldCurrencyMappingsBeDeletedInOneTimeTearDown => true;
 
-    public IExchangeServerClient? ExchangeServerClient { get; private set; }
+    public Mock<IExchangeServerClient>? ExchangeServerClientMock { get; private set; }
 
     [TestCase(DanielTenant, ExpectedResult = new [] { "Expense A", "Expense B" })]
     [TestCase(VeronikaTenant, ExpectedResult = new [] { "Expense B", "Expense C", "Expense D" })]
@@ -407,27 +408,33 @@ public class ExpensesRepositoryTests : TestsBase
 
         var cetTimeZone = TimeZoneInfo.FindSystemTimeZoneById("CET");
 
-        var exchangeRates = new Dictionary<string, Dictionary<int, ExchangeRate>>
+        var exchangeRates = new Dictionary<DateTime, Dictionary<string, double>>();
+
+        if (currencyName == "USD")
         {
-            ["USD"] = new Dictionary<int, ExchangeRate>
+            exchangeRates.Add(TimeZoneInfo.ConvertTimeToUtc(new DateTime(2021, 10, 22), cetTimeZone), new Dictionary<string, double>
             {
-                [1] = new ExchangeRate
-                {
-                    Date = TimeZoneInfo.ConvertTimeToUtc(new DateTime(2021, 10, 22), cetTimeZone),
-                    Rate = 0.85985
-                },
-                [3] = new ExchangeRate
-                {
-                    Date = TimeZoneInfo.ConvertTimeToUtc(new DateTime(2021, 10, 26), cetTimeZone),
-                    Rate = 0.86073
-                }
-            },
-            ["EUR"] = new Dictionary<int, ExchangeRate> { [0] = new ExchangeRate
+                ["EUR"] = 0.85985
+            });
+            exchangeRates.Add(TimeZoneInfo.ConvertTimeToUtc(new DateTime(2021, 10, 26), cetTimeZone), new Dictionary<string, double>
             {
-                Date = TimeZoneInfo.ConvertTimeToUtc(new DateTime(2021, 10, 22), cetTimeZone),
-                Rate = 1.163
-            }}
-        };
+                ["EUR"] = 0.86073
+            });
+        }
+        else if (currencyName == "EUR")
+        {
+            exchangeRates.Add(TimeZoneInfo.ConvertTimeToUtc(new DateTime(2021, 10, 22), cetTimeZone), new Dictionary<string, double>
+            {
+                ["USD"] = 1.163
+            });
+        }
+
+        this.ExchangeServerClientMock?
+            .Setup(x => x.GetExchangeRates(
+                It.IsAny<DateTime>(),
+                It.IsAny<DateTime>(),
+                It.IsAny<string>()))
+            .Returns(exchangeRates);
 
         var expenses = new List<Entities.Expense>
         {
@@ -461,7 +468,7 @@ public class ExpensesRepositoryTests : TestsBase
             new Entities.Expense
             {
                 Date = TimeZoneInfo.ConvertTimeToUtc(new DateTime(2021, 10, 26), cetTimeZone),
-                Name = "Expense C",
+                Name = "Expense D",
                 PriceAmount = 199.99,
                 CurrencyId = this.Currencies[1].Id,
                 CreatedById = this.Daniel.Id,
@@ -477,13 +484,197 @@ public class ExpensesRepositoryTests : TestsBase
         var currency = this.Currencies.First(c => c.Name == currencyName);
         new CurrenciesRepository(this.DbContext, this.Daniel).SetMainCurrency(currency.Id);
 
-        var result = new ExpensesRepository(DbContext, this.Daniel, new ExchangeServerClient(new Uri("http://api.frankfurter.app"))).GetExpenses();
+        var result = new ExpensesRepository(DbContext, this.Daniel, this.ExchangeServerClientMock?.Object).GetExpenses();
 
-        result.Select(e => new { e.Price, e.OriginalPrice }).Should().BeEquivalentTo(this.GetExchangedPriceParts(expenses.Select(e => new Price
+        var expectedPrices = new List<ExpensePricePart>();
+
+        if (currencyName == "USD")
         {
-            Currency = this.Currencies.First(c => c.Id == e.CurrencyId),
-            Amount = e.PriceAmount
-        }).ToList(), currency, exchangeRates));
+            expectedPrices = new List<ExpensePricePart>
+            {
+                new ExpensePricePart
+                {
+                    Price = new Price
+                    {
+                        Currency = this.Currencies.First(c => c.Id == expenses[0].CurrencyId),
+                        Amount = expenses[0].PriceAmount
+                    }
+                },
+                new ExpensePricePart
+                {
+                    Price = new Price
+                    {
+                        Currency = currency,
+                        Amount = expenses[1].PriceAmount / 0.85985,
+                        ExchangeRate = 1 / 0.85985,
+                        ExchangeRateDate = TimeZoneInfo.ConvertTimeToUtc(new DateTime(2021, 10, 22), cetTimeZone)
+                    },
+                    OriginalPrice = new Price
+                    {
+                        Currency = this.Currencies.First(c => c.Id == expenses[1].CurrencyId),
+                        Amount = expenses[1].PriceAmount
+                    }
+                },
+                new ExpensePricePart
+                {
+                    Price = new Price
+                    {
+                        Currency = this.Currencies.First(c => c.Id == expenses[2].CurrencyId),
+                        Amount = expenses[2].PriceAmount,
+                        ExchangeFailure = new Failure
+                        {
+                            Message = "There is no data to exchange the price. In case the issue persists, contact administrator.", 
+                            Type = FailureType.Error
+                        }
+                    },
+                    OriginalPrice = new Price
+                    {
+                        Currency = this.Currencies.First(c => c.Id == expenses[2].CurrencyId),
+                        Amount = expenses[2].PriceAmount
+                    }
+                },
+                new ExpensePricePart
+                {
+                    Price = new Price
+                    {
+                        Currency = currency,
+                        Amount = expenses[3].PriceAmount / 0.86073,
+                        ExchangeRate = 1 / 0.86073,
+                        ExchangeRateDate = TimeZoneInfo.ConvertTimeToUtc(new DateTime(2021, 10, 26), cetTimeZone)
+                    },
+                    OriginalPrice = new Price
+                    {
+                        Currency = this.Currencies.First(c => c.Id == expenses[3].CurrencyId),
+                        Amount = expenses[3].PriceAmount
+                    }
+                }
+            };
+        }
+        else if (currencyName == "EUR")
+        {
+            expectedPrices = new List<ExpensePricePart>
+            {
+                new ExpensePricePart
+                {
+                    Price = new Price
+                    {
+                        Currency = currency,
+                        Amount = expenses[0].PriceAmount / 1.163,
+                        ExchangeRate = 1 / 1.163,
+                        ExchangeRateDate = TimeZoneInfo.ConvertTimeToUtc(new DateTime(2021, 10, 22), cetTimeZone)
+                    },
+                    OriginalPrice = new Price
+                    {
+                        Currency = this.Currencies.First(c => c.Id == expenses[0].CurrencyId),
+                        Amount = expenses[0].PriceAmount
+                    }
+                },
+                new ExpensePricePart
+                {
+                    Price = new Price
+                    {
+                        Currency = this.Currencies.First(c => c.Id == expenses[1].CurrencyId),
+                        Amount = expenses[1].PriceAmount
+                    }
+                },
+                new ExpensePricePart
+                {
+                    Price = new Price
+                    {
+                        Currency = this.Currencies.First(c => c.Id == expenses[2].CurrencyId),
+                        Amount = expenses[2].PriceAmount,
+                        ExchangeFailure = new Failure
+                        {
+                            Message = "There is no data to exchange the price. In case the issue persists, contact administrator.", 
+                            Type = FailureType.Error
+                        }
+                    },
+                    OriginalPrice = new Price
+                    {
+                        Currency = this.Currencies.First(c => c.Id == expenses[2].CurrencyId),
+                        Amount = expenses[2].PriceAmount
+                    }
+                },
+                new ExpensePricePart
+                {
+                    Price = new Price
+                    {
+                        Currency = this.Currencies.First(c => c.Id == expenses[3].CurrencyId),
+                        Amount = expenses[3].PriceAmount
+                    }
+                }
+            };
+        }
+        else
+        {
+            expectedPrices = new List<ExpensePricePart>
+            {
+                new ExpensePricePart
+                {
+                    Price = new Price
+                    {
+                        Currency = this.Currencies.First(c => c.Id == expenses[0].CurrencyId),
+                        Amount = expenses[0].PriceAmount,
+                        ExchangeFailure = new Failure
+                        {
+                            Message = "There is no data to exchange the price. In case the issue persists, contact administrator.", 
+                            Type = FailureType.Error
+                        }
+                    },
+                    OriginalPrice = new Price
+                    {
+                        Currency = this.Currencies.First(c => c.Id == expenses[0].CurrencyId),
+                        Amount = expenses[0].PriceAmount
+                    }
+                },
+                new ExpensePricePart
+                {
+                    Price = new Price
+                    {
+                        Currency = this.Currencies.First(c => c.Id == expenses[1].CurrencyId),
+                        Amount = expenses[1].PriceAmount,
+                        ExchangeFailure = new Failure
+                        {
+                            Message = "There is no data to exchange the price. In case the issue persists, contact administrator.", 
+                            Type = FailureType.Error
+                        }
+                    },
+                    OriginalPrice = new Price
+                    {
+                        Currency = this.Currencies.First(c => c.Id == expenses[1].CurrencyId),
+                        Amount = expenses[1].PriceAmount
+                    }
+                },
+                new ExpensePricePart
+                {
+                    Price = new Price
+                    {
+                        Currency = this.Currencies.First(c => c.Id == expenses[2].CurrencyId),
+                        Amount = expenses[2].PriceAmount
+                    }
+                },
+                new ExpensePricePart
+                {
+                    Price = new Price
+                    {
+                        Currency = this.Currencies.First(c => c.Id == expenses[3].CurrencyId),
+                        Amount = expenses[3].PriceAmount,
+                        ExchangeFailure = new Failure
+                        {
+                            Message = "There is no data to exchange the price. In case the issue persists, contact administrator.", 
+                            Type = FailureType.Error
+                        }
+                    },
+                    OriginalPrice = new Price
+                    {
+                        Currency = this.Currencies.First(c => c.Id == expenses[3].CurrencyId),
+                        Amount = expenses[3].PriceAmount
+                    }
+                }
+            };
+        }
+
+        result.Select(e => new { e.Price, e.OriginalPrice }).Should().BeEquivalentTo(expectedPrices);
     }
 
     [Test]
@@ -521,7 +712,7 @@ public class ExpensesRepositoryTests : TestsBase
         this.ClearChangeTracker();
         new CurrenciesRepository(this.DbContext, this.Daniel).DeleteMainCurrency();
 
-        var result = new ExpensesRepository(DbContext, this.Daniel, this.ExchangeServerClient).GetExpenses();
+        var result = new ExpensesRepository(DbContext, this.Daniel, this.ExchangeServerClientMock?.Object).GetExpenses();
 
         result.Select(e => new { e.Price, e.OriginalPrice }).Should().BeEquivalentTo(expenses.Select(e => new ExpensePricePart
         {
@@ -599,6 +790,19 @@ public class ExpensesRepositoryTests : TestsBase
 
         var cetTimeZone = TimeZoneInfo.FindSystemTimeZoneById("CET");
 
+        this.ExchangeServerClientMock?
+            .Setup(x => x.GetExchangeRates(
+                It.IsAny<DateTime>(),
+                It.IsAny<DateTime>(),
+                It.IsAny<string>()))
+            .Returns(new Dictionary<DateTime, Dictionary<string, double>>
+            {
+                [TimeZoneInfo.ConvertTimeToUtc(new DateTime(2024, 8, 30), cetTimeZone)] = new Dictionary<string, double>
+                {
+                    ["USD"] = 1.1087
+                }
+            });
+
         var createParams = new ChangeExpenseParams
         {
             Date = new DateTime(2024, 8, 30, 17, 01, 8),
@@ -621,7 +825,7 @@ public class ExpensesRepositoryTests : TestsBase
             new CurrenciesRepository(this.DbContext, this.Daniel).SetMainCurrency(mainCurrency.Id);
         }
 
-        var result = new ExpensesRepository(this.DbContext, this.Daniel, this.ExchangeServerClient).CreateExpense(createParams);
+        var result = new ExpensesRepository(this.DbContext, this.Daniel, this.ExchangeServerClientMock?.Object).CreateExpense(createParams);
 
         if (isExpenseShared)
         {
@@ -984,6 +1188,19 @@ public class ExpensesRepositoryTests : TestsBase
 
         var cetTimeZone = TimeZoneInfo.FindSystemTimeZoneById("CET");
 
+        this.ExchangeServerClientMock?
+            .Setup(x => x.GetExchangeRates(
+                It.IsAny<DateTime>(),
+                It.IsAny<DateTime>(),
+                It.IsAny<string>()))
+            .Returns(new Dictionary<DateTime, Dictionary<string, double>>
+            {
+                [TimeZoneInfo.ConvertTimeToUtc(new DateTime(2024, 8, 1), cetTimeZone)] = new Dictionary<string, double>
+                {
+                    ["USD"] = 1.0789
+                }
+            });
+
         var connection = new ConnectionsRepository(this.DbContext, this.Daniel).CreateConnectionRequest(this.Veronika.Id);
         new ConnectionsRepository(this.DbContext, this.Veronika).AcceptConnectionRequest(connection.Id);
 
@@ -1023,7 +1240,7 @@ public class ExpensesRepositoryTests : TestsBase
             new CurrenciesRepository(this.DbContext, this.Daniel).SetMainCurrency(mainCurrency.Id);
         }
 
-        var result = new ExpensesRepository(this.DbContext, this.Daniel, this.ExchangeServerClient).UpdateExpense(expense.Id, changeParams);
+        var result = new ExpensesRepository(this.DbContext, this.Daniel, this.ExchangeServerClientMock?.Object).UpdateExpense(expense.Id, changeParams);
 
         result.Should().BeEquivalentTo(new Expense
         {
@@ -1590,11 +1807,19 @@ public class ExpensesRepositoryTests : TestsBase
         this.DbContext.SaveChanges();
 
         this.Categories = categories.Select(c => c.ToModel()).ToList();
+
         this.ClearChangeTracker();
+
+        this.ExchangeServerClientMock?
+            .Setup(x => x.GetExchangeRates(
+                It.IsAny<DateTime>(),
+                It.IsAny<DateTime>(),
+                It.IsAny<string>()))
+            .Returns(new Dictionary<DateTime, Dictionary<string, double>>());
     }
 
     [OneTimeSetUp]
-    public void test()
+    public void ExpensesRepositoryTestsOneTimeSetUp()
     {
         var currencies = new List<Entities.Currency>
         {
@@ -1647,62 +1872,10 @@ public class ExpensesRepositoryTests : TestsBase
         this.DbContext.SaveChanges();
 
         this.Currencies = currencies.Select(c => c.ToModel()).ToList();
+
         this.ClearChangeTracker();
 
-        this.ExchangeServerClient = new ExchangeServerClient(new Uri("http://api.frankfurter.app"));
-    }
-    private List<ExpensePricePart> GetExchangedPriceParts(List<Price> prices, Currency mainCurrency, Dictionary<string, Dictionary<int, ExchangeRate>> exchangeRates)
-    {
-        var result = new List<ExpensePricePart>();
-
-        foreach (var price in prices)
-        {
-            if (price.Currency.Id == mainCurrency.Id)
-            {
-                result.Add(new ExpensePricePart
-                {
-                    Price = price
-                });
-            }
-            else
-            {
-                var priceIndex = prices.IndexOf(price);
-
-                if (exchangeRates.TryGetValue(mainCurrency.Name, out var mainCurrencyRates) && mainCurrencyRates.TryGetValue(priceIndex, out var exchangeRate))
-                {
-                    result.Add(new ExpensePricePart
-                    {
-                        Price = new Price
-                        {
-                            Currency = mainCurrency,
-                            Amount = price.Amount / exchangeRate.Rate,
-                            ExchangeRate = 1 / exchangeRate.Rate,
-                            ExchangeRateDate = exchangeRate.Date
-                        },
-                        OriginalPrice = price
-                    });
-                }
-                else
-                {
-                    result.Add(new ExpensePricePart
-                    {
-                        Price = new Price
-                        {
-                            Currency = price.Currency,
-                            Amount = price.Amount,
-                            ExchangeFailure = new Failure
-                            {
-                                Message = "There is no data to exchange the price. In case the issue persists, contact administrator.", 
-                                Type = FailureType.Error
-                            }
-                        },
-                        OriginalPrice = price
-                    });
-                }
-            }
-        }
-
-        return result;
+        this.ExchangeServerClientMock = new Mock<IExchangeServerClient>();
     }
 }
 
@@ -1711,11 +1884,4 @@ internal class ExpensePricePart
     public required Price Price { get; set; }
 
     public Price? OriginalPrice { get; set; }
-}
-
-internal class ExchangeRate
-{
-    public required double Rate { get; set; }
-
-    public required DateTime Date { get; set; }
 }
