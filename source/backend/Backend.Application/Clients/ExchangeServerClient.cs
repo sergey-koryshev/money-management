@@ -33,10 +33,10 @@ public class ExchangeServerClient : IExchangeServerClient
 
         try
         {
-            var webRequest = new HttpRequestMessage(HttpMethod.Get, requestQuery);
-            webRequest.Headers.Add("Accept", "application/json");
+            var requestMessage = new HttpRequestMessage(HttpMethod.Get, requestQuery);
+            requestMessage.Headers.Add("Accept", "application/json");
             
-            var request = this.Client.Send(webRequest);
+            var request = this.Client.Send(requestMessage);
 
             if (request.IsSuccessStatusCode)
             {
@@ -47,8 +47,16 @@ public class ExchangeServerClient : IExchangeServerClient
                     if (response?.Rates != null)
                     {
                         result = response.Rates.ToDictionary(x => TimeZoneInfo.ConvertTimeToUtc(x.Key, cetTimeZone), x => x.Value);
+                    }
+                    else
+                    {
+                        Trace.TraceError($"There is no data in Exchange Server's response.");
                     };
                 }
+            }
+            else
+            {
+                Trace.TraceError($"Request to Exchange Server was failed. Returned code: {request.StatusCode}");
             }
         }
         catch (Exception ex)
