@@ -14,6 +14,7 @@ import { UserService } from '@app/services/user.service';
 import { ExpensesFilters } from '../../pages/expenses-page/expenses-filters.model';
 import { emptyFilter } from '../../pages/expenses-page/expenses-page.component';
 import { SharedFilterOptions } from '@app/models/enums/shared-filter.enum';
+import { FailureType } from '@app/models/enums/failure-type.enum';
 
 @Component({
   selector: 'app-expenses-table',
@@ -21,6 +22,7 @@ import { SharedFilterOptions } from '@app/models/enums/shared-filter.enum';
   styleUrls: ['./expenses-table.component.scss']
 })
 export class ExpensesTableComponent implements OnInit {
+  readonly failureType = FailureType;
   private sortingStorageName = 'expenses-table-sorting';
   private defaultSorting: SortEvent = {
     column: 'date',
@@ -75,10 +77,17 @@ export class ExpensesTableComponent implements OnInit {
       stretch: true
     },
     {
+      name: 'exchangeResult',
+      template: () => this.exchangeResult,
+      disableSorting: true,
+      ignorePadding: true
+    },
+    {
       name: 'price',
       displayName: 'Price',
       template: () => this.price,
-      sortFunc: priceComparer
+      sortFunc: priceComparer,
+      snapToPrevious: true
     },
     {
       name: 'permittedPersons',
@@ -113,6 +122,9 @@ export class ExpensesTableComponent implements OnInit {
   @ViewChild('confirmationDialog', { read: TemplateRef, static: true })
   confirmationDialog: TemplateRef<unknown>;
 
+  @ViewChild('exchangeResult', { read: TemplateRef, static: true })
+  exchangeResult: TemplateRef<unknown>;
+
   constructor(private expensesHttpClient: ExpensesHttpClientService, private modalService: NgbModal, userService: UserService) {
     this.currentUser = userService.user;
     userService.connections$.subscribe((connections) => this.friends = connections.filter((c) => c.status === UserConnectionStatus.accepted).map((c) => c.person));
@@ -136,7 +148,7 @@ export class ExpensesTableComponent implements OnInit {
             complete: () => {
               this.data.splice(indexOfItem, 1);
               this.itemChanged.emit({
-                oldValue: item.originalPrice?.amount ?? item.price.amount
+                oldPrice: item.price
               });
             },
             error: (ex) => {
@@ -165,13 +177,13 @@ export class ExpensesTableComponent implements OnInit {
               || (this.filters.shared.value === SharedFilterOptions.No && updatedItem.permittedPersons.length === 0))) {
           this.data[indexOfItem] = updatedItem;
           this.itemChanged.emit({
-            oldValue: item.originalPrice?.amount ?? item.price.amount,
-            newValue: updatedItem.originalPrice?.amount ?? updatedItem.price.amount,
+            oldPrice: item.price,
+            newPrice: updatedItem.price,
           })
         } else {
           this.data.splice(indexOfItem, 1);
           this.itemChanged.emit({
-            oldValue: item.originalPrice?.amount ?? item.price.amount
+            oldPrice: item.price
           })
         }
       }

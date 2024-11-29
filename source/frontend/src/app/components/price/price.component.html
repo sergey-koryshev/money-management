@@ -1,4 +1,4 @@
-<div [ngbPopover]="originalPrice != null ? popoverContent : null" triggers="mouseenter:mouseleave" class="price-container">
+<div [ngbPopover]="popoverContent" [disablePopover]="originalPrice == null || originalPrice.currency.id === price.currency.id" triggers="mouseenter:mouseleave" class="price-container">
     <span>
         {{ price.amount | number : '1.0-2' }}
     </span>
@@ -11,7 +11,7 @@
 
 <ng-template #popoverContent>
     <div>
-        <span>Original price:</span>
+        <span class="fw-bold">Original price:</span>
         <span>
             {{ originalPrice.amount | number : '1.0-2' }}
         </span>

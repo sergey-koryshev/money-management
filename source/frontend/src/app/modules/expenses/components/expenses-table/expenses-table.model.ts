@@ -1,4 +1,6 @@
+import { Price } from "@app/models/price.model";
+
 export interface ItemChangedEventArgs {
-  oldValue?: number,
-  newValue?: number
+  oldPrice?: Price,
+  newPrice?: Price
 }

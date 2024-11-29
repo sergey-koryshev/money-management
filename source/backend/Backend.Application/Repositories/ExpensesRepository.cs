@@ -1,5 +1,7 @@
 ﻿namespace Backend.Application;
 
+using Backend.Application.Clients;
+using Backend.Domain.Extensions;
 using Backend.Domain.Models;
 using Backend.Domain.Models.Mappers;
 using Backend.Infrastructure;
@@ -26,10 +28,13 @@ public class ExpensesRepository
 
     private readonly CurrenciesRepository currenciesRepository;
 
-    public ExpensesRepository(AppDbContext dbContext, Entities.Person identity)
+    private readonly IExchangeServerClient? exchangeServerClient;
+
+    public ExpensesRepository(AppDbContext dbContext, Entities.Person identity, IExchangeServerClient? exchangeServerClient = null)
     {
         this.dbContext = dbContext;
         this.identity = identity;
+        this.exchangeServerClient = exchangeServerClient;
         this.categoriesRepository = new CategoriesRepository(dbContext, identity);
         this.connectionsRepository = new ConnectionsRepository(dbContext, identity);
         this.currenciesRepository = new CurrenciesRepository(dbContext, identity);
@@ -294,6 +299,11 @@ public class ExpensesRepository
 
     private Dictionary<int, Price> GetExchangedPrices(List<Entities.Expense> expenses)
     {
+        if (this.exchangeServerClient == null || expenses.IsEmpty())
+        {
+            return new Dictionary<int, Price>();
+        }
+
         var mainCurrency = this.currenciesRepository.GetMainCurrency();
 
         if (mainCurrency == null)
@@ -301,19 +311,63 @@ public class ExpensesRepository
             return new Dictionary<int, Price>();
         }
 
-        var random = new Random();
-        var randomExchangeRate = random.NextDouble() + random.NextDouble();
+        Dictionary<DateTime, Dictionary<string, double>> exchangeRates =
+            this.exchangeServerClient.GetExchangeRates(expenses.Min(e => e.Date), expenses.Max(e => e.Date), mainCurrency.Name);
 
-        return expenses.Where(e => e.Currency!.Id != mainCurrency.Id).ToDictionary(e => e.Id, e => new Price
-        {
-            Amount = e.PriceAmount * randomExchangeRate,
-            Currency = mainCurrency
-        });
+        return expenses
+            .Where(e => e.Currency!.Id != mainCurrency.Id)
+            .ToDictionary(e => e.Id, e => this.ExchangePrice(exchangeRates, e, mainCurrency));
     }
 
     private Price? GetExchangedPrice(Entities.Expense expense)
     {
         var result = this.GetExchangedPrices(new List<Entities.Expense>{ expense });
         return result.Count > 0 ? result.First().Value : null;
+    }
+
+    private Price ExchangePrice(Dictionary<DateTime, Dictionary<string, double>> exchangeRates, Entities.Expense expense, Currency mainCurrency)
+    {
+        if (!exchangeRates.IsEmpty())
+        {
+            var targetRates = exchangeRates.Where(x => x.Key <= expense.Date);
+            var diffPredicate = (KeyValuePair<DateTime, Dictionary<string, double>> x) => Math.Abs((x.Key - expense.Date).Ticks);
+            var nearestDiff = targetRates.Min(diffPredicate);
+
+            var dateNode = targetRates.Where(x => diffPredicate(x) == nearestDiff).FirstOrDefault();
+
+            if (dateNode.Value != null && dateNode.Value.TryGetValue(expense.Currency!.Name, out var exchangeRate))
+            {
+                Failure? exchangeFailure = null;
+
+                if (expense.Date - dateNode.Key > TimeSpan.FromDays(2))
+                {
+                    exchangeFailure = new Failure
+                    {
+                        Type = FailureType.Warning,
+                        Message = "There is no data for expense date, so the exchanged price can be inaccurate."
+                    };
+                }
+
+                return new Price
+                {
+                    Amount = expense.PriceAmount / exchangeRate,
+                    Currency = mainCurrency,
+                    ExchangeRate = 1 / exchangeRate,
+                    ExchangeRateDate = dateNode.Key,
+                    ExchangeFailure = exchangeFailure
+                };
+            }
+        }
+
+        return new Price
+        {
+            Amount = expense.PriceAmount,
+            Currency = expense.Currency!.ToModel(),
+            ExchangeFailure = new Failure
+            {
+                Type = FailureType.Error,
+                Message = "There is no data to exchange the price. In case the issue persists, contact administrator."
+            }
+        };
     }
 }

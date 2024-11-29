@@ -32,9 +32,12 @@ export const defaultFilters: ExpensesFilters = {
 })
 export class ExpensesPageComponent implements OnInit, AfterViewInit {
 
+  readonly exchangeFaultedErrorMessage = 'Not all prices were converted successfully thus they were not taken into account in the counter.';
+
   expenses: Expense[];
   selectedMonth: Month;
   totalAmount?: Price;
+  isExchangeFaulted: boolean = false;
   createdByFilterOptions: ExtendedEnumItem<CreatedByFilterOptions>[];
   sharedFilterOptions: ExtendedEnumItem<SharedFilterOptions>[];
 
@@ -83,10 +86,11 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
         && (this.filters.shared.value === emptyFilter.value
           || (this.filters.shared.value === SharedFilterOptions.Yes && addedExpanse.permittedPersons.length > 0)
           || (this.filters.shared.value === SharedFilterOptions.No && addedExpanse.permittedPersons.length === 0))
-        && this.filters.createdBy.value === CreatedByFilterOptions.Me) {
+        && (this.filters.createdBy.value === emptyFilter.value
+          || this.filters.createdBy.value === CreatedByFilterOptions.Me)) {
           this.expenses.push(addedExpanse);
           this.onItemChange({
-            newValue: addedExpanse.originalPrice?.amount ?? addedExpanse.price.amount
+            newPrice: addedExpanse.price
           })
         }
     });
@@ -105,13 +109,15 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
       return;
     }
 
-    if (args.oldValue) {
-      this.totalAmount.amount = this.totalAmount.amount - args.oldValue;
+    if (args.oldPrice && this.totalAmount.currency.id == args.oldPrice.currency.id) {
+      this.totalAmount.amount = this.totalAmount.amount - args.oldPrice.amount;
     }
 
-    if (args.newValue) {
-      this.totalAmount.amount = this.totalAmount.amount + args.newValue;
+    if (args.newPrice && this.totalAmount.currency.id == args.newPrice.currency.id) {
+      this.totalAmount.amount = this.totalAmount.amount + args.newPrice.amount;
     }
+
+    this.isExchangeFaulted = this.expenses.some((e) => e.price.currency.id !== this.currencyService.mainCurrency?.id);
   }
 
   onFilterChanged(filterName: string, value: ExtendedEnumItem<any>) {
@@ -129,11 +135,13 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
     const mainCurrency = this.currencyService.mainCurrency;
     if (mainCurrency) {
       this.totalAmount = {
-        amount: expenses.reduce((sum, current) => sum + current.price.amount, 0),
+        amount: expenses.filter((e) => e.price.currency.id === this.currencyService.mainCurrency?.id).reduce((sum, current) => sum + current.price.amount, 0),
         currency: mainCurrency
-      }
+      };
+      this.isExchangeFaulted = expenses.some((e) => e.price.currency.id !== this.currencyService.mainCurrency?.id);
     } else {
       this.totalAmount = undefined;
+      this.isExchangeFaulted = false;
     }
   }
 }
