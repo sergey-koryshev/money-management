@@ -329,8 +329,11 @@ public class ExpensesRepository
     {
         if (!exchangeRates.IsEmpty())
         {
-            var nearestDiff = exchangeRates.Where(x => x.Key <= expense.Date).Min(x => Math.Abs((x.Key - expense.Date).Ticks));
-            var dateNode = exchangeRates.Where(x => x.Key <= expense.Date && Math.Abs((x.Key - expense.Date).Ticks) == nearestDiff).FirstOrDefault();
+            var targetRates = exchangeRates.Where(x => x.Key <= expense.Date);
+            var diffPredicate = (KeyValuePair<DateTime, Dictionary<string, double>> x) => Math.Abs((x.Key - expense.Date).Ticks);
+            var nearestDiff = targetRates.Min(diffPredicate);
+
+            var dateNode = targetRates.Where(x => diffPredicate(x) == nearestDiff).FirstOrDefault();
 
             if (dateNode.Value != null && dateNode.Value.TryGetValue(expense.Currency!.Name, out var exchangeRate))
             {
