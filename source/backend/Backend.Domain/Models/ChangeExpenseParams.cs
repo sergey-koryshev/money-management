@@ -15,6 +15,4 @@ public class ChangeExpenseParams
     public int CurrencyId { get; set; }
 
     public List<int> PermittedPersonsIds { get; set; } = new List<int>();
-
-    public string? TimeZone { get; set; }
 }

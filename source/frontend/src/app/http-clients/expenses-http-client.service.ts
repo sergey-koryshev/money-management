@@ -35,7 +35,6 @@ export class ExpensesHttpClientService {
   }
 
   addNewExpense(params: ChangeExpenseParams) {
-    params.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     return this.baseHttpClient.post<Expense>('expenses', params);
   }
 
@@ -54,7 +53,6 @@ export class ExpensesHttpClientService {
   }
 
   editExpense(id: number, params: ChangeExpenseParams) {
-    params.timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
     return this.baseHttpClient.put<Expense>(`expenses/${id}`, params)
   }
 
@@ -64,8 +62,7 @@ export class ExpensesHttpClientService {
     }
 
     return this.baseHttpClient.get<Expense[]>('expenses/search', {
-      searchingTerm: term,
-      timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+      searchingTerm: term
     })
   }
 }

@@ -6,7 +6,6 @@ export interface ChangeExpenseParams {
   currencyId: number
   categoryName?: string
   permittedPersonsIds?: number[]
-  timeZone?: string
 }
 
 export interface ExtendedExpenseName {
