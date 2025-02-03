@@ -153,6 +153,11 @@ public class ExpensesRepository
             {
                 query = query.Where(e => e.PermittedPersons.Any(p => p.Id != this.identity.Id) == filter.Shared);
             }
+
+            if (!filter.CategoryNames.IsEmpty())
+            {
+                query = query.Where(e => filter.CategoryNames!.Contains(e.Category!.Name!));
+            }
         }
 
         return query;
