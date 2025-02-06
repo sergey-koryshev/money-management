@@ -13,33 +13,21 @@
 </div>
 <div class="d-flex justify-content-between my-1">
   <div class="d-inline-block">
-    <div ngbDropdown class="d-inline-block me-1">
+    <div ngbDropdown class="d-inline-block me-1" *ngFor="let stickyFilter of stickyFilters | keyvalue">
       <button ngbDropdownToggle type="button" class="btn btn-outline-success">
-        <span class="me-1">Crated By:</span>
-        <span>{{ filters.createdBy.name }}</span>
+        <span class="me-1">{{ stickyFilter.value.displayName }}:</span>
+        <span>{{ stickyFilter.value.selectedValue.name }}</span>
       </button>
-      <div ngbDropdownMenu>
-        <button *ngFor="let selectOption of createdByFilterOptions" ngbDropdownItem
-          (click)="onFilterChanged('createdBy', selectOption)"
-          [disabled]="selectOption.value === filters.createdBy.value">
-          {{ selectOption.name }}
-        </button>
-      </div>
-    </div>
-    <div ngbDropdown class="d-inline-block">
-      <button ngbDropdownToggle type="button" class="btn btn-outline-success">
-        <span class="me-1">Shared:</span>
-        <span>{{ filters.shared.name }}</span>
-      </button>
-      <div ngbDropdownMenu>
-        <button *ngFor="let selectOption of sharedFilterOptions" ngbDropdownItem
-          (click)="onFilterChanged('shared', selectOption)" [disabled]="selectOption.value === filters.shared.value">
-          {{ selectOption.name }}
+      <div ngbDropdownMenu *ngIf="stickyFilter.value.type === stickyFilterType.list">
+        <button *ngFor="let item of stickyFilter.value.items" ngbDropdownItem
+          (click)="onStickyFilterChanged(stickyFilter.value, item)"
+          [disabled]="item.value === stickyFilter.value.selectedValue.value">
+          {{ item.name }}
         </button>
       </div>
     </div>
   </div>
   <button type="button" class="btn btn-primary d-inline-block ms-1" (click)="open()">Add new expense</button>
 </div>
-<app-expenses-table [data]="expenses" [selectedMonth]="selectedMonth" [filters]="filters"
+<app-expenses-table [data]="expenses" [selectedMonth]="selectedMonth" [stickyFilters]="stickyFilters"
   (itemChanged)="onItemChange($event)"></app-expenses-table>
