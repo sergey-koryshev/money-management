@@ -1,11 +1,11 @@
-import { StickyFilterBase, StickyFilterItem, StickyFilterType } from '@models/sticky-filter.model';
+import { StickyFilter, StickyFilterBase, StickyFilterItem, StickyFilterType } from '@models/sticky-filter.model';
 import { ExpensesMonthService } from '@services/expenses-month.service';
 import { ExpensesHttpClientService } from '@http-clients/expenses-http-client.service';
 import { CurrencyService } from '@services/currency.service';
 import { Expense } from '@app/models/expense.model';
 import { AfterViewInit, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { switchMap, skip } from 'rxjs/operators';
+import { switchMap, skip, tap } from 'rxjs/operators';
 import { NgbDatepickerNavigateEvent, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Month } from '@app/models/month.model';
 import { AddNewExpenseDialogComponent } from '../../components/add-new-expense-dialog/add-new-expense-dialog.component';
@@ -13,8 +13,9 @@ import { Price } from '@app/models/price.model';
 import { ItemChangedEventArgs } from '../../components/expenses-table/expenses-table.model';
 import { SharedFilterOptions } from '@app/models/enums/shared-filter.enum';
 import { CreatedByFilterOptions } from '@app/models/enums/created-by-filter.enum';
-import { ExpensesStickyFilters, ExpensesStickyFilterType, StoredExpensesStickyFilters } from './expenses-filters.model';
+import { ExpensesStickyFilterType } from './expenses-filters.model';
 import { ExpensesService } from '../../expenses.service';
+import { KeyValue } from '@angular/common';
 
 export const emptyFilter: StickyFilterItem<number | undefined> = {
   value: undefined,
@@ -36,18 +37,38 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
   totalAmount?: Price;
   isExchangeFaulted: boolean = false;
 
+  stickyFiltersDefinitions: Record<string, StickyFilter<number | undefined>> = {
+    [ExpensesStickyFilterType.createdBy]: {
+      type: StickyFilterType.list,
+      name: ExpensesStickyFilterType.createdBy,
+      displayName: 'Created By',
+      items: [emptyFilter].concat(CreatedByFilterOptions.getAll()),
+      selectedValue: emptyFilter,
+    },
+    [ExpensesStickyFilterType.shared]: {
+      type: StickyFilterType.list,
+      name: ExpensesStickyFilterType.shared,
+      displayName: 'Shared',
+      items: [emptyFilter].concat(SharedFilterOptions.getAll()),
+      selectedValue: emptyFilter,
+    }
+  };
+
   stickyFilterType = StickyFilterType;
-  stickyFilters?: ExpensesStickyFilters;
+  stickyFilters: Record<string, StickyFilter<number | undefined>> = {};
 
-  get filters(): StoredExpensesStickyFilters | undefined {
-    if (this.stickyFilters == null) {
-      return undefined;
-    }
+  get filters(): Record<string, StickyFilterItem<number | undefined>> {
+    const filtersToStore: Record<string, StickyFilterItem<number | undefined>> = {};
 
-    return {
-      [ExpensesStickyFilterType.createdBy]: this.stickyFilters[ExpensesStickyFilterType.createdBy].selectedValue,
-      [ExpensesStickyFilterType.shared]: this.stickyFilters[ExpensesStickyFilterType.shared].selectedValue
-    }
+    Object.keys(this.stickyFilters).forEach((filter) => {
+      filtersToStore[filter] = this.stickyFilters[filter].selectedValue
+    });
+
+    return filtersToStore;
+  }
+
+  originalOrder = (a: KeyValue<string,any>, b: KeyValue<string,any>): number => {
+    return 0;
   }
 
   constructor(
@@ -57,7 +78,7 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
     private modalService: NgbModal,
     private expensesMonthService: ExpensesMonthService,
     private expensesService: ExpensesService) {
-      this.buildStickyFilters();
+      this.restoreStickyFilters();
     }
 
   ngOnInit(): void {
@@ -69,13 +90,13 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
     this.currencyService.mainCurrency$
       .pipe(
         skip(1),
-        switchMap(() => this.expensesHttpClient.getExpenses(this.expensesMonthService.month, this.filters)))
-      .subscribe(data => this.populateData(data));
+        switchMap(() => this.fetchData()))
+      .subscribe();
     this.expensesMonthService.month$
       .pipe(
         skip(1),
-        switchMap(() => this.expensesHttpClient.getExpenses(this.expensesMonthService.month, this.filters)))
-      .subscribe(data => this.populateData(data));
+        switchMap(() => this.fetchData()))
+      .subscribe();
   }
 
   open() {
@@ -120,12 +141,44 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
 
   onStickyFilterChanged<T>(stickyFilter: StickyFilterBase<T>, value: StickyFilterItem<T>) {
     stickyFilter.selectedValue = value;
+    localStorage.setItem(filtersStorageName, JSON.stringify(this.filters));
+    this.fetchData().subscribe();
+  }
 
-    this.expensesHttpClient.getExpenses(this.expensesMonthService.month, this.filters)
-      .subscribe(data => {
-        localStorage.setItem(filtersStorageName, JSON.stringify(this.filters));
+  addStickyFilter(stickyFilterName: string) {
+    if (this.stickyFilters[stickyFilterName] == null) {
+      var definition = this.stickyFiltersDefinitions[stickyFilterName];
+
+      if (definition != null) {
+        this.stickyFilters[stickyFilterName] = definition
+      }
+
+      localStorage.setItem(filtersStorageName, JSON.stringify(this.filters));
+      this.fetchData().subscribe();
+    }
+  }
+
+  removeStickyFilter(stickyFilterName: string) {
+    if (this.stickyFilters[stickyFilterName] != null) {
+      const adjustedFiltersList: Record<string, StickyFilter<number | undefined>> = {};
+
+      Object.keys(this.stickyFilters).forEach((key) => {
+        if (key !== stickyFilterName) {
+          adjustedFiltersList[key] = this.stickyFilters[key];
+        }
+      });
+
+      this.stickyFilters = adjustedFiltersList
+      localStorage.setItem(filtersStorageName, JSON.stringify(this.filters));
+      this.fetchData().subscribe();
+    }
+  }
+
+  private fetchData() {
+    return this.expensesHttpClient.getExpenses(this.expensesMonthService.month, this.filters)
+      .pipe(tap((data) => {
         this.populateData(data);
-    });
+    }));
   }
 
   private populateData(expenses: Expense[]) {
@@ -143,32 +196,19 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
     }
   }
 
-  private buildStickyFilters() {
-    this.stickyFilters = {
-      [ExpensesStickyFilterType.createdBy]: {
-        type: StickyFilterType.list,
-        name: ExpensesStickyFilterType.createdBy.toString(),
-        displayName: 'Created By',
-        items: [emptyFilter].concat(CreatedByFilterOptions.getAll()),
-        selectedValue: emptyFilter
-      },
-      [ExpensesStickyFilterType.shared]: {
-        type: StickyFilterType.list,
-        name: ExpensesStickyFilterType.shared.toString(),
-        displayName: 'Shared',
-        items: [emptyFilter].concat(SharedFilterOptions.getAll()),
-        selectedValue: emptyFilter
-      }
-    };
-
+  private restoreStickyFilters() {
     const savedFilters = localStorage.getItem(filtersStorageName);
 
     if (savedFilters != null) {
-      const storedFilters = JSON.parse(savedFilters) as StoredExpensesStickyFilters;
+      const storedFilters = JSON.parse(savedFilters) as Record<string, StickyFilterItem<number | undefined>>;
 
       Object.keys(storedFilters).forEach((filter) => {
-        if (this.stickyFilters![filter] != null) {
-          this.stickyFilters![filter].selectedValue = storedFilters[filter] ?? emptyFilter
+        if (this.stickyFilters[filter] == null) {
+          var definition = this.stickyFiltersDefinitions[filter];
+
+          if (definition != null) {
+            this.stickyFilters[filter] = definition
+          }
         }
       });
     }

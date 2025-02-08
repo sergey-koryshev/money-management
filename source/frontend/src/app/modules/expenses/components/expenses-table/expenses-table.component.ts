@@ -1,4 +1,3 @@
-import { ExpensesStickyFilters } from './../../pages/expenses-page/expenses-filters.model';
 import { ExpensesHttpClientService } from '@http-clients/expenses-http-client.service';
 import { SortEvent, TableColumn } from '@components/table/table.model';
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
@@ -14,6 +13,7 @@ import { UserConnectionStatus } from '@app/models/enums/user-connection-status.e
 import { UserService } from '@app/services/user.service';
 import { FailureType } from '@app/models/enums/failure-type.enum';
 import { ExpensesService } from '../../expenses.service';
+import { StickyFilter } from '@app/models/sticky-filter.model';
 
 @Component({
   selector: 'app-expenses-table',
@@ -36,7 +36,7 @@ export class ExpensesTableComponent implements OnInit {
   data: Expense[];
 
   @Input()
-  stickyFilters?: ExpensesStickyFilters;
+  stickyFilters: Record<string, StickyFilter<number | undefined>>;
 
   @Output()
   itemChanged = new EventEmitter<ItemChangedEventArgs>()

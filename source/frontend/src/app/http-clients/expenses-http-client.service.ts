@@ -1,4 +1,4 @@
-import { ExpensesStickyFilterType, StoredExpensesStickyFilters } from './../modules/expenses/pages/expenses-page/expenses-filters.model';
+import { ExpensesStickyFilterType } from './../modules/expenses/pages/expenses-page/expenses-filters.model';
 import { Expense } from '@app/models/expense.model';
 import { Injectable } from '@angular/core';
 import { BaseHttpClientService } from './base-http-client.service';
@@ -6,6 +6,7 @@ import { ChangeExpenseParams, ExtendedExpenseName } from './expenses-http-client
 import { Month } from '@app/models/month.model';
 import { of } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
+import { StickyFilterItem } from '@app/models/sticky-filter.model';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class ExpensesHttpClientService {
 
   constructor(private baseHttpClient: BaseHttpClientService) {}
 
-  getExpenses(selectedMonth: Month, filters?: StoredExpensesStickyFilters) {
+  getExpenses(selectedMonth: Month, filters?: Record<string, StickyFilterItem<number | undefined>>) {
     let params = new HttpParams()
       .set('month', selectedMonth.month)
       .set('year', selectedMonth.year)
