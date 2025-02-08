@@ -16,11 +16,11 @@
     <div ngbDropdown class="d-inline-block me-1" *ngFor="let stickyFilter of stickyFilters | keyvalue: originalOrder">
       <button ngbDropdownToggle type="button" class="d-flex align-items-center btn btn-outline-success">
         <a class="d-inline-block icon icon-clear clear-filter" (click)="removeStickyFilter(stickyFilter.key); $event.stopPropagation()"></a>
-        <span class="me-1">{{ stickyFilter.value.displayName }}:</span>
+        <span class="me-1">{{ stickyFilter.value.definition.displayName }}:</span>
         <span>{{ stickyFilter.value.selectedValue.name }}</span>
       </button>
-      <div ngbDropdownMenu *ngIf="stickyFilter.value.type === stickyFilterType.list">
-        <button *ngFor="let item of stickyFilter.value.items" ngbDropdownItem
+      <div ngbDropdownMenu *ngIf="stickyFilter.value.definition.type === stickyFilterType.list">
+        <button *ngFor="let item of stickyFilter.value.definition.items" ngbDropdownItem
           (click)="onStickyFilterChanged(stickyFilter.value, item)"
           [disabled]="item.value === stickyFilter.value.selectedValue.value">
           {{ item.name }}

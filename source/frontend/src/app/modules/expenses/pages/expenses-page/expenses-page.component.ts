@@ -1,4 +1,3 @@
-import { StickyFilter, StickyFilterBase, StickyFilterItem, StickyFilterType } from '@models/sticky-filter.model';
 import { ExpensesMonthService } from '@services/expenses-month.service';
 import { ExpensesHttpClientService } from '@http-clients/expenses-http-client.service';
 import { CurrencyService } from '@services/currency.service';
@@ -16,6 +15,7 @@ import { CreatedByFilterOptions } from '@app/models/enums/created-by-filter.enum
 import { ExpensesStickyFilterType } from './expenses-filters.model';
 import { ExpensesService } from '../../expenses.service';
 import { KeyValue } from '@angular/common';
+import { StickyFilter, StickyFilterDefinition, StickyFilterItem, StickyFilterType } from '@app/models/sticky-filter.model';
 
 export const emptyFilter: StickyFilterItem<number | undefined> = {
   value: undefined,
@@ -37,20 +37,20 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
   totalAmount?: Price;
   isExchangeFaulted: boolean = false;
 
-  stickyFiltersDefinitions: Record<string, StickyFilter<number | undefined>> = {
+  stickyFiltersDefinitions: Record<string, StickyFilterDefinition<number | undefined>> = {
     [ExpensesStickyFilterType.createdBy]: {
       type: StickyFilterType.list,
       name: ExpensesStickyFilterType.createdBy,
       displayName: 'Created By',
       items: [emptyFilter].concat(CreatedByFilterOptions.getAll()),
-      selectedValue: emptyFilter,
+      defaultValue: emptyFilter,
     },
     [ExpensesStickyFilterType.shared]: {
       type: StickyFilterType.list,
       name: ExpensesStickyFilterType.shared,
       displayName: 'Shared',
       items: [emptyFilter].concat(SharedFilterOptions.getAll()),
-      selectedValue: emptyFilter,
+      defaultValue: emptyFilter,
     }
   };
 
@@ -139,7 +139,7 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
     this.isExchangeFaulted = this.expenses.some((e) => e.price.currency.id !== this.currencyService.mainCurrency?.id);
   }
 
-  onStickyFilterChanged<T>(stickyFilter: StickyFilterBase<T>, value: StickyFilterItem<T>) {
+  onStickyFilterChanged<T>(stickyFilter: StickyFilter<T>, value: StickyFilterItem<T>) {
     stickyFilter.selectedValue = value;
     localStorage.setItem(filtersStorageName, JSON.stringify(this.filters));
     this.fetchData().subscribe();
@@ -150,7 +150,10 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
       var definition = this.stickyFiltersDefinitions[stickyFilterName];
 
       if (definition != null) {
-        this.stickyFilters[stickyFilterName] = definition
+        this.stickyFilters[stickyFilterName] = {
+          definition,
+          selectedValue: definition.defaultValue
+        }
       }
 
       localStorage.setItem(filtersStorageName, JSON.stringify(this.filters));
@@ -202,12 +205,15 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
     if (savedFilters != null) {
       const storedFilters = JSON.parse(savedFilters) as Record<string, StickyFilterItem<number | undefined>>;
 
-      Object.keys(storedFilters).forEach((filter) => {
-        if (this.stickyFilters[filter] == null) {
-          var definition = this.stickyFiltersDefinitions[filter];
+      Object.keys(storedFilters).forEach((key) => {
+        if (this.stickyFilters[key] == null) {
+          var definition = this.stickyFiltersDefinitions[key];
 
           if (definition != null) {
-            this.stickyFilters[filter] = definition
+            this.stickyFilters[key] = {
+              definition,
+              selectedValue: storedFilters[key]
+            }
           }
         }
       });
