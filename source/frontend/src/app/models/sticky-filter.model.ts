@@ -31,5 +31,3 @@ export interface StickyFilterDefinitionBase<T> {
   displayName: string
   defaultValue: StickyFilterItem<T>
 }
-
-
