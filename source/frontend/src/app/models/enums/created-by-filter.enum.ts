@@ -16,4 +16,5 @@ InjectEnumNames(CreatedByFilterOptions, enumNames);
 
 declare namespace CreatedByFilterOptions {
   export let getAll: ExtendedEnumStab.getAll
+  export let get: ExtendedEnumStab.get
 }

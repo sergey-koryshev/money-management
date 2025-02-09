@@ -11,10 +11,9 @@ import { AmbiguousUser, User } from '@app/models/user.model';
 import { getUserFullName, getUserInitials } from '@app/helpers/users.helper';
 import { UserConnectionStatus } from '@app/models/enums/user-connection-status.enum';
 import { UserService } from '@app/services/user.service';
-import { ExpensesFilters } from '../../pages/expenses-page/expenses-filters.model';
-import { emptyFilter } from '../../pages/expenses-page/expenses-page.component';
-import { SharedFilterOptions } from '@app/models/enums/shared-filter.enum';
 import { FailureType } from '@app/models/enums/failure-type.enum';
+import { ExpensesService } from '../../expenses.service';
+import { StickyFilter } from '@app/models/sticky-filter.model';
 
 @Component({
   selector: 'app-expenses-table',
@@ -37,7 +36,7 @@ export class ExpensesTableComponent implements OnInit {
   data: Expense[];
 
   @Input()
-  filters: ExpensesFilters;
+  stickyFilters: Record<string, StickyFilter<number | undefined>>;
 
   @Output()
   itemChanged = new EventEmitter<ItemChangedEventArgs>()
@@ -125,7 +124,11 @@ export class ExpensesTableComponent implements OnInit {
   @ViewChild('exchangeResult', { read: TemplateRef, static: true })
   exchangeResult: TemplateRef<unknown>;
 
-  constructor(private expensesHttpClient: ExpensesHttpClientService, private modalService: NgbModal, userService: UserService) {
+  constructor(
+    private expensesHttpClient: ExpensesHttpClientService,
+    private modalService: NgbModal,
+    userService: UserService,
+    private expensesService: ExpensesService) {
     this.currentUser = userService.user;
     userService.connections$.subscribe((connections) => this.friends = connections.filter((c) => c.status === UserConnectionStatus.accepted).map((c) => c.person));
   }
@@ -172,9 +175,7 @@ export class ExpensesTableComponent implements OnInit {
         if (this.selectedMonth == null
           || (this.selectedMonth.month == date.getMonth() + 1
             && this.selectedMonth.year == date.getFullYear())
-            && (this.filters.shared.value === emptyFilter.value
-              || (this.filters.shared.value === SharedFilterOptions.Yes && updatedItem.permittedPersons.length > 0)
-              || (this.filters.shared.value === SharedFilterOptions.No && updatedItem.permittedPersons.length === 0))) {
+            && (this.expensesService.testExpenseAgainstFilter(this.stickyFilters, updatedItem))) {
           this.data[indexOfItem] = updatedItem;
           this.itemChanged.emit({
             oldPrice: item.price,

@@ -1,10 +1,12 @@
 // needs to be sure that types are the same across namespaces
 export namespace ExtendedEnumStab {
   export type getAll = <T extends ExtendedEnum>(this: T) => ReadonlyArray<ExtendedEnumItem<T>> ;
+  export type get = <T extends ExtendedEnum>(this: T, key:  NonFunctionPropertyNames<T>) => ExtendedEnumItem<T> ;
 }
 
 interface ExtendedEnum {
   getAll: ExtendedEnumStab.getAll
+  get: ExtendedEnumStab.get
 }
 
 type NonFunctionPropertyNames<T> = {
@@ -27,4 +29,11 @@ export function InjectEnumNames<T extends ExtendedEnum>(enumType: T, enumNames: 
       name: enumNames[k as NonFunctionPropertyNames<T>]
     } as ExtendedEnumItem<T>))
   }) as ExtendedEnumStab.getAll
+
+  enumType.get = ((key: NonFunctionPropertyNames<T>): ExtendedEnumItem<T> => {
+    return {
+      value: enumType[key],
+      name: enumNames[key]
+    } as ExtendedEnumItem<T>
+  }) as ExtendedEnumStab.get
 }

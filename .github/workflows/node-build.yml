@@ -53,7 +53,7 @@ jobs:
           nodeVersion=$(node -v)
           echo "nodeVersion=$nodeVersion" >> "$GITHUB_ENV"
       - name: Publish Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: ${{ github.event_name != 'pull_request' }}
         with:
           name: '${{ inputs.artifact-prefix }}-${{ env.version }}-node-${{ env.nodeVersion }}'
