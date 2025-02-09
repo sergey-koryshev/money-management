@@ -12,10 +12,10 @@ import { Price } from '@app/models/price.model';
 import { ItemChangedEventArgs } from '../../components/expenses-table/expenses-table.model';
 import { SharedFilterOptions } from '@app/models/enums/shared-filter.enum';
 import { CreatedByFilterOptions } from '@app/models/enums/created-by-filter.enum';
-import { ExpensesStickyFilterType } from './expenses-filters.model';
 import { ExpensesService } from '../../expenses.service';
 import { KeyValue } from '@angular/common';
 import { StickyFilter, StickyFilterDefinition, StickyFilterItem, StickyFilterType } from '@app/models/sticky-filter.model';
+import { ExpensesStickyFilterType } from '@app/models/enums/expenses-sticky-filter-type.enum';
 
 export const emptyFilter: StickyFilterItem<number | undefined> = {
   value: undefined,
@@ -41,14 +41,14 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
     [ExpensesStickyFilterType.createdBy]: {
       type: StickyFilterType.list,
       name: ExpensesStickyFilterType.createdBy,
-      displayName: 'Created By',
+      displayName: ExpensesStickyFilterType.get(ExpensesStickyFilterType.createdBy).name,
       items: [emptyFilter].concat(CreatedByFilterOptions.getAll()),
       defaultValue: emptyFilter,
     },
     [ExpensesStickyFilterType.shared]: {
       type: StickyFilterType.list,
       name: ExpensesStickyFilterType.shared,
-      displayName: 'Shared',
+      displayName: ExpensesStickyFilterType.get(ExpensesStickyFilterType.shared).name,
       items: [emptyFilter].concat(SharedFilterOptions.getAll()),
       defaultValue: emptyFilter,
     }
