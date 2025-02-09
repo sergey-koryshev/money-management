@@ -16,4 +16,5 @@ InjectEnumNames(SharedFilterOptions, enumNames);
 
 declare namespace SharedFilterOptions {
   export let getAll: ExtendedEnumStab.getAll
+  export let get: ExtendedEnumStab.get
 }
