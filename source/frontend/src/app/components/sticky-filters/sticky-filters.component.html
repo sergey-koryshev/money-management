@@ -1,0 +1,18 @@
+<app-sticky-filter *ngFor="let stickyFilter of stickyFilters | keyvalue: originalOrder | notnullkeyvalue" [definition]="stickyFilter.value.definition"
+                   [selectedValue]="stickyFilter.value.selectedValue"
+                   (filterChanged)="onStickyFilterChanged(stickyFilter.value, $event)"
+                   (filterRemoved)="onStickyFilterRemoved(stickyFilter.key)"
+></app-sticky-filter>
+<div ngbDropdown class="d-inline-block">
+  <button ngbDropdownToggle type="button" class="d-flex align-items-center btn btn-outline-success filter-dropdown-button">
+    <li class="d-inline-block icon icon-add-filter"></li>
+  </button>
+  <div ngbDropdownMenu>
+    <button ngbDropdownItem
+            *ngFor="let definition of definitions | keyvalue"
+            [disabled]="!!stickyFilters[definition.key]"
+            (click)="addStickyFilter(definition.key)">
+      {{ definition.value.displayName }}
+    </button>
+  </div>
+</div>

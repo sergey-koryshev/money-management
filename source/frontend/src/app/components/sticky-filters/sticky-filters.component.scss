@@ -1,0 +1,25 @@
+@import "~/node_modules/bootstrap/scss/functions";
+@import "~/node_modules/bootstrap/scss/variables";
+
+.filter-dropdown-button {
+  height: 100%;
+
+  &::after {
+    display: none;
+  }
+
+  & li {
+    width: 22px;
+    height: 22px;
+    background-color: var(--bs-btn-color);
+    vertical-align: middle;
+  }
+
+  &:hover li {
+    background-color: var(--bs-btn-hover-color);
+  }
+
+  &:focus li {
+    background-color: var(--bs-btn-active-color);
+  }
+}
