@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { StickyFilterDefinition, StickyFilterItem, StickyFilterType } from "@components/sticky-filters/sticky-filters.model";
 import { NgSelectComponent } from "@ng-select/ng-select";
 import { tap } from "rxjs/operators";
+import { stickyFilterItemsComparer } from "@app/helpers/comparers.helper";
 
 @Component({
   selector: 'app-sticky-filter',
@@ -29,15 +30,15 @@ export class StickyFilterComponent implements OnInit {
   onListItemClicked(item: StickyFilterItem<any>) {
     if (this.definition.multiselect) {
       // removing All Item from list of selected values
-      if (this.definition.allItem != null && this.selectedValue.some((x) => this.compareItems(x, this.definition.allItem!))) {
-        this.selectedValue = this.selectedValue.filter((x) => !this.compareItems(x, this.definition.allItem!));
+      if (this.definition.allItem != null && this.selectedValue.some((x) => stickyFilterItemsComparer(x, this.definition.allItem!))) {
+        this.selectedValue = this.selectedValue.filter((x) => !stickyFilterItemsComparer(x, this.definition.allItem!));
       }
 
       // remove or add item to list of selected ones
-      if (this.selectedValue.some((x) => this.compareItems(x, item))) {
-        this.selectedValue = this.selectedValue.filter((x) => !this.compareItems(x, item));
+      if (this.selectedValue.some((x) => stickyFilterItemsComparer(x, item))) {
+        this.selectedValue = this.selectedValue.filter((x) => !stickyFilterItemsComparer(x, item));
       } else {
-        if (this.definition.allItem != null && this.compareItems(item, this.definition.allItem)) {
+        if (this.definition.allItem != null && stickyFilterItemsComparer(item, this.definition.allItem)) {
           this.selectedValue = [this.definition.allItem];
         } else {
           this.selectedValue.push(item);
@@ -60,13 +61,13 @@ export class StickyFilterComponent implements OnInit {
       const value = values[0];
 
       // removing All Item from list of selected values
-      if (this.definition.allItem != null && this.selectedValue.some((x) => this.compareItems(x, this.definition.allItem!))) {
-        this.selectedValue = this.selectedValue.filter((x) => !this.compareItems(x, this.definition.allItem!));
+      if (this.definition.allItem != null && this.selectedValue.some((x) => stickyFilterItemsComparer(x, this.definition.allItem!))) {
+        this.selectedValue = this.selectedValue.filter((x) => !stickyFilterItemsComparer(x, this.definition.allItem!));
       }
 
       // add value if it's not added already
       if (this.definition.multiselect) {
-        if (!this.selectedValue.some((x) => this.compareItems(x, value))) {
+        if (!this.selectedValue.some((x) => stickyFilterItemsComparer(x, value))) {
           this.selectedValue.push(value);
         }
       } else {
@@ -81,7 +82,7 @@ export class StickyFilterComponent implements OnInit {
 
   onDropdownElementClicked(item: StickyFilterItem<any>) {
     // removing item
-    this.selectedValue = this.selectedValue.filter((x) => !this.compareItems(x, item));
+    this.selectedValue = this.selectedValue.filter((x) => !stickyFilterItemsComparer(x, item));
 
     // set to default value if not items left
     if (this.selectedValue.length === 0) {
@@ -110,7 +111,7 @@ export class StickyFilterComponent implements OnInit {
   }
 
   isItemActive(item: StickyFilterItem<any>) {
-    return this.selectedValue.some((v) => this.compareItems(v, item));
+    return this.selectedValue.some((v) => stickyFilterItemsComparer(v, item));
   }
 
   /**
@@ -118,10 +119,6 @@ export class StickyFilterComponent implements OnInit {
    * @private
    */
   private adjustVisibleDropdownItems() {
-    this.visibleDropdownItems = this.items.filter((i) => !this.selectedValue.some((x) => this.compareItems(x, i)))
-  }
-
-  private compareItems (a: StickyFilterItem<any>, b: StickyFilterItem<any>) {
-    return a.value === b.value && a.name === b.name;
+    this.visibleDropdownItems = this.items.filter((i) => !this.selectedValue.some((x) => stickyFilterItemsComparer(x, i)))
   }
 }

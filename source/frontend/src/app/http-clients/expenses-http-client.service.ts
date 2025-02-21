@@ -10,6 +10,7 @@ import {
   StoringExpensesStickyFilters
 } from '@app/modules/expenses/pages/expenses-page/expenses-page.model';
 import { emptyFilter } from "@app/constants";
+import {stickyFilterItemsComparer} from "@app/helpers/comparers.helper";
 
 @Injectable({
   providedIn: 'root'
@@ -36,7 +37,7 @@ export class ExpensesHttpClientService {
       }
 
       const categoriesFilter = filters[ExpensesStickyFilterType.categories];
-      if (categoriesFilter != null && !categoriesFilter.some((c) => c.value == emptyFilter.value && c.name === emptyFilter.name)) {
+      if (categoriesFilter != null && !categoriesFilter.some((c) => stickyFilterItemsComparer(c, emptyFilter))) {
         categoriesFilter.forEach((c) => {
           params = params.append('categoryName', c.value ?? "");
         });
