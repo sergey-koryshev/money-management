@@ -1,4 +1,5 @@
-<app-sticky-filter *ngFor="let stickyFilter of stickyFilters | keyvalue: originalOrder | notnullkeyvalue" [definition]="stickyFilter.value.definition"
+<app-sticky-filter *ngFor="let stickyFilter of stickyFilters | keyvalue: originalOrder | notnullkeyvalue"
+                   [definition]="stickyFilter.value.definition"
                    [selectedValue]="stickyFilter.value.selectedValue"
                    (filterChanged)="onStickyFilterChanged(stickyFilter.value, $event)"
                    (filterRemoved)="onStickyFilterRemoved(stickyFilter.key)"

@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Expense } from '@app/models/expense.model';
-import { emptyFilter } from './pages/expenses-page/expenses-page.component';
 import { CreatedByFilterOptions } from '@app/models/enums/created-by-filter.enum';
 import { SharedFilterOptions } from '@app/models/enums/shared-filter.enum';
 import { UserService } from '@app/services/user.service';
 import { ExpensesStickyFilterType } from '@app/models/enums/expenses-sticky-filter-type.enum';
-import { StoringExpensesStickyFilters} from './pages/expenses-page/expenses-page.model';
+import { StoringExpensesStickyFilters } from './pages/expenses-page/expenses-page.model';
+import { emptyFilter } from "@app/constants";
 
 @Injectable({
   providedIn: 'root'

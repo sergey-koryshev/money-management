@@ -13,7 +13,7 @@ import { UserConnectionStatus } from '@app/models/enums/user-connection-status.e
 import { UserService } from '@app/services/user.service';
 import { FailureType } from '@app/models/enums/failure-type.enum';
 import { ExpensesService } from '../../expenses.service';
-import { StoringExpensesStickyFilters} from '../../pages/expenses-page/expenses-page.model';
+import { StoringExpensesStickyFilters } from '../../pages/expenses-page/expenses-page.model';
 
 @Component({
   selector: 'app-expenses-table',

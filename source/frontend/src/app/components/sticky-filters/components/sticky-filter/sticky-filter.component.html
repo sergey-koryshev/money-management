@@ -32,10 +32,10 @@
                placeholder="Select category">
     </ng-select>
     <div class="list-group all-types-overlay"
-    [ngClass]="{
-        'list-group-flush': definition.type === stickyFilterType.dropdown,
-        'dropdown-type-overlay': definition.type === stickyFilterType.dropdown
-      }">
+         [ngClass]="{
+           'list-group-flush': definition.type === stickyFilterType.dropdown,
+           'dropdown-type-overlay': definition.type === stickyFilterType.dropdown
+         }">
       <label
              *ngIf="definition.type === stickyFilterType.list && definition.allItem"
              class="list-group-item">

@@ -4,7 +4,6 @@ import {
   StickyFilterDefinition,
   StickyFilterItem, StickyFilters, StoringStickyFilters
 } from "@components/sticky-filters/sticky-filters.model";
-import { filtersStorageName } from "@app/modules/expenses/pages/expenses-page/expenses-page.component";
 
 @Component({
   selector: 'app-sticky-filters',
@@ -87,14 +86,18 @@ export class StickyFiltersComponent implements OnInit {
     const filters = this.filters;
 
     if (this.storageKey) {
-      localStorage.setItem(filtersStorageName, JSON.stringify(filters));
+      localStorage.setItem(this.storageKey, JSON.stringify(filters));
     }
 
     this.filtersChanged.emit(filters);
   }
 
   private restoreStickyFilters() {
-    const savedFilters = localStorage.getItem(filtersStorageName);
+    if (!this.storageKey) {
+      return;
+    }
+
+    const savedFilters = localStorage.getItem(this.storageKey);
 
     if (savedFilters != null) {
       const storedFilters = JSON.parse(savedFilters) as StoringStickyFilters;

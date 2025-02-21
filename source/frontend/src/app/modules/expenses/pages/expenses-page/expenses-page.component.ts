@@ -17,13 +17,9 @@ import { StickyFilterDefinition, StickyFilterItem, StickyFilterType } from '@com
 import { ExpensesStickyFilterType } from '@app/models/enums/expenses-sticky-filter-type.enum';
 import { defer, of } from 'rxjs';
 import { CategoryHttpClient } from '@app/http-clients/category-http-client.service';
-import {StoringExpensesStickyFilters} from './expenses-page.model';
+import { StoringExpensesStickyFilters } from './expenses-page.model';
+import { emptyFilter, filtersStorageName } from "@app/constants";
 
-export const emptyFilter: StickyFilterItem<number | undefined> = {
-  value: undefined,
-  name: 'All'
-};
-export const filtersStorageName = 'expenses-sticky-filters';
 const emptyCategoryFilter: StickyFilterItem<string | undefined> = {
   value: undefined,
   name: 'Empty Category'

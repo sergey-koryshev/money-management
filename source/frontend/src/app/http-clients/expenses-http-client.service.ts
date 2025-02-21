@@ -9,7 +9,7 @@ import { ExpensesStickyFilterType } from '@app/models/enums/expenses-sticky-filt
 import {
   StoringExpensesStickyFilters
 } from '@app/modules/expenses/pages/expenses-page/expenses-page.model';
-import { emptyFilter } from "@app/modules/expenses/pages/expenses-page/expenses-page.component";
+import { emptyFilter } from "@app/constants";
 
 @Injectable({
   providedIn: 'root'

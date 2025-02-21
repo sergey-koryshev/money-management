@@ -1,11 +1,7 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import {StickyFilterDefinition, StickyFilterItem, StickyFilterType} from "@components/sticky-filters/sticky-filters.model";
-import {NgSelectComponent} from "@ng-select/ng-select";
-import {tap} from "rxjs/operators";
-
-interface ExtendedStickyFilterItem extends StickyFilterItem<any> {
-  active?: boolean;
-}
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { StickyFilterDefinition, StickyFilterItem, StickyFilterType } from "@components/sticky-filters/sticky-filters.model";
+import { NgSelectComponent } from "@ng-select/ng-select";
+import { tap } from "rxjs/operators";
 
 @Component({
   selector: 'app-sticky-filter',
@@ -26,7 +22,7 @@ export class StickyFilterComponent implements OnInit {
   filterChanged = new EventEmitter<StickyFilterItem<any>[]>();
 
   stickyFilterType = StickyFilterType;
-  items: ExtendedStickyFilterItem[];
+  items: StickyFilterItem<any>[];
   visibleDropdownItems: StickyFilterItem<any>[];
   dropdownLoading = false;
 
@@ -113,6 +109,10 @@ export class StickyFilterComponent implements OnInit {
     }
   }
 
+  isItemActive(item: StickyFilterItem<any>) {
+    return this.selectedValue.some((v) => this.compareItems(v, item));
+  }
+
   /**
    * Adjusts visible items in dropdown to hide selected ones
    * @private
@@ -123,9 +123,5 @@ export class StickyFilterComponent implements OnInit {
 
   private compareItems (a: StickyFilterItem<any>, b: StickyFilterItem<any>) {
     return a.value === b.value && a.name === b.name;
-  }
-
-  isItemActive(item: ExtendedStickyFilterItem) {
-    return this.selectedValue.some((v) => this.compareItems(v, item));
   }
 }
