@@ -156,7 +156,7 @@ public class ExpensesRepository
 
             if (!filter.CategoryName.IsEmpty())
             {
-                query = query.Where(e => filter.CategoryName!.Contains(e.Category!.Name));
+                query = query.Where(e => filter.CategoryName!.Contains(e.Category != null ? e.Category.Name : null));
             }
         }
 
