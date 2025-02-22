@@ -13,4 +13,6 @@ public class ExpensesFilterDto
     public int? CreatedById { get; set; }
 
     public bool? Shared { get; set; }
+
+    public List<string?>? CategoryName { get; set; }
 }

@@ -399,11 +399,12 @@ public class ExpensesRepositoryTests : TestsBase
         return result.Select(e => e.Name).ToArray();
     }
 
-    [TestCase("Category 1", "Category 2", ExpectedResult = new[] { "Expense A", "Expense C" })]
+    [TestCase("Category 1", "Category 2", null, ExpectedResult = new[] { "Expense A", "Expense B", "Expense C", "Expense E" })]
     [TestCase("Category 2", ExpectedResult = new[] { "Expense C" })]
     [TestCase("Category 2", "Category 3", ExpectedResult = new[] { "Expense C" })]
     [TestCase("Category 3", ExpectedResult = new string[] {})]
-    public string[] GetExpenses_FilterCategoryNames_CorrectedResultReturned(params string[] categoryNames)
+    [TestCase(null, ExpectedResult = new string[] { "Expense B", "Expense E" })]
+    public string[] GetExpenses_FilterCategoryNames_CorrectedResultReturned(params string?[] categoryNames)
     {
         this.DbContext.Attach(this.Daniel);
         this.DbContext.Attach(this.Veronika);
@@ -449,7 +450,16 @@ public class ExpensesRepositoryTests : TestsBase
                 CurrencyId = this.Currencies[0].Id,
                 CreatedById = this.Chuck.Id,
                 PermittedPersons = new List<Entities.Person> { this.Chuck }
-            }
+            },
+            new Entities.Expense
+            {
+                Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
+                Name = "Expense E",
+                PriceAmount = 999,
+                CurrencyId = this.Currencies[0].Id,
+                CreatedById = this.Daniel.Id,
+                PermittedPersons = new List<Entities.Person> { this.Daniel, this.Veronika }
+            },
         };
 
         this.DbContext.AddRange(expenses);
@@ -459,7 +469,7 @@ public class ExpensesRepositoryTests : TestsBase
 
         var result = new ExpensesRepository(DbContext, this.Veronika).GetExpenses(new ExpensesFilter
         {
-            CategoryNames = new List<string>(categoryNames)
+            CategoryName = new List<string?>(categoryNames)
         });
 
         return result.Select(e => e.Name).ToArray();

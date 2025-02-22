@@ -5,8 +5,12 @@ import { ChangeExpenseParams, ExtendedExpenseName } from './expenses-http-client
 import { Month } from '@app/models/month.model';
 import { of } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
-import { StickyFilterItem } from '@app/models/sticky-filter.model';
 import { ExpensesStickyFilterType } from '@app/models/enums/expenses-sticky-filter-type.enum';
+import {
+  StoringExpensesStickyFilters
+} from '@app/modules/expenses/pages/expenses-page/expenses-page.model';
+import { emptyFilter } from "@app/constants";
+import {stickyFilterItemsComparer} from "@app/helpers/comparers.helper";
 
 @Injectable({
   providedIn: 'root'
@@ -15,19 +19,28 @@ export class ExpensesHttpClientService {
 
   constructor(private baseHttpClient: BaseHttpClientService) {}
 
-  getExpenses(selectedMonth: Month, filters?: Record<string, StickyFilterItem<number | undefined>>) {
+  getExpenses(selectedMonth: Month, filters?: StoringExpensesStickyFilters) {
     let params = new HttpParams()
       .set('month', selectedMonth.month)
       .set('year', selectedMonth.year)
       .set('timeZone', Intl.DateTimeFormat().resolvedOptions().timeZone);
 
     if (filters != null) {
-      if (filters[ExpensesStickyFilterType.createdBy] != null && filters[ExpensesStickyFilterType.createdBy].value != null) {
-        params = params.set('createdById', filters[ExpensesStickyFilterType.createdBy].value!);
+      const createdByFilter = filters[ExpensesStickyFilterType.createdBy];
+      if (createdByFilter != null && createdByFilter.value != null) {
+        params = params.set('createdById', createdByFilter.value!);
       }
 
-      if (filters[ExpensesStickyFilterType.shared] != null && filters[ExpensesStickyFilterType.shared].value != null) {
-        params = params.set('shared', !!filters[ExpensesStickyFilterType.shared].value);
+      const sharedFilter = filters[ExpensesStickyFilterType.shared];
+      if (sharedFilter != null && sharedFilter.value != null) {
+        params = params.set('shared', !!sharedFilter.value);
+      }
+
+      const categoriesFilter = filters[ExpensesStickyFilterType.categories];
+      if (categoriesFilter != null && !categoriesFilter.some((c) => stickyFilterItemsComparer(c, emptyFilter))) {
+        categoriesFilter.forEach((c) => {
+          params = params.append('categoryName', c.value ?? "");
+        });
       }
     }
 

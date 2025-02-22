@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Expense } from '@app/models/expense.model';
-import { emptyFilter } from './pages/expenses-page/expenses-page.component';
 import { CreatedByFilterOptions } from '@app/models/enums/created-by-filter.enum';
 import { SharedFilterOptions } from '@app/models/enums/shared-filter.enum';
 import { UserService } from '@app/services/user.service';
-import { StickyFilter } from '@app/models/sticky-filter.model';
 import { ExpensesStickyFilterType } from '@app/models/enums/expenses-sticky-filter-type.enum';
+import { StoringExpensesStickyFilters } from './pages/expenses-page/expenses-page.model';
+import {emptyCategoryFilter, emptyFilter} from "@app/constants";
+import {stickyFilterItemsComparer} from "@app/helpers/comparers.helper";
 
 @Injectable({
   providedIn: 'root'
@@ -14,18 +15,30 @@ export class ExpensesService {
 
   constructor(private userService: UserService) {}
 
-  testExpenseAgainstFilter(stickyFilters: Record<string, StickyFilter<number | undefined>>, expense: Expense) {
-    if ((stickyFilters[ExpensesStickyFilterType.shared] == null ||
-      (stickyFilters[ExpensesStickyFilterType.shared].selectedValue?.value === emptyFilter.value ||
-        (stickyFilters[ExpensesStickyFilterType.shared].selectedValue?.value === SharedFilterOptions.Yes && expense.permittedPersons.length > 0) ||
-        (stickyFilters[ExpensesStickyFilterType.shared].selectedValue?.value === SharedFilterOptions.No && expense.permittedPersons.length === 0))) &&
-      ((stickyFilters[ExpensesStickyFilterType.createdBy] == null ||
-        (stickyFilters[ExpensesStickyFilterType.createdBy].selectedValue?.value === emptyFilter.value ||
-          stickyFilters[ExpensesStickyFilterType.createdBy].selectedValue?.value === CreatedByFilterOptions.Me && expense.createdBy.id === this.userService.user?.id ||
-            stickyFilters[ExpensesStickyFilterType.createdBy].selectedValue?.value === CreatedByFilterOptions.NotMe && expense.createdBy.id !== this.userService.user?.id)))) {
-      return true;
+  testExpenseAgainstFilter(stickyFilters: StoringExpensesStickyFilters, expense: Expense) {
+    let result = true
+
+    const createdByFilter = stickyFilters[ExpensesStickyFilterType.createdBy];
+    if (createdByFilter != null) {
+      result = result && (stickyFilterItemsComparer(createdByFilter, emptyFilter) ||
+        createdByFilter.value === CreatedByFilterOptions.Me && expense.createdBy.id === this.userService.user?.id ||
+        createdByFilter.value === CreatedByFilterOptions.NotMe && expense.createdBy.id !== this.userService.user?.id)
     }
 
-    return false;
+    const sharedFilter = stickyFilters[ExpensesStickyFilterType.shared];
+    if (sharedFilter != null) {
+      result = result && (stickyFilterItemsComparer(sharedFilter, emptyFilter) ||
+        (sharedFilter.value === SharedFilterOptions.Yes && expense.permittedPersons.length > 0) ||
+        (sharedFilter.value === SharedFilterOptions.No && expense.permittedPersons.length === 0))
+    }
+
+    const categoriesFilter = stickyFilters[ExpensesStickyFilterType.categories]
+    if (categoriesFilter != null) {
+      result = result && (categoriesFilter.some((i) => stickyFilterItemsComparer(i, emptyFilter)) ||
+        (expense.category == null && categoriesFilter.some((i) => stickyFilterItemsComparer(i, emptyCategoryFilter))) ||
+        (categoriesFilter.some((i) => i.name === expense.category.name)));
+    }
+
+    return result;
   }
 }

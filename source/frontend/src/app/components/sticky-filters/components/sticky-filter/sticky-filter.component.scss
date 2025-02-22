@@ -1,0 +1,59 @@
+@import "~/node_modules/bootstrap/scss/functions";
+@import "~/node_modules/bootstrap/scss/variables";
+
+button[ngbDropdownToggle] {
+  & .selected-filter-item-name {
+    max-width: 250px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  & a.clear-filter {
+    width: 12px;
+    height: 12px;
+    display: inline-block;
+    margin-right: 0.25rem;
+    background-color: var(--bs-btn-color);
+    transition: background-color 0.15s ease-in-out, opacity 0.15s ease-in-out;
+
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+
+  &:hover a.clear-filter {
+    background-color: var(--bs-btn-hover-color);
+  }
+
+  &:focus a.clear-filter {
+    background-color: var(--bs-btn-active-color);
+  }
+}
+
+.all-types-overlay {
+  max-width: 300px;
+
+  & label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+
+    & input {
+      cursor: pointer;
+    }
+  }
+}
+
+.dropdown-type-overlay {
+  min-width: 200px;
+
+  & label:last-child {
+    padding-bottom: 0;
+  }
+}
+
+.drop-down-flush {
+  padding: 0;
+  border: none;
+}

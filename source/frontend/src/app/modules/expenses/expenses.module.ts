@@ -1,4 +1,4 @@
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 
@@ -35,7 +35,7 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [ExpensesPageComponent, ExpensesTableComponent, ExpenseFormComponent, AddNewExpenseDialogComponent, EditExpenseDialogComponent, SearchResultsComponent],
-  imports: [CommonModule, NgbModule, RouterModule.forChild(routes), ComponentsModule, ReactiveFormsModule, NgbDatepickerModule, NgSelectModule],
+  imports: [CommonModule, NgbModule, RouterModule.forChild(routes), ComponentsModule, ReactiveFormsModule, NgbDatepickerModule, NgSelectModule, FormsModule],
   providers: [ExpensesResolver]
 })
 export class ExpensesModule {}

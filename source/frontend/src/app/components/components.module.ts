@@ -11,6 +11,10 @@ import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
 import { UserTileComponent } from './user-tile/user-tile.component';
 import { PillButtonComponent } from './pill-button/pill-button.component';
 import { ParenthesesPipe } from './parentheses-pipe/parentheses.pipe';
+import { StickyFiltersComponent } from "@components/sticky-filters/sticky-filters.component";
+import { NgSelectModule } from "@ng-select/ng-select";
+import { StickyFiltersModule } from "@components/sticky-filters/sticky-filters.module";
+import { PipesModule } from "@app/pipes/pipes.module";
 
 @NgModule({
   declarations: [
@@ -21,12 +25,16 @@ import { ParenthesesPipe } from './parentheses-pipe/parentheses.pipe';
     ModalDialogComponent,
     UserTileComponent,
     PillButtonComponent,
-    ParenthesesPipe
+    ParenthesesPipe,
+    StickyFiltersComponent
   ],
   imports: [
     CommonModule,
     NgbModule,
-    TableModule
+    TableModule,
+    NgSelectModule,
+    StickyFiltersModule,
+    PipesModule
   ],
   exports: [
     UserAvatarComponent,
@@ -37,7 +45,8 @@ import { ParenthesesPipe } from './parentheses-pipe/parentheses.pipe';
     RoundButtonComponent,
     ModalDialogComponent,
     PillButtonComponent,
-    ParenthesesPipe
+    ParenthesesPipe,
+    StickyFiltersComponent
   ],
 })
 export class ComponentsModule { }

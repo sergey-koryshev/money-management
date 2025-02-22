@@ -1,0 +1,62 @@
+<div ngbDropdown class="d-inline-block" >
+  <!-- Sticky filter button -->
+  <button ngbDropdownToggle type="button" class="d-flex align-items-center btn btn-outline-success sticky-filter-button">
+    <a class="d-inline-block icon icon-clear clear-filter" (click)="this.filterRemoved.emit(); $event.stopPropagation()"></a>
+    <span class="me-1">{{ definition.displayName }}:</span>
+    <span class="selected-filter-item-name" *ngIf="!definition.multiselect; else multiselectName">
+      {{ selectedValue[0].name }}
+    </span>
+    <ng-template #multiselectName [ngSwitch]="selectedValue.length">
+      <span class="selected-filter-item-name" *ngSwitchCase=0>Not selected</span>
+      <span class="selected-filter-item-name" *ngSwitchCase=1>{{ selectedValue[0].name }}</span>
+      <span class="selected-filter-item-name" *ngSwitchDefault>{{ selectedValue.length }} items</span>
+    </ng-template>
+  </button>
+
+  <!-- Sticky filter dropdown -->
+  <div ngbDropdownMenu
+       [ngClass]="{'drop-down-flush': definition.type === stickyFilterType.list }">
+    <ng-select *ngIf="definition.type === stickyFilterType.dropdown"
+               #dropdownElement
+               class="mx-2"
+               [items]="visibleDropdownItems"
+               [hideSelected]="true"
+               [addTag]="false"
+               [minTermLength]="1"
+               bindLabel="name"
+               [clearable]="false"
+               [multiple]="true"
+               (change)="onDropdownChanged($event, dropdownElement)"
+               [loading]="dropdownLoading"
+               [readonly]="!definition.multiselect && selectedValue.length > 0 && (!definition.allItem || (definition.allItem.value !== selectedValue[0].value || definition.allItem.name !== selectedValue[0].name))"
+               placeholder="Select category">
+    </ng-select>
+    <div class="list-group all-types-overlay"
+         [ngClass]="{
+           'list-group-flush': definition.type === stickyFilterType.dropdown,
+           'dropdown-type-overlay': definition.type === stickyFilterType.dropdown
+         }">
+      <label
+             *ngIf="definition.type === stickyFilterType.list && definition.allItem"
+             class="list-group-item">
+        <input class="form-check-input"
+               type="checkbox"
+               [checked]="isItemActive(definition.allItem)"
+               [disabled]="isItemActive(definition.allItem)"
+               (click)="onListItemClicked(definition.allItem)">
+        {{ definition.allItem.name }}
+      </label>
+      <ng-container *ngFor="let item of (definition.type === stickyFilterType.dropdown ? selectedValue : items)">
+        <label *ngIf="definition.type !== stickyFilterType.dropdown || (!definition.allItem || (definition.allItem.value !== item.value || definition.allItem.name !== item.name))"
+               class="list-group-item">
+          <input class="form-check-input"
+                 type="checkbox"
+                 [checked]="definition.type === stickyFilterType.dropdown ? true : isItemActive(item)"
+                 [disabled]="definition.type === stickyFilterType.list && !definition.multiselect && isItemActive(item)"
+                 (click)="definition.type === stickyFilterType.dropdown ? onDropdownElementClicked(item) : onListItemClicked(item)">
+          {{ item.name }}
+        </label>
+      </ng-container>
+    </div>
+  </div>
+</div>

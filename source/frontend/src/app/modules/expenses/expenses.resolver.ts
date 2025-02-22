@@ -4,7 +4,7 @@ import { Resolve } from '@angular/router';
 import { Expense } from '@app/models/expense.model';
 import { ExpensesMonthService } from '@app/services/expenses-month.service';
 import { Observable } from 'rxjs';
-import { filtersStorageName } from './pages/expenses-page/expenses-page.component';
+import { filtersStorageName } from "@app/constants";
 
 @Injectable()
 export class ExpensesResolver implements Resolve<Expense[]> {

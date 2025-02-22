@@ -13,7 +13,7 @@ import { UserConnectionStatus } from '@app/models/enums/user-connection-status.e
 import { UserService } from '@app/services/user.service';
 import { FailureType } from '@app/models/enums/failure-type.enum';
 import { ExpensesService } from '../../expenses.service';
-import { StickyFilter } from '@app/models/sticky-filter.model';
+import { StoringExpensesStickyFilters } from '../../pages/expenses-page/expenses-page.model';
 
 @Component({
   selector: 'app-expenses-table',
@@ -36,7 +36,7 @@ export class ExpensesTableComponent implements OnInit {
   data: Expense[];
 
   @Input()
-  stickyFilters: Record<string, StickyFilter<number | undefined>>;
+  stickyFilters: StoringExpensesStickyFilters;
 
   @Output()
   itemChanged = new EventEmitter<ItemChangedEventArgs>()

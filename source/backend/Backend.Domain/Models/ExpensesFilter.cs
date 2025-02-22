@@ -14,5 +14,5 @@ public class ExpensesFilter
 
     public bool? Shared { get; set; }
 
-    public List<string>? CategoryNames { get; set; }
+    public List<string?>? CategoryName { get; set; }
 }
