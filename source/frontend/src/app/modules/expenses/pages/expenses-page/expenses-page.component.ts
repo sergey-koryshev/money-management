@@ -18,12 +18,7 @@ import { ExpensesStickyFilterType } from '@app/models/enums/expenses-sticky-filt
 import { defer, of } from 'rxjs';
 import { CategoryHttpClient } from '@app/http-clients/category-http-client.service';
 import { StoringExpensesStickyFilters } from './expenses-page.model';
-import { emptyFilter, filtersStorageName } from "@app/constants";
-
-const emptyCategoryFilter: StickyFilterItem<string | undefined> = {
-  value: undefined,
-  name: 'Empty Category'
-}
+import { emptyFilter, emptyCategoryFilter, filtersStorageName } from "@app/constants";
 
 @Component({
   selector: 'app-expenses-page',

@@ -15,4 +15,9 @@ export const emptyFilter: StickyFilterItem<number | undefined> = {
   name: 'All'
 };
 
+export const emptyCategoryFilter: StickyFilterItem<string | undefined> = {
+  value: undefined,
+  name: 'Empty Category'
+}
+
 export const filtersStorageName = 'expenses-sticky-filters';
