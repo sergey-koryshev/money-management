@@ -1,29 +1,18 @@
-version: '3.5'
-
 services:
   frontend:
-    container_name: money-mamagement-frontend
+    container_name: money-management-frontend
     build: ./source/frontend
     ports:
       - '4200:80'
     depends_on:
-        - backend
+      - backend
 
   backend:
-    container_name: money-mamagement-backend
+    container_name: money-management-backend
     build:
       context: ./source/backend
       dockerfile: Dockerfile
-      args:
-          ENV_TYPE: DockerCompose
-    ports:
-      - '5161:80'
-    depends_on:
-      - backend-db
-
-  backend-db:
-    container_name: money-mamagement-backend-db
-    image: postgres:16.2
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: DrOid-R2D2
+      - 'ConnectionStrings__Postgres=Server=host.docker.internal;Port=5432;Database=mm-dev;User Id=postgres;Password=DrOid-R2D2'
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
