@@ -33,7 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="../Backend.WebApi/appsettings.Tests.json" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="settings.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>
