@@ -62,7 +62,7 @@ public abstract class TestsBase
     protected TestsBase()
     {
         var config = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.Tests.json")
+            .AddJsonFile("settings.json")
             .Build();
             
         this.dbContextOptionsBuilder = new DbContextOptionsBuilder<AppDbContext>()

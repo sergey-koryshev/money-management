@@ -2,10 +2,10 @@ namespace Backend.Application.Clients;
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text.Json;
 using Backend.Domain.Models;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Extensions.Logging;
 
 public class ExchangeServerClient : IExchangeServerClient
 {
@@ -13,9 +13,12 @@ public class ExchangeServerClient : IExchangeServerClient
 
     private HttpClient Client => this.client ??= new HttpClient();
 
-    public ExchangeServerClient(Uri baseAddress)
+    private ILogger Logger { get; }
+
+    public ExchangeServerClient(Uri baseAddress, ILoggerFactory loggerFactory)
     {
         this.Client.BaseAddress = baseAddress;
+        this.Logger = loggerFactory.CreateLogger<ExchangeServerClient>();
     }
 
     public Dictionary<DateTime, Dictionary<string, double>> GetExchangeRates(DateTime from, DateTime to, string targetCurrency)
@@ -24,7 +27,7 @@ public class ExchangeServerClient : IExchangeServerClient
         var cetFrom = TimeZoneInfo.ConvertTimeFromUtc(from, cetTimeZone);
         var cetTo = TimeZoneInfo.ConvertTimeFromUtc(to, cetTimeZone);
 
-        string requestQuery = QueryHelpers.AddQueryString($"{cetFrom:yyyy-MM-dd}..{cetTo:yyyy-MM-dd}", new Dictionary<string, string>
+        string requestQuery = QueryHelpers.AddQueryString($"v1/{cetFrom:yyyy-MM-dd}..{cetTo:yyyy-MM-dd}", new Dictionary<string, string>
         {
             { "base", targetCurrency }
         });
@@ -50,18 +53,18 @@ public class ExchangeServerClient : IExchangeServerClient
                     }
                     else
                     {
-                        Trace.TraceError($"There is no data in Exchange Server's response.");
+                        this.Logger.LogError($"There is no data in Exchange Server's response.");
                     };
                 }
             }
             else
             {
-                Trace.TraceError($"Request to Exchange Server was failed. Returned code: {request.StatusCode}");
+                this.Logger.LogError($"Request to Exchange Server was failed. Returned code: {request.StatusCode}");
             }
         }
         catch (Exception ex)
         {
-            Trace.TraceError($"Error has occurred during fetching exchange rates from server '{this.Client.BaseAddress}': {ex}");
+            this.Logger.LogError($"Error has occurred during fetching exchange rates from server '{this.Client.BaseAddress}': {ex}");
         }
 
         return result;

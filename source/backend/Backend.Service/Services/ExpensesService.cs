@@ -9,18 +9,19 @@ using Backend.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 public class ExpensesService : ServiseBase, IExpensesService
 {
     protected ExchangeServerClient? ExchangeServerClient { get; }
 
-    public ExpensesService(IHttpContextAccessor httpContextAccessor, IMapper mapper, IDbContextFactory<AppDbContext> dbContextFactory, IConfiguration config) : base(httpContextAccessor, mapper, dbContextFactory)
+    public ExpensesService(IHttpContextAccessor httpContextAccessor, IMapper mapper, IDbContextFactory<AppDbContext> dbContextFactory, IConfiguration config, ILoggerFactory loggerFactory) : base(httpContextAccessor, mapper, dbContextFactory)
     {
         var exchangeServerBaseUrl = config["ExchangeServerBaseUrl"];
 
         if (exchangeServerBaseUrl != null)
         {
-            this.ExchangeServerClient = new ExchangeServerClient(new Uri(exchangeServerBaseUrl));
+            this.ExchangeServerClient = new ExchangeServerClient(new Uri(exchangeServerBaseUrl), loggerFactory);
         }
     }
 

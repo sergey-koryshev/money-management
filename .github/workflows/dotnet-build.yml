@@ -49,10 +49,6 @@ on:
         required: false
         type: string
         default: "Backend.WebApi"
-      environment-name:
-        required: false
-        type: string
-        default: "Tests"
 
 jobs:
   build:
@@ -97,7 +93,8 @@ jobs:
           dotnet tool restore
 
           echo "Applying migrations..."
-          dotnet ef database update --project ${{ inputs.migrations-project }} --startup-project ${{ inputs.startup-project }} -- --environment ${{ inputs.environment-name }}
+          export ConnectionStrings__Postgres=Server='localhost;Port=5432;Database=mm-test;User Id=${{ inputs.test-db-username }};Password=${{ inputs.test-db-password}}'
+          dotnet ef database update --project ${{ inputs.migrations-project }} --startup-project ${{ inputs.startup-project }}
       - name: Tests
         if: ${{ inputs.test-project-path != '' }}
         run: dotnet test ${{ inputs.test-project-path }} --logger "trx;logfilename=TestResults-${{ inputs.build-configuration }}.trx"
