@@ -21,6 +21,9 @@ export class TableComponent<T> implements OnInit, DoCheck {
   @Input()
   defaultSorting: SortEvent;
 
+  @Input()
+  loading = false;
+
   @Output()
   sortingChanged = new EventEmitter<SortEvent>();
 
@@ -34,6 +37,7 @@ export class TableComponent<T> implements OnInit, DoCheck {
   headers: QueryList<SortableHeaderDirective>;
 
   ngOnInit(): void {
+    this.data = this.data ?? [];
     this.sortedData = this.data
     this.lastSorting = this.defaultSorting;
   }

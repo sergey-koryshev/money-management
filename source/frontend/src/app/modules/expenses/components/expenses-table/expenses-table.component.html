@@ -1,4 +1,8 @@
-<app-table [columns]="columns" [data]="data" [defaultSorting]="sorting" (sortingChanged)="onSortingChanged($event)"></app-table>
+<app-table [columns]="columns"
+           [data]="data"
+           [defaultSorting]="sorting"
+           [loading]="loading"
+           (sortingChanged)="onSortingChanged($event)"></app-table>
 
 <ng-template #price let-row>
     <app-price [price]="row.price" [originalPrice]="row.originalPrice" class="d-inline-block"></app-price>

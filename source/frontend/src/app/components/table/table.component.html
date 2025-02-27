@@ -15,21 +15,34 @@
         </tr>
     </thead>
     <tbody>
+      <ng-container *ngIf="!loading">
         <tr *ngFor="let row of sortedData">
-            <td *ngFor="let column of getVisibleColumns()" [ngSwitch]="getColumnType(column)" [ngClass]="{ 'p-0': column.ignorePadding, 'ps-0': column.snapToPrevious }" [ngStyle]="{ 'vertical-align': 'middle', 'white-space': column.stretch ? 'normal' : 'nowrap' }">
-                <span *ngSwitchCase="columnTypes.function">
-                    {{ column.function?.(row) ?? emptyTableData}}
-                </span>
-                <ng-container *ngSwitchCase="columnTypes.template">
-                    <ng-container [ngTemplateOutlet]="column.template?.() ?? null" [ngTemplateOutletContext]="{ $implicit: row }"></ng-container>
-                </ng-container>
-                <span *ngSwitchDefault>
-                    {{ extractProperty(row, column.name) ?? emptyTableData }}
-                </span>
-            </td>
+          <td *ngFor="let column of getVisibleColumns()" [ngSwitch]="getColumnType(column)" [ngClass]="{ 'p-0': column.ignorePadding, 'ps-0': column.snapToPrevious }" [ngStyle]="{ 'vertical-align': 'middle', 'white-space': column.stretch ? 'normal' : 'nowrap' }">
+                  <span *ngSwitchCase="columnTypes.function">
+                      {{ column.function?.(row) ?? emptyTableData}}
+                  </span>
+            <ng-container *ngSwitchCase="columnTypes.template">
+              <ng-container [ngTemplateOutlet]="column.template?.() ?? null" [ngTemplateOutletContext]="{ $implicit: row }"></ng-container>
+            </ng-container>
+            <span *ngSwitchDefault>
+                      {{ extractProperty(row, column.name) ?? emptyTableData }}
+                  </span>
+          </td>
         </tr>
         <tr *ngIf="!sortedData || sortedData?.length === 0">
-            <td [attr.colspan]="columns.length" class="no-data-column">No data</td>
+          <td [attr.colspan]="columns.length"
+              class="no-data-column">
+            <span>No data</span>
+          </td>
         </tr>
+      </ng-container>
+      <tr *ngIf="loading">
+        <td [attr.colspan]="columns.length"
+            class="no-data-column">
+          <div class="spinner-border spinner-border-sm" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </td>
+      </tr>
     </tbody>
 </table>

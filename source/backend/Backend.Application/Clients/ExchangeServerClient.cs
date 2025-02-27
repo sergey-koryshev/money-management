@@ -27,7 +27,7 @@ public class ExchangeServerClient : IExchangeServerClient
         var cetFrom = TimeZoneInfo.ConvertTimeFromUtc(from, cetTimeZone);
         var cetTo = TimeZoneInfo.ConvertTimeFromUtc(to, cetTimeZone);
 
-        string requestQuery = QueryHelpers.AddQueryString($"v1/{cetFrom:yyyy-MM-dd}..{cetTo:yyyy-MM-dd}", new Dictionary<string, string>
+        string requestQuery = QueryHelpers.AddQueryString($"{cetFrom:yyyy-MM-dd}..{cetTo:yyyy-MM-dd}", new Dictionary<string, string>
         {
             { "base", targetCurrency }
         });

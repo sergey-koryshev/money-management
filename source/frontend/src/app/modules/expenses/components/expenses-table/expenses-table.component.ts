@@ -38,6 +38,9 @@ export class ExpensesTableComponent implements OnInit {
   @Input()
   stickyFilters: StoringExpensesStickyFilters;
 
+  @Input()
+  loading = false;
+
   @Output()
   itemChanged = new EventEmitter<ItemChangedEventArgs>()
 

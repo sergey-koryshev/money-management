@@ -21,6 +21,7 @@
 </div>
 <app-expenses-table [data]="expenses"
                     [selectedMonth]="selectedMonth"
-                    [stickyFilters]="stickyFilters"
+                    [stickyFilters]="stickyFilters$.value"
+                    [loading]="loading"
                     (itemChanged)="onItemChange($event)">
 </app-expenses-table>

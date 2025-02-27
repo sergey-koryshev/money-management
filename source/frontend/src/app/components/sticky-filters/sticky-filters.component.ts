@@ -122,6 +122,8 @@ export class StickyFiltersComponent implements OnInit {
           }
         }
       });
+
+      this.filtersChanged.emit(this.filters);
     }
   }
 }

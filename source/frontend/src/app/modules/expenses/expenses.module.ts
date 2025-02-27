@@ -6,7 +6,6 @@ import { ExpensesPageComponent } from './pages/expenses-page/expenses-page.compo
 import { Routes, RouterModule } from '@angular/router';
 import { ExpensesTableComponent } from './components/expenses-table/expenses-table.component';
 import { ComponentsModule } from '@app/components/components.module';
-import { ExpensesResolver } from './expenses.resolver';
 import { ExpenseFormComponent } from './components/expense-form/expense-form.component';
 import { NgbDatepickerModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -18,10 +17,7 @@ import { SearchResultsResolver } from './search-results.resolver';
 const routes: Routes = [
   {
     path: '',
-    component: ExpensesPageComponent,
-    resolve: {
-      expenses: ExpensesResolver,
-    }
+    component: ExpensesPageComponent
   },
   {
     path: 'search',
@@ -35,7 +31,6 @@ const routes: Routes = [
 
 @NgModule({
   declarations: [ExpensesPageComponent, ExpensesTableComponent, ExpenseFormComponent, AddNewExpenseDialogComponent, EditExpenseDialogComponent, SearchResultsComponent],
-  imports: [CommonModule, NgbModule, RouterModule.forChild(routes), ComponentsModule, ReactiveFormsModule, NgbDatepickerModule, NgSelectModule, FormsModule],
-  providers: [ExpensesResolver]
+  imports: [CommonModule, NgbModule, RouterModule.forChild(routes), ComponentsModule, ReactiveFormsModule, NgbDatepickerModule, NgSelectModule, FormsModule]
 })
 export class ExpensesModule {}
