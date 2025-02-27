@@ -5,8 +5,8 @@ import { SharedFilterOptions } from '@app/models/enums/shared-filter.enum';
 import { UserService } from '@app/services/user.service';
 import { ExpensesStickyFilterType } from '@app/models/enums/expenses-sticky-filter-type.enum';
 import { StoringExpensesStickyFilters } from './pages/expenses-page/expenses-page.model';
-import {emptyCategoryFilter, emptyFilter} from "@app/constants";
-import {stickyFilterItemsComparer} from "@app/helpers/comparers.helper";
+import { emptyCategoryFilter, emptyFilter } from "@app/constants";
+import { stickyFilterItemsComparer } from "@app/helpers/comparers.helper";
 
 @Injectable({
   providedIn: 'root'

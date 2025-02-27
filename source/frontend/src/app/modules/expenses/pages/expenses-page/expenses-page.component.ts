@@ -14,7 +14,7 @@ import { CreatedByFilterOptions } from '@app/models/enums/created-by-filter.enum
 import { ExpensesService } from '../../expenses.service';
 import { StickyFilterDefinition, StickyFilterType } from '@components/sticky-filters/sticky-filters.model';
 import { ExpensesStickyFilterType } from '@app/models/enums/expenses-sticky-filter-type.enum';
-import {BehaviorSubject, combineLatest, defer, NEVER, of} from 'rxjs';
+import { BehaviorSubject, combineLatest, defer, NEVER, of } from 'rxjs';
 import { CategoryHttpClient } from '@app/http-clients/category-http-client.service';
 import { StoringExpensesStickyFilters } from './expenses-page.model';
 import { emptyFilter, emptyCategoryFilter, filtersStorageName } from "@app/constants";

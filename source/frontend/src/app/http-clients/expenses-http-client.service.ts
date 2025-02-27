@@ -10,7 +10,7 @@ import {
   StoringExpensesStickyFilters
 } from '@app/modules/expenses/pages/expenses-page/expenses-page.model';
 import { emptyFilter } from "@app/constants";
-import {stickyFilterItemsComparer} from "@app/helpers/comparers.helper";
+import { stickyFilterItemsComparer } from "@app/helpers/comparers.helper";
 
 @Injectable({
   providedIn: 'root'
