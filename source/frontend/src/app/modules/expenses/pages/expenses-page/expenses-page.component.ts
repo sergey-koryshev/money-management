@@ -3,8 +3,7 @@ import { ExpensesHttpClientService } from '@http-clients/expenses-http-client.se
 import { CurrencyService } from '@services/currency.service';
 import { Expense } from '@app/models/expense.model';
 import { AfterViewInit, Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
-import { switchMap, skip, tap, catchError, map } from 'rxjs/operators';
+import { switchMap, tap, catchError, map } from 'rxjs/operators';
 import { NgbDatepickerNavigateEvent, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Month } from '@app/models/month.model';
 import { AddNewExpenseDialogComponent } from '../../components/add-new-expense-dialog/add-new-expense-dialog.component';
@@ -13,9 +12,9 @@ import { ItemChangedEventArgs } from '../../components/expenses-table/expenses-t
 import { SharedFilterOptions } from '@app/models/enums/shared-filter.enum';
 import { CreatedByFilterOptions } from '@app/models/enums/created-by-filter.enum';
 import { ExpensesService } from '../../expenses.service';
-import { StickyFilterDefinition, StickyFilterItem, StickyFilterType } from '@components/sticky-filters/sticky-filters.model';
+import { StickyFilterDefinition, StickyFilterType } from '@components/sticky-filters/sticky-filters.model';
 import { ExpensesStickyFilterType } from '@app/models/enums/expenses-sticky-filter-type.enum';
-import { defer, of } from 'rxjs';
+import {BehaviorSubject, combineLatest, defer, NEVER, of} from 'rxjs';
 import { CategoryHttpClient } from '@app/http-clients/category-http-client.service';
 import { StoringExpensesStickyFilters } from './expenses-page.model';
 import { emptyFilter, emptyCategoryFilter, filtersStorageName } from "@app/constants";
@@ -33,6 +32,7 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
   selectedMonth: Month;
   totalAmount?: Price;
   isExchangeFaulted: boolean = false;
+  loading = false;
 
   stickyFiltersDefinitions: Record<string, StickyFilterDefinition<any>> = {
     [ExpensesStickyFilterType.createdBy]: {
@@ -72,10 +72,9 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
       allItem: emptyFilter
     }
   };
-  stickyFilters: StoringExpensesStickyFilters = {};
+  stickyFilters$ = new BehaviorSubject<StoringExpensesStickyFilters>({});
 
   constructor(
-    private route: ActivatedRoute,
     private currencyService: CurrencyService,
     private expensesHttpClient: ExpensesHttpClientService,
     private modalService: NgbModal,
@@ -85,18 +84,11 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.selectedMonth = this.expensesMonthService.month;
-    this.route.data.subscribe(data => this.populateData(data.expenses as Expense[]));
   }
 
   ngAfterViewInit(): void {
-    this.currencyService.mainCurrency$
+    combineLatest([this.currencyService.mainCurrency$, this.expensesMonthService.month$, this.stickyFilters$])
       .pipe(
-        skip(1),
-        switchMap(() => this.fetchData()))
-      .subscribe();
-    this.expensesMonthService.month$
-      .pipe(
-        skip(1),
         switchMap(() => this.fetchData()))
       .subscribe();
   }
@@ -108,7 +100,7 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
 
       if (this.expensesMonthService.month.month == date.getMonth() + 1 &&
         this.expensesMonthService.month.year == date.getFullYear() &&
-        this.expensesService.testExpenseAgainstFilter(this.stickyFilters, addedExpanse)) {
+        this.expensesService.testExpenseAgainstFilter(this.stickyFilters$.value, addedExpanse)) {
         this.expenses.push(addedExpanse);
         this.onItemChange({
           newPrice: addedExpanse.price
@@ -142,10 +134,25 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
   }
 
   private fetchData() {
-    return this.expensesHttpClient.getExpenses(this.expensesMonthService.month, this.stickyFilters)
-      .pipe(tap((data) => {
-        this.populateData(data);
-    }));
+    this.loading = true;
+
+    this.totalAmount = this.currencyService.mainCurrency
+      ? {
+        amount: 0,
+        currency: this.currencyService.mainCurrency
+      } : undefined;
+    this.isExchangeFaulted = false;
+
+    return this.expensesHttpClient.getExpenses(this.expensesMonthService.month, this.stickyFilters$.value)
+      .pipe(
+        catchError(() => {
+          this.loading = false;
+          return NEVER;
+        }),
+        tap((data) => {
+          this.loading = false;
+          this.populateData(data);
+        }));
   }
 
   private populateData(expenses: Expense[]) {
@@ -164,8 +171,7 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
   }
 
   onFiltersChanged(filters: StoringExpensesStickyFilters) {
-    this.stickyFilters = filters;
-    this.fetchData().subscribe();
+    this.stickyFilters$.next(filters);
   }
 
   protected readonly filtersStorageName = filtersStorageName;
