@@ -7,12 +7,13 @@ import { ExpensesStickyFilterType } from '@app/models/enums/expenses-sticky-filt
 import { StoringExpensesStickyFilters } from './pages/expenses-page/expenses-page.model';
 import { emptyCategoryFilter, emptyFilter } from "@app/constants";
 import { stickyFilterItemsComparer } from "@app/helpers/comparers.helper";
+import {AbstractControl, ValidationErrors, ValidatorFn} from "@angular/forms";
+import {isNumber} from "@ng-bootstrap/ng-bootstrap/util/util";
 
 @Injectable({
   providedIn: 'root'
 })
 export class ExpensesService {
-
   constructor(private userService: UserService) {}
 
   testExpenseAgainstFilter(stickyFilters: StoringExpensesStickyFilters, expense: Expense) {
@@ -40,5 +41,45 @@ export class ExpensesService {
     }
 
     return result;
+  }
+
+  normalizeNumberString(value: string | number) {
+    if (typeof value === 'number') {
+      return value;
+    }
+
+    let normalizedString = value.trim().replace(/,/g, '.');
+
+    const parts = normalizedString.split('.');
+    if (parts.length > 2) {
+      const decimalPart = parts.pop();
+      const integerPart = parts.join('');
+      normalizedString = `${integerPart}.${decimalPart}`;
+    }
+
+    const finalNumber = Number(normalizedString);
+
+    if (!isNaN(finalNumber)) {
+      return finalNumber;
+    } else {
+      throw new Error(`Invalid number entered: ${value}`);
+    }
+  }
+
+  numberValidator(): ValidatorFn {
+    return (control:AbstractControl) : ValidationErrors | null => {
+      const value = control.value;
+
+      if (!value) {
+        return null;
+      }
+
+      try {
+        this.normalizeNumberString(value);
+        return null;
+      } catch (error: any) {
+        return { 'incorrectNumber': true }
+      }
+    }
   }
 }
