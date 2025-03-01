@@ -21,17 +21,24 @@ export class ModalDialogComponent<T> {
   disableSubmitButton: boolean;
 
   @Input()
-  returnValue?: T;
+  returnValue = (): T | null => null;
 
   @Input()
   error?: string;
 
   @Output()
-  submit = new EventEmitter<ModalSubmitEvent<T>>();
+  submit = new EventEmitter<ModalSubmitEvent<T | null>>();
 
   modalRef: NgbActiveModal;
 
   constructor(activeModal: NgbActiveModal) {
     this.modalRef = activeModal;
+  }
+
+  onSubmitButtonClick() {
+    this.submit.emit({
+      modalRef: this.modalRef,
+      value: this.returnValue()
+    })
   }
 }
