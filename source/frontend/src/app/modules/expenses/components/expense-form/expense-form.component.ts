@@ -1,7 +1,7 @@
 import { ExpensesHttpClientService } from '@http-clients/expenses-http-client.service';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { CurrencyService } from '@services/currency.service';
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, LOCALE_ID, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Currency } from '@app/models/currency.model';
 import { ExpensesMonthService } from '@app/services/expenses-month.service';
@@ -15,6 +15,7 @@ import { getUserFullName } from '@app/helpers/users.helper';
 import { UserService } from '@app/services/user.service';
 import { CategoryHttpClient } from '@app/http-clients/category-http-client.service';
 import { ExpensesService } from "@app/modules/expenses/expenses.service";
+import { formatNumber } from "@angular/common";
 
 interface ExtendedExpenseNameForm extends ExtendedExpenseName {
   isNew: boolean
@@ -63,7 +64,8 @@ export class ExpenseFormComponent implements OnInit, OnChanges {
     private expensesHttpClient: ExpensesHttpClientService,
     private userService: UserService,
     categoryHttpClient: CategoryHttpClient,
-    private expensesService: ExpensesService) {
+    private expensesService: ExpensesService,
+    @Inject(LOCALE_ID) private locale: string) {
     this.currentUser = userService.user;
     this.isItemShared = this.checkIfItemShared(this.item);
     this.currencies = currency.currencies;
@@ -188,7 +190,7 @@ export class ExpenseFormComponent implements OnInit, OnChanges {
       id: item.id,
       date: new NgbDate(item.date.getFullYear(), item.date.getMonth() + 1, item.date.getDate()),
       name: item.name,
-      priceAmount: item.originalPrice?.amount ?? item.price.amount,
+      priceAmount: formatNumber(item.originalPrice?.amount ?? item.price.amount, this.locale, '1.0-2'),
       currencyId: item.originalPrice?.currency.id ?? item.price.currency.id,
       categoryName: item.category?.name,
       permittedPersons: this.isItemShared ? [] : item.permittedPersons,
