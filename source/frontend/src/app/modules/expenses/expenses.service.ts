@@ -7,8 +7,7 @@ import { ExpensesStickyFilterType } from '@app/models/enums/expenses-sticky-filt
 import { StoringExpensesStickyFilters } from './pages/expenses-page/expenses-page.model';
 import { emptyCategoryFilter, emptyFilter } from "@app/constants";
 import { stickyFilterItemsComparer } from "@app/helpers/comparers.helper";
-import {AbstractControl, ValidationErrors, ValidatorFn} from "@angular/forms";
-import {isNumber} from "@ng-bootstrap/ng-bootstrap/util/util";
+import { AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
 
 @Injectable({
   providedIn: 'root'
