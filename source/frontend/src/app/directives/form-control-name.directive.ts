@@ -1,5 +1,5 @@
-import {Directive, Self} from '@angular/core';
-import {FormControlName} from "@angular/forms";
+import { Directive, Self } from '@angular/core';
+import { FormControlName } from "@angular/forms";
 
 @Directive({
   selector: '[formControlName]',
