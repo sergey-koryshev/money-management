@@ -1,19 +1,21 @@
 import { ExpensesHttpClientService } from '@http-clients/expenses-http-client.service';
 import { NgbDate } from '@ng-bootstrap/ng-bootstrap';
 import { CurrencyService } from '@services/currency.service';
-import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges, LOCALE_ID, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Currency } from '@app/models/currency.model';
 import { ExpensesMonthService } from '@app/services/expenses-month.service';
 import { Month } from '@app/models/month.model';
 import { Observable, Subject, catchError, defer, of, switchMap, tap } from 'rxjs';
-import { ExtendedExpenseName } from '@app/http-clients/expenses-http-client.model';
+import { ChangeExpenseParams, ExtendedExpenseName } from '@app/http-clients/expenses-http-client.model';
 import { Expense } from '@app/models/expense.model';
 import { AmbiguousUser, User } from '@app/models/user.model';
 import { UserConnectionStatus } from '@app/models/enums/user-connection-status.enum';
 import { getUserFullName } from '@app/helpers/users.helper';
 import { UserService } from '@app/services/user.service';
 import { CategoryHttpClient } from '@app/http-clients/category-http-client.service';
+import { ExpensesService } from "@app/modules/expenses/expenses.service";
+import { formatNumber } from "@angular/common";
 
 interface ExtendedExpenseNameForm extends ExtendedExpenseName {
   isNew: boolean
@@ -36,7 +38,6 @@ export class ExpenseFormComponent implements OnInit, OnChanges {
   private isItemShared = false;
 
   currencies: Currency[];
-  categories: string[];
   form: FormGroup;
   names$: Observable<ExtendedExpenseName[]>;
   categories$: Observable<string[]>;
@@ -62,7 +63,9 @@ export class ExpenseFormComponent implements OnInit, OnChanges {
     expensesMonthService: ExpensesMonthService,
     private expensesHttpClient: ExpensesHttpClientService,
     private userService: UserService,
-    categoryHttpClient: CategoryHttpClient) {
+    categoryHttpClient: CategoryHttpClient,
+    private expensesService: ExpensesService,
+    @Inject(LOCALE_ID) private locale: string) {
     this.currentUser = userService.user;
     this.isItemShared = this.checkIfItemShared(this.item);
     this.currencies = currency.currencies;
@@ -86,7 +89,7 @@ export class ExpenseFormComponent implements OnInit, OnChanges {
       'id': [null],
       'date': [this.getCurrentDate(expensesMonthService.month), Validators.required],
       'name': [null, Validators.required],
-      'priceAmount': [null, Validators.required],
+      'priceAmount': [null, [Validators.required, expensesService.numberValidator()]],
       'currencyId': [this.defaultCurrency, Validators.required],
       'categoryName': [null],
       'permittedPersons': [[]],
@@ -187,7 +190,7 @@ export class ExpenseFormComponent implements OnInit, OnChanges {
       id: item.id,
       date: new NgbDate(item.date.getFullYear(), item.date.getMonth() + 1, item.date.getDate()),
       name: item.name,
-      priceAmount: item.originalPrice?.amount ?? item.price.amount,
+      priceAmount: formatNumber(item.originalPrice?.amount ?? item.price.amount, this.locale, '1.0-2'),
       currencyId: item.originalPrice?.currency.id ?? item.price.currency.id,
       categoryName: item.category?.name,
       permittedPersons: this.isItemShared ? [] : item.permittedPersons,
@@ -216,5 +219,16 @@ export class ExpenseFormComponent implements OnInit, OnChanges {
 
     return (item == null && hasFriends) ||
       (item != null && item.createdBy.id === this.currentUser?.id && (item!.permittedPersons.length > 0 || hasFriends))
+  }
+
+  getValue = (): ChangeExpenseParams => {
+    const { date, priceAmount, permittedPersons, ...restParams } = this.form.value;
+
+    return {
+      date: new Date(date.year, date.month - 1, date.day),
+      priceAmount: this.expensesService.normalizeNumberString(priceAmount),
+      permittedPersonsIds: permittedPersons?.map((u: AmbiguousUser) => Number(u.id)),
+      ...restParams
+    }
   }
 }

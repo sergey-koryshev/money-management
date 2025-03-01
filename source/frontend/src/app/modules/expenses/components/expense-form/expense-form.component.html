@@ -1,4 +1,4 @@
-<form [formGroup]="form">
+<form [formGroup]="form" class="has-validation">
     <div class="row">
         <div class="col-6">
             <label for="date">Date:</label>
@@ -32,7 +32,11 @@
       <div class="col-6">
         <label for="price">Price:</label>
         <div class="input-group">
-          <input id="price" class="form-control" formControlName="priceAmount" />
+          <input id="price"
+                 #priceFormControl="ngForm"
+                 class="form-control"
+                 formControlName="priceAmount"
+                 [ngClass]="{'is-invalid': priceFormControl.errors?.['incorrectNumber']}" />
           <select class="form-select input-group-text" formControlName="currencyId">
             <option *ngFor="let currency of currencies" [ngValue]="currency.id">{{ currency.name }}</option>
           </select>

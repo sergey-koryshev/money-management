@@ -1,4 +1,5 @@
 export interface ChangeExpenseParams {
+  id?: number
   date: Date
   name: string
   description?: string
