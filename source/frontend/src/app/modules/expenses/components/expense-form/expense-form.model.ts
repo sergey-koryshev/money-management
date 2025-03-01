@@ -6,7 +6,7 @@ export interface ExpenseForm {
   date: NgbDate
   name: string
   description?: string
-  priceAmount: number
+  priceAmount: string
   currencyId: number
   categoryName?: string
   permittedPersons: AmbiguousUser[]
