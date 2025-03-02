@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  baseApiUri: 'http://localhost:5161'
+  baseApiUri: process.env["BASE_API_URL"] ?? 'http://localhost:5161'
 };

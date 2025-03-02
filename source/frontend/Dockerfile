@@ -1,4 +1,5 @@
 FROM node:16-alpine AS build
+ENV BASE_API_URL="/api"
 WORKDIR /usr/local/app
 COPY . .
 RUN npm ci
