@@ -9,9 +9,7 @@ services:
 
   backend:
     container_name: money-management-backend
-    build:
-      context: ./source/backend
-      dockerfile: Dockerfile
+    build: ./source/backend
     environment:
       - 'ConnectionStrings__Postgres=Server=host.docker.internal;Port=5432;Database=mm-dev;User Id=postgres;Password=DrOid-R2D2'
       - 'ExchangeServerBaseUrl=http://frankfurter:8080'

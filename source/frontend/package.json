@@ -30,12 +30,15 @@
     "zone.js": "~0.11.8"
   },
   "devDependencies": {
+    "@angular-builders/custom-webpack": "^14.1.0",
     "@angular-devkit/build-angular": "^14.1.2",
     "@angular/cli": "^14.1.2",
     "@angular/compiler-cli": "^14.1.2",
     "@mockoon/cli": "^3.0.0",
+    "@types/dotenv-webpack": "^7.0.8",
     "@types/jasmine": "~3.8.0",
-    "@types/node": "^12.11.1",
+    "@types/node": "^12.20.55",
+    "dotenv-webpack": "^8.1.0",
     "flag-icons": "^6.6.4",
     "jasmine-core": "~3.8.0",
     "karma": "~6.3.0",
