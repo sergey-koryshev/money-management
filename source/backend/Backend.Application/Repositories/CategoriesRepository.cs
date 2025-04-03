@@ -21,7 +21,7 @@ public class CategoriesRepository
 
     public List<string> GetUniqueCategoryNames()
     {
-        return this.GetCategoriesQuery().Select(c => c.Name!).Distinct().ToList();
+        return this.GetCategoriesQuery().OrderBy(c => c.Name).Select(c => c.Name!).Distinct().ToList();
     }
 
     public int CreateCategory(Category categoryModel)
