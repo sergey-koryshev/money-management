@@ -11,38 +11,38 @@ public class CategoriesRepositoryTests : TestsBase
 {
     protected override bool ShouldCategoriesBeDeletedInTearDown => true;
 
-    [TestCase(DanielTenant, ExpectedResult = 4)]
-    [TestCase(VeronikaTenant, ExpectedResult = 2)]
-    public int GetUniqueCategoryNames_CategoriesExistForMultipleUsers_ReturnsUniqueCategoriesForSpecificUserOnly(string userTenant)
+    [TestCase(DanielTenant, ExpectedResult = new int[] { 4, 3, 1, 0 })]
+    [TestCase(VeronikaTenant, ExpectedResult = new int[] { 4, 2 })]
+    public int[] GetUniqueCategoryNames_CategoriesExistForMultipleUsers_ReturnsUniqueCategoriesForSpecificUserOnly(string userTenant)
     {
         this.DbContext.Attach(this.Daniel);
         this.DbContext.Attach(this.Veronika);
 
-        var categoryName = Guid.NewGuid().ToString();
+        var categoryName = $"CategoryA_{Guid.NewGuid()}";
 
         var categories = new List<Entities.Category>
         {
             new Entities.Category
             {
-                Name = Guid.NewGuid().ToString(),
+                Name = $"CategoryZ_{Guid.NewGuid()}",
                 CreatedById = this.Daniel.Id,
                 PermittedPersons = new List<Entities.Person> { this.Daniel }
             },
             new Entities.Category
             {
-                Name = Guid.NewGuid().ToString(),
+                Name = $"CategoryF_{Guid.NewGuid()}",
                 CreatedById = this.Daniel.Id,
                 PermittedPersons = new List<Entities.Person> { this.Daniel }
             },
             new Entities.Category
             {
-                Name = Guid.NewGuid().ToString(),
+                Name = $"CategoryQ_{Guid.NewGuid()}",
                 CreatedById = this.Veronika.Id,
                 PermittedPersons = new List<Entities.Person> { this.Veronika }
             },
             new Entities.Category
             {
-                Name = Guid.NewGuid().ToString(),
+                Name = $"CategoryC_{Guid.NewGuid()}",
                 CreatedById = this.Daniel.Id,
                 PermittedPersons = new List<Entities.Person> { this.Daniel }
             },
@@ -67,9 +67,10 @@ public class CategoriesRepositoryTests : TestsBase
 
         var user = this.DbContext.Persons.FirstOrDefault(p => p.Tenant.ToString() == userTenant);
 
-        var result = new CategoriesRepository(this.DbContext, user!).GetUniqueCategoryNames();
+        var result = new CategoriesRepository(this.DbContext, user!).GetUniqueCategoryNames().ToArray();
 
-        return result.Count();
+        var originCategoriesName = categories.Select(c => c.Name!).ToList();
+        return result.Select((c) => originCategoriesName.IndexOf(c)).ToArray();
     }
 
     [Test]
