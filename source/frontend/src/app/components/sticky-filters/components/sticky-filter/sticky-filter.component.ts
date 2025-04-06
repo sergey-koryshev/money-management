@@ -1,8 +1,9 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { StickyFilterDefinition, StickyFilterItem, StickyFilterType } from "@components/sticky-filters/sticky-filters.model";
 import { NgSelectComponent } from "@ng-select/ng-select";
-import { tap } from "rxjs/operators";
+import { catchError, switchMap, tap } from "rxjs/operators";
 import { stickyFilterItemsComparer } from "@app/helpers/comparers.helper";
+import { Observable, of, Subject } from 'rxjs';
 
 @Component({
   selector: 'app-sticky-filter',
@@ -24,8 +25,41 @@ export class StickyFilterComponent implements OnInit {
 
   stickyFilterType = StickyFilterType;
   items: StickyFilterItem<any>[];
-  visibleDropdownItems: StickyFilterItem<any>[];
   dropdownLoading = false;
+  visibleDropdownItems$: Observable<StickyFilterItem<any>[] | never[]> = of([]);
+  searchEntry$ = new Subject<string>();
+  visibleItemsChanged$ = new Subject<void>();
+
+  ngOnInit(): void {
+    if (this.definition.type === StickyFilterType.list) {
+      this.items = this.definition.items;
+    }
+
+    if (this.definition.type === StickyFilterType.dropdown) {
+      if (this.definition.source != null) {
+        this.visibleDropdownItems$ = this.visibleItemsChanged$.pipe(
+          switchMap(() => of(this.getVisibleDropdownItems(this.items))));
+
+        this.definition.source.pipe(
+          (tap(() => this.dropdownLoading = true))
+        ).subscribe({
+          next: (items) => {
+            this.items = items;
+            this.visibleItemsChanged$.next();
+          }
+        }).add(() => this.dropdownLoading = false);
+      } else if (this.definition.searchFunc != null) {
+        const searchFunc = this.definition.searchFunc;
+        this.visibleDropdownItems$ = this.searchEntry$.pipe(
+          tap(() => this.dropdownLoading = true),
+          switchMap((entry) => searchFunc(entry).pipe(
+            catchError(() => of([])),
+            tap(() => this.dropdownLoading = false)
+          )),
+          switchMap((foundItems) => of(this.getVisibleDropdownItems(foundItems))));
+      }
+    }
+  }
 
   onListItemClicked(item: StickyFilterItem<any>) {
     if (this.definition.multiselect) {
@@ -75,7 +109,7 @@ export class StickyFilterComponent implements OnInit {
       }
 
       element?.writeValue([]);
-      this.adjustVisibleDropdownItems();
+      this.visibleItemsChanged$.next();
       this.filterChanged.emit(this.selectedValue);
     }
   }
@@ -89,36 +123,15 @@ export class StickyFilterComponent implements OnInit {
       this.selectedValue = [this.definition.defaultValue];
     }
 
-    this.adjustVisibleDropdownItems();
+    this.visibleItemsChanged$.next();
     this.filterChanged.emit(this.selectedValue);
-  }
-
-  ngOnInit(): void {
-    if (this.definition.type === StickyFilterType.list) {
-      this.items = this.definition.items;
-    }
-
-    if (this.definition.type === StickyFilterType.dropdown) {
-      this.definition.source.pipe(
-        (tap(() => this.dropdownLoading = true))
-      ).subscribe({
-        next: (items) => {
-          this.items = items;
-          this.adjustVisibleDropdownItems();
-        }
-      }).add(() => this.dropdownLoading = false)
-    }
   }
 
   isItemActive(item: StickyFilterItem<any>) {
     return this.selectedValue.some((v) => stickyFilterItemsComparer(v, item));
   }
 
-  /**
-   * Adjusts visible items in dropdown to hide selected ones
-   * @private
-   */
-  private adjustVisibleDropdownItems() {
-    this.visibleDropdownItems = this.items.filter((i) => !this.selectedValue.some((x) => stickyFilterItemsComparer(x, i)))
+  private getVisibleDropdownItems(itemsToFilter: StickyFilterItem<any>[]) {
+    return itemsToFilter.filter((i) => !this.selectedValue.some((x) => stickyFilterItemsComparer(x, i)))
   }
 }
