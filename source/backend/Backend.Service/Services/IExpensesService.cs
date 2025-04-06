@@ -12,5 +12,5 @@ public interface IExpensesService
 
     public void DeleteExpense(int expenseId);
 
-    public List<ExtendedExpenseNameDto> SearchExpenseNames(string term);
+    public List<ExtendedExpenseNameDto> SearchExpenseNames(string term, bool ignoreCategory);
 }

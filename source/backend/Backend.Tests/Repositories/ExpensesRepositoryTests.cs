@@ -1817,12 +1817,13 @@ public class ExpensesRepositoryTests : TestsBase
         existingExpense.Should().BeNull();
     }
 
-    [TestCase("W", new [] { 1 })]
-    [TestCase("Wlt", new [] { 0, 1, 2 })]
-    [TestCase("Wolt", new [] { 0, 1, 2 })]
-    [TestCase("Konzm", new [] { 3, 4 })]
-    [TestCase("Test", new int[] { 0, 2, 4 })]
-    public void FindExpenseNames_TermToSearch_CorrectedExpensesListReturned(string term, int[] expensesIndexes)
+    [TestCase("W", new [] { 1, 5 }, false)]
+    [TestCase("Wlt", new [] { 0, 1, 2, 5 }, false)]
+    [TestCase("Wolt", new [] { 0, 1, 2, 5 }, false)]
+    [TestCase("Wolt", new [] { 0, 1 }, true)]
+    [TestCase("Konzm", new [] { 3, 4 }, false)]
+    [TestCase("Test", new int[] { 0, 2, 4 }, false)]
+    public void FindExpenseNames_TermToSearch_CorrectedExpensesListReturned(string term, int[] expensesIndexes, bool ignoreCategory)
     {
         this.DbContext.Attach(this.Daniel);
 
@@ -1875,7 +1876,17 @@ public class ExpensesRepositoryTests : TestsBase
                 CurrencyId = this.Currencies[1].Id,
                 CreatedById = this.Daniel.Id,
                 PermittedPersons = new List<Entities.Person> { this.Daniel }
-            }
+            },
+            new Entities.Expense
+            {
+                Date = new DateTime(2024, 06, 13).ToUniversalTime(),
+                Name = "Wolt",
+                CategoryId = this.Categories[0].Id,
+                PriceAmount = 1108,
+                CurrencyId = this.Currencies[0].Id,
+                CreatedById = this.Daniel.Id,
+                PermittedPersons = new List<Entities.Person> { this.Daniel }
+            },
         };
 
         this.DbContext.AddRange(expenses);
@@ -1883,12 +1894,12 @@ public class ExpensesRepositoryTests : TestsBase
 
         this.ClearChangeTracker();
 
-        var result = new ExpensesRepository(DbContext, this.Daniel).FindExpenseNames(term);
+        var result = new ExpensesRepository(DbContext, this.Daniel).FindExpenseNames(term, ignoreCategory);
 
         var expected = expensesIndexes.Select(i => new ExtendedExpenseName
         {
             Name = expenses[i].Name,
-            CategoryName = expenses[i].Category?.Name
+            CategoryName = ignoreCategory ? null : expenses[i].Category?.Name
         });
 
         result.Should().BeEquivalentTo(expected);

@@ -71,11 +71,11 @@ public class ExpensesService : ServiseBase, IExpensesService
         });
     }
 
-    public List<ExtendedExpenseNameDto> SearchExpenseNames(string term)
+    public List<ExtendedExpenseNameDto> SearchExpenseNames(string term, bool ignoreCategory)
     {
         return this.ExecuteActionInTransaction((dbContext) =>
         {
-            var result = new ExpensesRepository(dbContext, this.Identity!, this.ExchangeServerClient).FindExpenseNames(term);
+            var result = new ExpensesRepository(dbContext, this.Identity!, this.ExchangeServerClient).FindExpenseNames(term, ignoreCategory);
             return result.Select(r => this.Mapper.Map<ExtendedExpenseNameDto>(r)).ToList();
         });
     }

@@ -91,11 +91,11 @@ public class ExpensesRepository
         this.dbContext.SaveChanges();
     }
 
-    public List<ExtendedExpenseName> FindExpenseNames(string term)
+    public List<ExtendedExpenseName> FindExpenseNames(string term, bool ignoreCategory)
     {
         return this.GetExpensesQuery()
             .Where(e => EF.Functions.TrigramsSimilarity(EF.Functions.Unaccent(e.Name), EF.Functions.Unaccent(term)) > minTrigramsSimilarity)
-            .Select(e => new { e.Name, CategoryName = e.CategoryId == null ? null : e.Category!.Name, Similarity = EF.Functions.TrigramsSimilarity(EF.Functions.Unaccent(e.Name), EF.Functions.Unaccent(term)) })
+            .Select(e => new { e.Name, CategoryName = ignoreCategory || e.CategoryId == null ? null : e.Category!.Name, Similarity = EF.Functions.TrigramsSimilarity(EF.Functions.Unaccent(e.Name), EF.Functions.Unaccent(term)) })
             .Distinct()
             .OrderByDescending(o => o.Similarity)
             .Take(maxNamesSearchResults)
