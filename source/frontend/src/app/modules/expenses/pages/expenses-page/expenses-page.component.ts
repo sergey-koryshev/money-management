@@ -18,6 +18,7 @@ import { BehaviorSubject, combineLatest, defer, NEVER, of } from 'rxjs';
 import { CategoryHttpClient } from '@app/http-clients/category-http-client.service';
 import { StoringExpensesStickyFilters } from './expenses-page.model';
 import { emptyFilter, emptyCategoryFilter, filtersStorageName } from "@app/constants";
+import { ExtendedExpenseName } from '@app/http-clients/expenses-http-client.model';
 
 @Component({
   selector: 'app-expenses-page',
@@ -60,16 +61,25 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
       source: defer(() => {
         return this.categoryHttpClient.getUniqueCategoryNames()
           .pipe(
-            map((v) => [emptyCategoryFilter].concat(v.map((name) => ({
-              name,
-              value: name
-            })))),
+            map(this.convertStringsToStickyFilterItem.bind(this)),
             catchError(() => of([]))
           );
       }),
       defaultValue: emptyFilter,
       multiselect: true,
-      allItem: emptyFilter
+      allItem: emptyFilter,
+      placeholder: 'Select category'
+    },
+    [ExpensesStickyFilterType.names]: {
+      type: StickyFilterType.dropdown,
+      name: ExpensesStickyFilterType.names,
+      displayName: ExpensesStickyFilterType.get(ExpensesStickyFilterType.names).name,
+      searchFunc: (entry) => this.expensesHttpClient.getExistingNames(entry, true)
+        .pipe(map(this.convertExtendedExpensesToStickyFilterItem.bind(this))),
+      defaultValue: emptyFilter,
+      multiselect: true,
+      allItem: emptyFilter,
+      placeholder: 'Search name...'
     }
   };
   stickyFilters$ = new BehaviorSubject<StoringExpensesStickyFilters>({});
@@ -168,6 +178,20 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
       this.totalAmount = undefined;
       this.isExchangeFaulted = false;
     }
+  }
+
+  private convertStringsToStickyFilterItem(values: string[]) {
+    return [emptyCategoryFilter].concat(values.map((name) => ({
+      name,
+      value: name
+    })));
+  }
+
+  private convertExtendedExpensesToStickyFilterItem(values: ExtendedExpenseName[]) {
+    return values.map((v) => ({
+      name: v.name,
+      value: v.name
+    }));
   }
 
   onFiltersChanged(filters: StoringExpensesStickyFilters) {

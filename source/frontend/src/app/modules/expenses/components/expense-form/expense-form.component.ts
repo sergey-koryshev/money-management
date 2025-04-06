@@ -80,7 +80,7 @@ export class ExpenseFormComponent implements OnInit, OnChanges {
 
     this.names$ = this.searchEntry$.pipe(
       tap(() => this.loading = true),
-      switchMap(searchEntry => this.expensesHttpClient.getExistingNames(searchEntry).pipe(
+      switchMap(searchEntry => this.expensesHttpClient.getExistingNames(searchEntry, false).pipe(
         catchError(() => of([])),
         tap(() => this.loading = false)
     )));

@@ -48,9 +48,9 @@ public class ExpensesController
 
     [HttpGet]
     [Route("search/expenseNames")]
-    public IActionResult SearchExpenseNames(string term)
+    public IActionResult SearchExpenseNames(string term, bool ignoreCategory)
     {
-        var result = this.expensesService.SearchExpenseNames(term);
+        var result = this.expensesService.SearchExpenseNames(term, ignoreCategory);
         return new AppActionResult(result);
     }
 

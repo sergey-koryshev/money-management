@@ -22,7 +22,9 @@ export interface ListStickyFilter<T> extends StickyFilterDefinitionBase<T> {
 
 export interface DropdownStickyFilter<T> extends StickyFilterDefinitionBase<T> {
   type: StickyFilterType.dropdown
-  source: Observable<StickyFilterItem<T>[]>
+  source?: Observable<StickyFilterItem<T>[]>
+  searchFunc?: (entry: string) => Observable<StickyFilterItem<T>[]>
+  placeholder?: string
 }
 
 export type StickyFilterDefinition<T> = ListStickyFilter<T> | DropdownStickyFilter<T>

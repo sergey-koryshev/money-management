@@ -19,7 +19,7 @@
     <ng-select *ngIf="definition.type === stickyFilterType.dropdown"
                #dropdownElement
                class="mx-2"
-               [items]="visibleDropdownItems"
+               [items]="visibleDropdownItems$ | async"
                [hideSelected]="true"
                [addTag]="false"
                [minTermLength]="1"
@@ -29,7 +29,8 @@
                (change)="onDropdownChanged($event, dropdownElement)"
                [loading]="dropdownLoading"
                [readonly]="!definition.multiselect && selectedValue.length > 0 && (!definition.allItem || (definition.allItem.value !== selectedValue[0].value || definition.allItem.name !== selectedValue[0].name))"
-               placeholder="Select category">
+               [placeholder]="definition.placeholder ?? ''"
+               [typeahead]="searchEntry$">
     </ng-select>
     <div class="list-group all-types-overlay"
          [ngClass]="{
