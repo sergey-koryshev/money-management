@@ -39,6 +39,13 @@ export class ExpensesService {
         (categoriesFilter.some((i) => i.name === expense.category.name)));
     }
 
+    const namesFilter = stickyFilters[ExpensesStickyFilterType.names]
+    if (namesFilter != null) {
+      result = result && (namesFilter.some((i) => stickyFilterItemsComparer(i, emptyFilter)) ||
+        (expense.category == null && namesFilter.some((i) => stickyFilterItemsComparer(i, emptyCategoryFilter))) ||
+        (namesFilter.some((i) => i.name === expense.category.name)));
+    }
+
     return result;
   }
 

@@ -5,13 +5,15 @@ export { ExpensesStickyFilterType }
 enum ExpensesStickyFilterType {
   createdBy = 'createdBy',
   shared = 'shared',
-  categories = 'categories'
+  categories = 'categories',
+  names = 'names'
 }
 
 const enumNames: EnumNames<typeof ExpensesStickyFilterType> = {
   createdBy: 'Created By',
   shared: 'Shared',
-  categories: 'Categories'
+  categories: 'Categories',
+  names: 'Names'
 }
 
 InjectEnumNames(ExpensesStickyFilterType, enumNames);

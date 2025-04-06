@@ -42,6 +42,13 @@ export class ExpensesHttpClientService {
           params = params.append('categoryName', c.value ?? "");
         });
       }
+
+      const namesFilter = filters[ExpensesStickyFilterType.names];
+      if (namesFilter != null && !namesFilter.some((c) => stickyFilterItemsComparer(c, emptyFilter))) {
+        namesFilter.forEach((c) => {
+          params = params.append('name', c.value ?? "");
+        });
+      }
     }
 
     return this.baseHttpClient.get<Expense[]>('expenses', params);
@@ -51,13 +58,14 @@ export class ExpensesHttpClientService {
     return this.baseHttpClient.post<Expense>('expenses', params);
   }
 
-  getExistingNames(term: string) {
+  getExistingNames(term: string, ignoreCategory: boolean) {
     if (term == null || term.length === 0) {
       return of([]);
     }
 
     return this.baseHttpClient.get<ExtendedExpenseName[]>('expenses/search/expenseNames', {
-      term
+      term,
+      ignoreCategory
     });
   }
 
