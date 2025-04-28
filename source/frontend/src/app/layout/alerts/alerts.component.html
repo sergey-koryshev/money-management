@@ -1,0 +1,5 @@
+<div *ngIf="alert">
+  <ngb-alert class="xs" [dismissible]="(alert.dismissible ?? true)" type="warning" (closed)="dismissed.emit()">
+		<span [innerHTML]="alert.html"></span>
+	</ngb-alert>
+</div>
