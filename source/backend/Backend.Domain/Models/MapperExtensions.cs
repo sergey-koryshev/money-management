@@ -90,4 +90,17 @@ public static class MapperExtensions
             PermittedPersons = entity.PermittedPersons.Select(p => p.ToModel()).ToList()
         };
     }
+
+    public static Announcement ToModel(this Entities.Announcement entity)
+    {
+        return new Announcement
+        {
+            Id = entity.Id,
+            Title = entity.Title,
+            HTML = entity.HTML,
+            Type = (AnnouncementType)entity.TypeId,
+            Dismissible = entity.Dismissible,
+            TimeStamp = entity.TimeStamp
+        };
+    }
 }

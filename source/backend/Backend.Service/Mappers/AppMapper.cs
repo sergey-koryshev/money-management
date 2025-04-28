@@ -28,6 +28,7 @@ public class AppMapper : Profile
         CreateMap<LookupItem, LookupItemDto>();
         CreateMap<ExtendedExpenseName, ExtendedExpenseNameDto>();
         CreateMap<Failure, FailureDto>();
+        CreateMap<Announcement, AnnouncementDto>();
 
         CreateMap<ExpensesFilterDto, ExpensesFilter>();
         CreateMap<LookupItemDto, LookupItem>();
