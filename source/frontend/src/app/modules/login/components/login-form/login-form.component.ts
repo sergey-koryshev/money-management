@@ -36,6 +36,6 @@ export class LoginFormComponent implements OnInit {
         this.signedIn.emit();
         this.router.navigate(['expenses']);
       },
-      error: (err) => this.error = err.error.data ?? err.error.message ?? err.message})
+      error: (err) => this.error = err?.error?.data ?? err?.error?.message ?? err?.message ?? err})
   }
 }
