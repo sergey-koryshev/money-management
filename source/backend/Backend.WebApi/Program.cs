@@ -77,6 +77,7 @@ builder.Services.AddScoped<ICategoriesService, CategoriesService>();
 builder.Services.AddScoped<ICurrenciesService, CurrenciesService>();
 builder.Services.AddScoped<IConnectionsService, ConnectionsService>();
 builder.Services.AddScoped<IExpensesService, ExpensesService>();
+builder.Services.AddScoped<IAnnouncementsService, AnnouncementsService>();
 
 var app = builder.Build();
 
