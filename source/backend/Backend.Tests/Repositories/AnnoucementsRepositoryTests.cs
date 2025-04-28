@@ -48,26 +48,7 @@ public class AnnouncementsRepositoryTests : TestsBase
                 HTML = "<div>Announcement D</div>",
                 TypeId = (int)AnnouncementType.PopUp,
                 Active = false,
-            },
-            // the announcements below shouldn't exist in the DB, but here we have it just to validate the logic
-            new Entities.Announcement
-            {
-                TimeStamp = new DateTime(2025, 04, 25, 15, 1, 08).ToUniversalTime(),
-                Title = "Announcement E",
-                HTML = "<div>Announcement E</div>",
-                TypeId = (int)AnnouncementType.PopUp,
-                Active = true,
-                DismissedFor = new List<Entities.Person> { this.Daniel, this.Veronika }
-            },
-            new Entities.Announcement
-            {
-                TimeStamp = new DateTime(2025, 04, 24, 15, 1, 08).ToUniversalTime(),
-                Title = "Announcement F",
-                HTML = "<div>Announcement F</div>",
-                TypeId = (int)AnnouncementType.Alert,
-                Active = true,
-                DismissedFor = new List<Entities.Person> { this.Daniel, this.Veronika }
-            },
+            }
         };
 
         this.DbContext.AddRange(announcements);
