@@ -23,9 +23,7 @@ export class AlertsComponent {
       skipWhile(() => this.alert == null),
       switchMap(() => announcementsHttpClient.dismiss(this.alert!.id)))
     .subscribe({
-      next: () => {
-        this.alert = undefined;
-        console.log(JSON.stringify(this.alert)) }
+      next: this.alert = undefined
     });
   }
 }

@@ -161,7 +161,7 @@ public class AnnouncementsRepositoryTests : TestsBase
 
     [TestCase(AnnouncementType.Alert)]
     [TestCase(AnnouncementType.PopUp)]
-    public void Dismiss_DismissibleNonAlert_AnnouncementDismissed(AnnouncementType type)
+    public void Dismiss_DismissibleAnnouncement_AnnouncementDismissed(AnnouncementType type)
     {
         var announcement = new Entities.Announcement
         {

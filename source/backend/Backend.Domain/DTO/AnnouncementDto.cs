@@ -4,7 +4,6 @@ using Backend.Domain.Models;
 
 public class AnnouncementDto
 {
-
     public int Id { get; set; }
 
     public string? Title { get; set; }

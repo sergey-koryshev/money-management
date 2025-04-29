@@ -4,8 +4,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 
 @Component({
   selector: 'notices-dialog',
-  templateUrl: './notice-dialog.component.html',
-  styleUrls: ['./notice-dialog.component.scss']
+  templateUrl: './notice-dialog.component.html'
 })
 export class NoticesDialogComponent {
   @Input()

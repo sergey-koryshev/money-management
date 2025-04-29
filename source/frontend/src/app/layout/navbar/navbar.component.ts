@@ -1,4 +1,3 @@
-import { Announcement } from '@models/announcement.model';
 import { CurrencyService } from '@services/currency.service';
 import { Component } from '@angular/core';
 import { Currency } from '@models/currency.model';
@@ -28,7 +27,6 @@ export class NavbarComponent {
   emptyMainCurrency = emptyMainCurrency;
   searchForm: FormGroup;
   pendingConnectionsCount = 0;
-  alerts: Announcement[] = []
 
   get defaultUser(): User {
     return {
@@ -65,7 +63,7 @@ export class NavbarComponent {
         modalRef.componentInstance.announcement = popup;
         modalRef.hidden.pipe(switchMap(() => announcementsHttpClient.dismiss(popup.id))).subscribe();
       }
-    })
+    });
    }
 
   setMainCurrency(currency: Currency) {
