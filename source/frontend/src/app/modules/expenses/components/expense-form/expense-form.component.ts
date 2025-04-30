@@ -64,8 +64,7 @@ export class ExpenseFormComponent implements OnInit, OnChanges {
     private expensesHttpClient: ExpensesHttpClientService,
     private userService: UserService,
     categoryHttpClient: CategoryHttpClient,
-    private expensesService: ExpensesService,
-    @Inject(LOCALE_ID) private locale: string) {
+    private expensesService: ExpensesService) {
     this.currentUser = userService.user;
     this.isItemShared = this.checkIfItemShared(this.item);
     this.currencies = currency.currencies;
@@ -190,7 +189,7 @@ export class ExpenseFormComponent implements OnInit, OnChanges {
       id: item.id,
       date: new NgbDate(item.date.getFullYear(), item.date.getMonth() + 1, item.date.getDate()),
       name: item.name,
-      priceAmount: formatNumber(item.originalPrice?.amount ?? item.price.amount, this.locale, '1.0-2'),
+      priceAmount: item.originalPrice?.amount ?? item.price.amount,
       currencyId: item.originalPrice?.currency.id ?? item.price.currency.id,
       categoryName: item.category?.name,
       permittedPersons: this.isItemShared ? [] : item.permittedPersons,
