@@ -1,0 +1,11 @@
+ngb-alert {
+  margin: 0;
+  padding: 0.6rem;
+  font-size: small;
+  border-radius: 0;
+
+  & ::ng-deep button {
+    width: 0;
+    height: 0;
+  }
+}

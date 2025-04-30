@@ -7,11 +7,11 @@ import { AppRoutingModule } from '@app/app-routing.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { LoginModule } from '@app/modules/login/login.module';
 import { NoticesDialogComponent } from './notice-dialog/notice-dialog.component';
-import { AlertsComponent } from './alerts/alerts.component';
+import { AlertComponent } from './alert/alert.component';
 
 @NgModule({
-  declarations: [NavbarComponent, NoticesDialogComponent, AlertsComponent],
-  exports: [NavbarComponent, AlertsComponent],
+  declarations: [NavbarComponent, NoticesDialogComponent, AlertComponent],
+  exports: [NavbarComponent, AlertComponent],
   imports: [
     CommonModule, ReactiveFormsModule, AppRoutingModule, ComponentsModule, NgbModule, LoginModule
   ]
