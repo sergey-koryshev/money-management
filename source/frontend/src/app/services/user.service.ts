@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
-import { CategoryHttpClient } from '@app/http-clients/category-http-client.service';
+import { AnnouncementsHttpClient } from '@app/http-clients/announcements-http-client.service';
 import { UserConnectionHttpClient } from '@app/http-clients/user-connections-http-client.service';
+import { Announcement } from '@app/models/announcement.model';
 import { UserConnection } from '@app/models/user-connection.model';
-import { User } from '@app/models/user.model';
-import { BehaviorSubject, filter, iif, map, mergeMap, of, switchMap, tap, zip } from 'rxjs';
+import { User } from '@models/user.model';
+import { BehaviorSubject, forkJoin, map, of, skipWhile, switchMap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -13,6 +14,7 @@ export class UserService {
   storageName = "user-profile";
   user$ = new BehaviorSubject<User | null>(null);
   connections$ = new BehaviorSubject<UserConnection[]>([]);
+  announcements$ = new BehaviorSubject<Announcement[] | null>(null)
 
   get isLoggedIn() {
     return this.user$.value !== null;
@@ -22,12 +24,12 @@ export class UserService {
     return this.user$.value;
   }
 
-  constructor(private userConnectionsHttpClient: UserConnectionHttpClient) {
+  constructor(private userConnectionsHttpClient: UserConnectionHttpClient, private announcementsHttpClient: AnnouncementsHttpClient) {
     this.user$
-      .pipe(switchMap((user) => user != null ? this.userConnectionsHttpClient.getUserConnections() : of([])))
-      .subscribe((connections) => {
-          this.connections$.next(connections);
-      });
+      .pipe(
+        skipWhile((user) => user == null),
+        switchMap(this.loadUserDetails.bind(this)))
+      .subscribe();
   }
 
   initialize() {
@@ -58,8 +60,24 @@ export class UserService {
   public updateConnections() {
     if (this.user == null) {
       this.connections$.next([]);
+      return of()
     }
 
     return this.userConnectionsHttpClient.getUserConnections().pipe(map((connections) => this.connections$.next(connections)));
+  }
+
+  public fetchNotices() {
+    if (this.user == null) {
+      this.announcements$.next([]);
+      return of()
+    }
+
+    return this.announcementsHttpClient.get().pipe(map((announcements) => this.announcements$.next(announcements)));
+  }
+
+  private loadUserDetails() {
+    const updateConnections$ = this.updateConnections();
+    const updateNotice$ = this.fetchNotices();
+    return forkJoin([updateConnections$, updateNotice$]);
   }
 }

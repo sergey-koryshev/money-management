@@ -27,4 +27,6 @@ public class Person
     public virtual ICollection<Expense> CreatedExpenses { get; set; } = new List<Expense>();
 
     public virtual ICollection<Expense> Expenses { get; set; } = new List<Expense>();
+
+    public virtual ICollection<Announcement> DismissedAnnouncements { get; set; } = new List<Announcement>();
 }

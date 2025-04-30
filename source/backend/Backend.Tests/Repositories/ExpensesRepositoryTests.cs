@@ -1615,7 +1615,7 @@ public class ExpensesRepositoryTests : TestsBase
     [TestCase(ChuckTenant, DanielTenant, 7)]
     [TestCase(ChuckTenant, VeronikaTenant, 7)]
     [TestCase(ChuckTenant, ChuckTenant, 7)]
-    public void UpdateExpense_CategoryWithTeSameName_ExpenseUpdatedWithRightCategory(string creatorTenant, string changePersonTenant, int resolvedCategoryIndex)
+    public void UpdateExpense_CategoryWithTheSameName_ExpenseUpdatedWithRightCategory(string creatorTenant, string changePersonTenant, int resolvedCategoryIndex)
     {
         this.DbContext.Attach(this.Daniel);
         this.DbContext.Attach(this.Veronika);

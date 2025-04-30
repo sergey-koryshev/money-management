@@ -6,10 +6,12 @@ import { NavbarComponent } from './navbar/navbar.component';
 import { AppRoutingModule } from '@app/app-routing.module';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { LoginModule } from '@app/modules/login/login.module';
+import { NoticesDialogComponent } from './notice-dialog/notice-dialog.component';
+import { AlertComponent } from './alert/alert.component';
 
 @NgModule({
-  declarations: [NavbarComponent],
-  exports: [NavbarComponent],
+  declarations: [NavbarComponent, NoticesDialogComponent, AlertComponent],
+  exports: [NavbarComponent, AlertComponent],
   imports: [
     CommonModule, ReactiveFormsModule, AppRoutingModule, ComponentsModule, NgbModule, LoginModule
   ]

@@ -27,6 +27,8 @@ public abstract class TestsBase
 
     private int lastExpenseId;
 
+    private int lastAnnouncementId;
+
     protected AppDbContext DbContext { get; }
 
     protected Person Daniel { get; }
@@ -58,6 +60,10 @@ public abstract class TestsBase
     protected virtual bool ShouldExpensesBeDeletedInTearDown => false;
 
     protected virtual bool ShouldExpensesBeDeletedInOneTimeTearDown => false;
+
+    protected virtual bool ShouldAnnouncementsBeDeletedInTearDown => false;
+
+    protected virtual bool ShouldAnnouncementsBeDeletedInOneTimeTearDown => false;
 
     protected TestsBase()
     {
@@ -125,6 +131,11 @@ public abstract class TestsBase
             this.lastExpenseId = this.DbContext.Expenses.Select(e => e.Id).OrderByDescending(e => e).FirstOrDefault();
         }
 
+        if (this.ShouldAnnouncementsBeDeletedInTearDown || this.ShouldAnnouncementsBeDeletedInOneTimeTearDown)
+        {
+            this.lastAnnouncementId = this.DbContext.Announcements.Select(e => e.Id).OrderByDescending(e => e).FirstOrDefault();
+        }
+
         this.DbContext.Persons.Add(this.Daniel);
         this.DbContext.Persons.Add(this.Veronika);
         this.DbContext.Persons.Add(this.Chuck);
@@ -180,6 +191,14 @@ public abstract class TestsBase
             foreach (var entity in this.DbContext.Expenses.Where(c => c.Id > this.lastExpenseId))
             {
                 this.DbContext.Expenses.Remove(entity);
+            }
+        }
+
+        if (this.ShouldAnnouncementsBeDeletedInOneTimeTearDown)
+        {
+            foreach (var entity in this.DbContext.Announcements.Where(c => c.Id > this.lastAnnouncementId))
+            {
+                this.DbContext.Announcements.Remove(entity);
             }
         }
 
@@ -245,6 +264,14 @@ public abstract class TestsBase
             }
         }
 
+        if (this.ShouldAnnouncementsBeDeletedInTearDown)
+        {
+            foreach (var entity in this.DbContext.Announcements.Where(c => c.Id > this.lastAnnouncementId))
+            {
+                this.DbContext.Announcements.Remove(entity);
+            }
+        }
+
         this.DbContext.SaveChanges();
     }
 
@@ -256,7 +283,15 @@ public abstract class TestsBase
         this.ClearChangeTracker();
     }
 
-    protected void ClearChangeTracker() => this.DbContext?.ChangeTracker.Clear();
+    protected void ClearChangeTracker()
+    {
+        this.DbContext?.ChangeTracker.Clear();
+
+        // we need to keep users attached to DB context to have actual state of navigation properties
+        this.DbContext?.Attach(this.Daniel);
+        this.DbContext?.Attach(this.Veronika);
+        this.DbContext?.Attach(this.Chuck);
+    }
 
     protected AppDbContext GetDbContext() => new AppDbContext(this.dbContextOptionsBuilder.Options);
 }

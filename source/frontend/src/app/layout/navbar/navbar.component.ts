@@ -8,6 +8,11 @@ import { Router } from '@angular/router';
 import { UserService } from '@app/services/user.service';
 import { LoginHttpClient } from '@app/http-clients/login-http-client.service';
 import { UserConnectionStatus } from '@app/models/enums/user-connection-status.enum';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NoticesDialogComponent } from '../notice-dialog/notice-dialog.component';
+import { AnnouncementType } from '@app/models/enums/announcement-type.enum';
+import { AnnouncementsHttpClient } from '@app/http-clients/announcements-http-client.service';
+import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-navbar',
@@ -35,7 +40,9 @@ export class NavbarComponent {
     private router: Router,
     fb: FormBuilder,
     private userService: UserService,
-    private loginHttpClient: LoginHttpClient) {
+    private loginHttpClient: LoginHttpClient,
+    modalService: NgbModal,
+    announcementsHttpClient: AnnouncementsHttpClient) {
     this.currencyService.currencies$.subscribe((currencies) => this.currencies = currencies);
     this.currencyService.mainCurrency$.subscribe((currency) => this.mainCurrency = currency)
     this.userService.user$
@@ -48,6 +55,14 @@ export class NavbarComponent {
       });
     this.searchForm = fb.group({
       text: ['', Validators.required]
+    });
+    this.userService.announcements$.subscribe((announcements) => {
+      const popup = announcements?.find((a) => a.type === AnnouncementType.PopUp);
+      if (popup != null) {
+        const modalRef = modalService.open(NoticesDialogComponent);
+        modalRef.componentInstance.announcement = popup;
+        modalRef.hidden.pipe(switchMap(() => announcementsHttpClient.dismiss(popup.id))).subscribe();
+      }
     });
    }
 
