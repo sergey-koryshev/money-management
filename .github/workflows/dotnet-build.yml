@@ -111,10 +111,10 @@ jobs:
         if: ${{ always() && inputs.test-project-path != '' }}
         run: docker stop $(docker ps -qf "name=${{ inputs.test-db-container-name }}")
       - name: Building Migrations Bundle
-        if: ${{ inputs.build-migrations-bundle == 'true' }}
+        if: ${{ inputs.build-migrations-bundle == true }}
         run: dotnet ef migrations bundle --project ${{ inputs.migrations-project }} --startup-project ${{ inputs.startup-project }} --verbose --self-contained
       - name: Publish Migrations Bundle
-        if: ${{ success() && inputs.build-migrations-bundle == 'true' }}
+        if: ${{ success() && inputs.build-migrations-bundle == true }}
         uses: actions/upload-artifact@v4
         with:
           name: 'efbundle'
