@@ -9,11 +9,14 @@ jobs:
   release-workflow:
     if: ${{ startsWith(github.ref, 'refs/heads/release/') }}
     name: Kick off Release Workflow for Branch ${{ github.ref }}
-    uses: actions/github-script@v7
-    with:
-      script: |
-        github.rest.repos.createDispatchEvent({
-          owner: context.repo.owner,
-          repo: context.repo.repo,
-          event_type: 'release_branch_created'
-        })
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        name: Sending event 'release_branch_created'
+        with:
+          script: |
+            github.rest.repos.createDispatchEvent({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              event_type: 'release_branch_created'
+            })
