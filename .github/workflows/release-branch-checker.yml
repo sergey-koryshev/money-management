@@ -1,0 +1,16 @@
+name: Release Branch Checker
+
+run-name: Check Branch ${{ github.ref }}
+
+on:
+  create:
+
+jobs:
+  release-workflow:
+    if: ${{ startsWith(github.ref, 'refs/heads/release/') }}
+    permissions:
+      contents: write
+    name: Kick off Release Workflow for Branch ${{ github.ref }}
+    uses: peter-evans/repository-dispatch@v3
+    with:
+      event-type: release_branch_created
