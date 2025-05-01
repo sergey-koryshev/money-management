@@ -120,5 +120,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: 'efbundles'
-          path: '${{ inputs.root-path }}\efbundle*'
+          path: '${{ inputs.root-path }}/efbundle-*'
 
