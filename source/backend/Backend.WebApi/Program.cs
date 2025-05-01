@@ -94,5 +94,3 @@ app.UseAuthorization();
 app.UseMiddleware<RequestUserIdentityMiddleware>();
 app.MapControllers();
 app.Run();
-
-// dummy change
