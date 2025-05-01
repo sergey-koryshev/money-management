@@ -29,8 +29,6 @@ jobs:
     with:
       node-version: 16.x
       root-path: source/frontend
-      dist-path: dist/money-management
-      artifact-prefix: frontend-prod
       build-command: "npm run build"
   publish-docker-images:
     name: Publishing Docker Images
