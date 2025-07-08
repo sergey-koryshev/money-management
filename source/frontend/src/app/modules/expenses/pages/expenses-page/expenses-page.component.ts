@@ -2,7 +2,7 @@ import { ExpensesMonthService } from '@services/expenses-month.service';
 import { ExpensesHttpClientService } from '@http-clients/expenses-http-client.service';
 import { CurrencyService } from '@services/currency.service';
 import { Expense } from '@app/models/expense.model';
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { switchMap, tap, catchError, map } from 'rxjs/operators';
 import { NgbDatepickerNavigateEvent, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Month } from '@app/models/month.model';
@@ -28,61 +28,51 @@ import { ExtendedExpenseName } from '@app/http-clients/expenses-http-client.mode
 export class ExpensesPageComponent implements OnInit, AfterViewInit {
 
   readonly exchangeFaultedErrorMessage = 'Not all prices were converted successfully thus they were not taken into account in the counter.';
+  readonly stickyAddExpenseButtonClass = 'sticky-add-expense-button';
+
+  @ViewChild('addExpenseButton', { static: true }) addExpenseButton: any;
+  @ViewChild('tableHeader', { static: true }) tableHeader: any;
 
   expenses: Expense[];
   selectedMonth: Month;
   totalAmount?: Price;
   isExchangeFaulted: boolean = false;
   loading = false;
-
-  stickyFiltersDefinitions: Record<string, StickyFilterDefinition<any>> = {
-    [ExpensesStickyFilterType.createdBy]: {
-      type: StickyFilterType.list,
-      name: ExpensesStickyFilterType.createdBy,
-      displayName: ExpensesStickyFilterType.get(ExpensesStickyFilterType.createdBy).name,
-      items: [...CreatedByFilterOptions.getAll()],
-      defaultValue: emptyFilter,
-      multiselect: false,
-      allItem: emptyFilter
-    },
-    [ExpensesStickyFilterType.shared]: {
-      type: StickyFilterType.list,
-      name: ExpensesStickyFilterType.shared,
-      displayName: ExpensesStickyFilterType.get(ExpensesStickyFilterType.shared).name,
-      items: [...SharedFilterOptions.getAll()],
-      defaultValue: emptyFilter,
-      multiselect: false,
-      allItem: emptyFilter
-    },
-    [ExpensesStickyFilterType.categories]: {
-      type: StickyFilterType.dropdown,
-      name: ExpensesStickyFilterType.categories,
-      displayName: ExpensesStickyFilterType.get(ExpensesStickyFilterType.categories).name,
-      source: defer(() => {
-        return this.categoryHttpClient.getUniqueCategoryNames()
-          .pipe(
-            map(this.convertStringsToStickyFilterItem.bind(this)),
-            catchError(() => of([]))
-          );
-      }),
-      defaultValue: emptyFilter,
-      multiselect: true,
-      allItem: emptyFilter,
-      placeholder: 'Select category'
-    },
-    [ExpensesStickyFilterType.names]: {
-      type: StickyFilterType.dropdown,
-      name: ExpensesStickyFilterType.names,
-      displayName: ExpensesStickyFilterType.get(ExpensesStickyFilterType.names).name,
-      searchFunc: (entry) => this.expensesHttpClient.getExistingNames(entry, true)
-        .pipe(map(this.convertExtendedExpensesToStickyFilterItem.bind(this))),
-      defaultValue: emptyFilter,
-      multiselect: true,
-      allItem: emptyFilter,
-      placeholder: 'Search name...'
-    }
-  };
+  stickyFiltersDefinitions: Record<string, StickyFilterDefinition<any>>;
   stickyFilters$ = new BehaviorSubject<StoringExpensesStickyFilters>({});
+
+  @HostListener('window:scroll')
+  onWindowScroll() {
+    if (!this.addExpenseButton || !this.tableHeader) {
+      return;
+    }
+
+    const rect = this.tableHeader.nativeElement.getBoundingClientRect();
+    if (rect.bottom < 0 || rect.bottom > window.innerHeight) {
+      if (!this.addExpenseButton.nativeElement.classList.contains(this.stickyAddExpenseButtonClass)) {
+        this.addExpenseButton.nativeElement.classList.add(this.stickyAddExpenseButtonClass);
+        this.addExpenseButton.nativeElement.style.position = 'fixed';
+        this.addExpenseButton.nativeElement.style.top = '5px';
+        this.addExpenseButton.nativeElement.style.right = (window.innerWidth - this.tableHeader.nativeElement.offsetWidth) / 2 + 'px';
+      }
+    } else {
+      this.addExpenseButton.nativeElement.classList.remove(this.stickyAddExpenseButtonClass);
+      this.addExpenseButton.nativeElement.style.position = 'static';
+      this.addExpenseButton.nativeElement.style.top = 'auto';
+      this.addExpenseButton.nativeElement.style.right = 'auto';
+    }
+  }
+
+  @HostListener('window:resize')
+  onWindowResize() {
+    if (!this.addExpenseButton || !this.tableHeader) {
+      return;
+    }
+
+    if (this.addExpenseButton.nativeElement.classList.contains(this.stickyAddExpenseButtonClass)) {
+      this.addExpenseButton.nativeElement.style.right = (window.innerWidth - this.tableHeader.nativeElement.offsetWidth) / 2 + 'px';
+    }
+  }
 
   constructor(
     private currencyService: CurrencyService,
@@ -90,7 +80,55 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
     private modalService: NgbModal,
     private expensesMonthService: ExpensesMonthService,
     private expensesService: ExpensesService,
-    private categoryHttpClient: CategoryHttpClient) {}
+    private categoryHttpClient: CategoryHttpClient) {
+      this.stickyFiltersDefinitions = {
+        [ExpensesStickyFilterType.createdBy]: {
+          type: StickyFilterType.list,
+          name: ExpensesStickyFilterType.createdBy,
+          displayName: ExpensesStickyFilterType.get(ExpensesStickyFilterType.createdBy).name,
+          items: [...CreatedByFilterOptions.getAll()],
+          defaultValue: emptyFilter,
+          multiselect: false,
+          allItem: emptyFilter
+        },
+        [ExpensesStickyFilterType.shared]: {
+          type: StickyFilterType.list,
+          name: ExpensesStickyFilterType.shared,
+          displayName: ExpensesStickyFilterType.get(ExpensesStickyFilterType.shared).name,
+          items: [...SharedFilterOptions.getAll()],
+          defaultValue: emptyFilter,
+          multiselect: false,
+          allItem: emptyFilter
+        },
+        [ExpensesStickyFilterType.categories]: {
+          type: StickyFilterType.dropdown,
+          name: ExpensesStickyFilterType.categories,
+          displayName: ExpensesStickyFilterType.get(ExpensesStickyFilterType.categories).name,
+          source: defer(() => {
+            return this.categoryHttpClient.getUniqueCategoryNames()
+              .pipe(
+                map(this.convertStringsToStickyFilterItem.bind(this)),
+                catchError(() => of([]))
+              );
+          }),
+          defaultValue: emptyFilter,
+          multiselect: true,
+          allItem: emptyFilter,
+          placeholder: 'Select category'
+        },
+        [ExpensesStickyFilterType.names]: {
+          type: StickyFilterType.dropdown,
+          name: ExpensesStickyFilterType.names,
+          displayName: ExpensesStickyFilterType.get(ExpensesStickyFilterType.names).name,
+          searchFunc: (entry) => this.expensesHttpClient.getExistingNames(entry, true)
+            .pipe(map(this.convertExtendedExpensesToStickyFilterItem.bind(this))),
+          defaultValue: emptyFilter,
+          multiselect: true,
+          allItem: emptyFilter,
+          placeholder: 'Search name...'
+        }
+      };
+    }
 
   ngOnInit(): void {
     this.selectedMonth = this.expensesMonthService.month;
