@@ -11,12 +11,15 @@ export class UserAvatarComponent implements OnChanges {
   tenant?: string
 
   @Input()
+  color?: string;
+
+  @Input()
   initials: string;
 
   avatarStyles: {[key: string]: string};
 
   ngOnChanges(): void {
-    const avatarBackgroundColor = blend(this.getUniqueColor(this.tenant ?? '8eeb9d4b-d246-4075-a53a-fa31184f71ec'), '#f8f9fa', 0.5);
+    const avatarBackgroundColor = this.color ?? blend(this.getUniqueColor(this.tenant ?? '8eeb9d4b-d246-4075-a53a-fa31184f71ec'), '#f8f9fa', 0.5);
     const avatarForegroundColor = this.getForegroundColor(avatarBackgroundColor);
     this.avatarStyles = {
       'background-color': avatarBackgroundColor,
