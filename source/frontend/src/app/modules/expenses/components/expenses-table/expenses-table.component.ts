@@ -46,11 +46,11 @@ export class ExpensesTableComponent implements OnInit {
 
   columns: TableColumn<Expense>[] = [
     {
-      name: 'createdBy',
+      name: 'permittedPersons',
       ignorePadding: true,
       disableSorting: true,
-      template: () => this.createdByTemplate,
-      hide: () => this.isCreatedByColumnVisible()
+      template: () => this.permittedPersons,
+      hide: () => this.isPermittedUsersColumnVisible()
     },
     {
       name: 'date',
@@ -92,13 +92,6 @@ export class ExpensesTableComponent implements OnInit {
       snapToPrevious: true
     },
     {
-      name: 'permittedPersons',
-      ignorePadding: true,
-      disableSorting: true,
-      template: () => this.sharedWithTemplate,
-      hide: () => this.isSharedWithColumnVisible()
-    },
-    {
       name: 'actions',
       ignorePadding: true,
       disableSorting: true,
@@ -115,11 +108,8 @@ export class ExpensesTableComponent implements OnInit {
   @ViewChild('actions', { read: TemplateRef, static: true })
   actions: TemplateRef<unknown>;
 
-  @ViewChild('createdBy', { read: TemplateRef, static: true })
-  createdByTemplate: TemplateRef<unknown>;
-
-  @ViewChild('sharedWith', { read: TemplateRef, static: true })
-  sharedWithTemplate: TemplateRef<unknown>;
+  @ViewChild('permittedPersons', { read: TemplateRef, static: true })
+  permittedPersons: TemplateRef<unknown>;
 
   @ViewChild('confirmationDialog', { read: TemplateRef, static: true })
   confirmationDialog: TemplateRef<unknown>;
@@ -218,15 +208,12 @@ export class ExpensesTableComponent implements OnInit {
     return row.createdBy.id == this.currentUser.id || this.friends.some((f) => f.id === row.createdBy.id)
   }
 
-  private isCreatedByColumnVisible(): boolean {
+  private isPermittedUsersColumnVisible(): boolean {
     if (this.currentUser == null) {
       return false;
     }
 
-    return this.data?.filter((e) => e.createdBy.id != this.currentUser!.id).length > 0;
-  }
-
-  private isSharedWithColumnVisible() {
-    return this.data?.filter((e) => e.permittedPersons.length > 0).length > 0;
+    return this.data?.filter((e) => e.createdBy.id != this.currentUser!.id).length > 0 ||
+      this.data?.filter((e) => e.permittedPersons.length > 0).length > 0;
   }
 }
