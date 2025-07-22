@@ -13,13 +13,16 @@
 }
 
 .shared-with-container {
+  display: flex;
+  flex-direction: row-reverse;
+
   app-user-avatar:not(:first-child) {
-    margin-left: -20px;
+    margin-right: -26px;
   }
 
   &:hover {
     app-user-avatar:not(:first-child) {
-      margin-left: 0.25em;
+      margin-right: -7px;
     }
   }
 }
@@ -51,4 +54,8 @@
   font-size: small;
   color: #95a5a6;
   font-style: italic;
+}
+
+.more-users {
+  cursor: pointer;
 }
