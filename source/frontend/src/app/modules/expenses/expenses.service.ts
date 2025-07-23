@@ -15,6 +15,12 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
 export class ExpensesService {
   constructor(private userService: UserService) {}
 
+  /**
+   * Tests if the expense matches the sticky filters.
+   * @param stickyFilters The sticky filters to test against.
+   * @param expense The expense to test.
+   * @returns True if the expense matches the sticky filters, false otherwise.
+   */
   testExpenseAgainstFilter(stickyFilters: StoringExpensesStickyFilters, expense: Expense) {
     let result = true
 
