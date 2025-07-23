@@ -4,7 +4,7 @@ run-name: Frontend Build @${{ github.sha }}
 
 on:
   workflow_run:
-    workflows: [Create Frontend Version Label]
+    workflows: [Increment version for 'Frontend']
     types:
       - completed
     branches:
