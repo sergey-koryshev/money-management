@@ -55,6 +55,12 @@ export class ExpensesService {
     return result;
   }
 
+  /**
+   * Normalizes a string or number to a valid number format.
+   * @param value The value to normalize, can be a string or a number.
+   * @returns The normalized number.
+   * @throws Error if the value cannot be converted to a valid number.
+   */
   normalizeNumberString(value: string | number) {
     if (typeof value === 'number') {
       return value;

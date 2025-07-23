@@ -4,7 +4,7 @@ run-name: Backend Build @${{ github.sha }}
 
 on:
   workflow_run:
-    workflows: [Create Backend Version Label]
+    workflows: [Increment version for 'Backend']
     types:
       - completed
     branches:
