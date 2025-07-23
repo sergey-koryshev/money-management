@@ -52,7 +52,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
         options.Events = new JwtBearerEvents
         {
-            // propagate JWT token to be able to validate in in authorization process
+            // propagate JWT token to be able to validate it in authorization process
             OnMessageReceived = context =>
             {
                 context.Token = context.Request.Cookies["access_token"];
