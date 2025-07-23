@@ -1,4 +1,4 @@
-name: Create Backend Version Label
+name: Increment version for 'Backend'
 
 concurrency: versioning
 
@@ -12,17 +12,21 @@ on:
 
 jobs:
   create_label:
-    name: Create Version Label
-    uses: sergey-koryshev/build-system/.github/workflows/create-version-label.yml@796e60e68ffd38b05f0bfc97a41d5094bac602fd
+    name: Increment version
+    runs-on: ubuntu-latest
     permissions:
-      contents: write
       pull-requests: read
-    secrets:
-      REPO_TOKEN: ${{ secrets.GITHUB_TOKEN}}
-    with:
-      app-name: backend
-      root-path: source/backend
-      project-type: Custom
-      posh-custom-module-path: build/WebApiIncrementVersionHelper.psm1
-      version-configuration-path: source/backend/version-configuration.json
-      scripts-ref: 796e60e68ffd38b05f0bfc97a41d5094bac602fd
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ssh-key: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Increment Version
+        uses: sergey-koryshev/bump-version@6d176fd6306315acba741862476574d3e49f8f7a
+        with:
+          app-name: backend
+          root-path: source/backend
+          project-type: Custom
+          posh-custom-module-path: build/WebApiIncrementVersionHelper.psm1
+          version-configuration-path: source/backend/version-configuration.json
