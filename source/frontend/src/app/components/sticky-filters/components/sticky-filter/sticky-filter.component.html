@@ -19,7 +19,7 @@
     <ng-select *ngIf="definition.type === stickyFilterType.dropdown"
                #dropdownElement
                class="mx-2"
-               [items]="visibleDropdownItems$ | async"
+               [items]="visibleDropdownItems"
                [hideSelected]="true"
                [addTag]="false"
                [minTermLength]="1"

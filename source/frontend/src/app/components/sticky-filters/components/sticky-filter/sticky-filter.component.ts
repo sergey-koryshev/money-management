@@ -26,9 +26,8 @@ export class StickyFilterComponent implements OnInit {
   stickyFilterType = StickyFilterType;
   items: StickyFilterItem<any>[];
   dropdownLoading = false;
-  visibleDropdownItems$: Observable<StickyFilterItem<any>[] | never[]> = of([]);
+  visibleDropdownItems: StickyFilterItem<any>[] | never[];
   searchEntry$ = new Subject<string>();
-  visibleItemsChanged$ = new Subject<void>();
 
   ngOnInit(): void {
     if (this.definition.type === StickyFilterType.list) {
@@ -37,26 +36,24 @@ export class StickyFilterComponent implements OnInit {
 
     if (this.definition.type === StickyFilterType.dropdown) {
       if (this.definition.source != null) {
-        this.visibleDropdownItems$ = this.visibleItemsChanged$.pipe(
-          switchMap(() => of(this.getVisibleDropdownItems(this.items))));
-
         this.definition.source.pipe(
           (tap(() => this.dropdownLoading = true))
         ).subscribe({
           next: (items) => {
             this.items = items;
-            this.visibleItemsChanged$.next();
+            this.visibleDropdownItems = this.getVisibleDropdownItems(items);
           }
         }).add(() => this.dropdownLoading = false);
       } else if (this.definition.searchFunc != null) {
         const searchFunc = this.definition.searchFunc;
-        this.visibleDropdownItems$ = this.searchEntry$.pipe(
+        this.searchEntry$.pipe(
           tap(() => this.dropdownLoading = true),
           switchMap((entry) => searchFunc(entry).pipe(
             catchError(() => of([])),
             tap(() => this.dropdownLoading = false)
-          )),
-          switchMap((foundItems) => of(this.getVisibleDropdownItems(foundItems))));
+          ))).subscribe({
+            next: (foundItems) => this.visibleDropdownItems = this.getVisibleDropdownItems(foundItems)
+          });
       }
     }
   }
@@ -109,7 +106,7 @@ export class StickyFilterComponent implements OnInit {
       }
 
       element?.writeValue([]);
-      this.visibleItemsChanged$.next();
+      this.visibleDropdownItems = this.getVisibleDropdownItems(this.items);
       this.filterChanged.emit(this.selectedValue);
     }
   }
@@ -123,7 +120,7 @@ export class StickyFilterComponent implements OnInit {
       this.selectedValue = [this.definition.defaultValue];
     }
 
-    this.visibleItemsChanged$.next();
+    this.visibleDropdownItems = this.getVisibleDropdownItems(this.items)
     this.filterChanged.emit(this.selectedValue);
   }
 
