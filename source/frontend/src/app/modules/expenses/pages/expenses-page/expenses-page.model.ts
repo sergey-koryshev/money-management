@@ -9,4 +9,5 @@ export interface StoringExpensesStickyFilters extends StoringStickyFilters {
   [ExpensesStickyFilterType.shared]?: StickyFilterItem<number | undefined>
   [ExpensesStickyFilterType.categories]?: StickyFilterItem<string | undefined>[]
   [ExpensesStickyFilterType.names]?: StickyFilterItem<string | undefined>[]
+  [ExpensesStickyFilterType.currencies]?: StickyFilterItem<number | undefined>[]
 }
