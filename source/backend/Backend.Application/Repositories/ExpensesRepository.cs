@@ -274,11 +274,13 @@ public class ExpensesRepository
             }
         }
 
+        var description = string.IsNullOrWhiteSpace(changeParams.Description) ? null : changeParams.Description.Trim();
+
         if (entity != null)
         {
             entity.Date = changeParams.Date;
             entity.Name = changeParams.Name;
-            entity.Description = changeParams.Description;
+            entity.Description = description;
             entity.CategoryId = categoryId;
             entity.PriceAmount = changeParams.PriceAmount;
             entity.CurrencyId = changeParams.CurrencyId;
@@ -291,7 +293,7 @@ public class ExpensesRepository
         {
             Date = changeParams.Date,
             Name = changeParams.Name,
-            Description = changeParams.Description,
+            Description = description,
             CategoryId = categoryId,
             PriceAmount = changeParams.PriceAmount,
             CurrencyId = changeParams.CurrencyId,
