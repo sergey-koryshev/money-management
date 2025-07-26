@@ -16,5 +16,7 @@ public class ExpensesFilterDto
 
     public List<string?>? CategoryName { get; set; }
 
-    public List<string>? Name { get ; set;}
+    public List<string>? Name { get; set; }
+
+    public List<int>? CurrencyId { get ; set; }
 }

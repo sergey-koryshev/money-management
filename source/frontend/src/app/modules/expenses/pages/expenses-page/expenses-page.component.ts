@@ -3,7 +3,7 @@ import { ExpensesHttpClientService } from '@http-clients/expenses-http-client.se
 import { CurrencyService } from '@services/currency.service';
 import { Expense } from '@app/models/expense.model';
 import { AfterViewInit, Component, HostListener, OnInit, ViewChild } from '@angular/core';
-import { switchMap, tap, catchError, map } from 'rxjs/operators';
+import { switchMap, tap, catchError, map, take, skipWhile } from 'rxjs/operators';
 import { NgbDatepickerNavigateEvent, NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { Month } from '@app/models/month.model';
 import { AddNewExpenseDialogComponent } from '../../components/add-new-expense-dialog/add-new-expense-dialog.component';
@@ -19,6 +19,7 @@ import { CategoryHttpClient } from '@app/http-clients/category-http-client.servi
 import { StoringExpensesStickyFilters } from './expenses-page.model';
 import { emptyFilter, emptyCategoryFilter, filtersStorageName } from "@app/constants";
 import { ExtendedExpenseName } from '@app/http-clients/expenses-http-client.model';
+import { Currency } from '@app/models/currency.model';
 
 @Component({
   selector: 'app-expenses-page',
@@ -126,6 +127,21 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
           multiselect: true,
           allItem: emptyFilter,
           placeholder: 'Search name...'
+        },
+        [ExpensesStickyFilterType.currencies]: {
+          type: StickyFilterType.dropdown,
+          name: ExpensesStickyFilterType.currencies,
+          displayName: ExpensesStickyFilterType.get(ExpensesStickyFilterType.currencies).name,
+          source: defer(() => this.currencyService.currencies$.asObservable()
+            .pipe(
+              skipWhile((c) => c.length === 0),
+              take(1),
+              map((c) => this.convertCurrencyToStickyFilterItem(c)),
+              catchError(() => of([])))),
+          defaultValue: emptyFilter,
+          multiselect: true,
+          allItem: emptyFilter,
+          placeholder: 'Select currency'
         }
       };
     }
@@ -229,6 +245,13 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
     return values.map((v) => ({
       name: v.name,
       value: v.name
+    }));
+  }
+
+  private convertCurrencyToStickyFilterItem(values: Currency[]) {
+    return values.map((v) => ({
+      name: v.name,
+      value: v.id
     }));
   }
 

@@ -42,14 +42,21 @@ export class ExpensesService {
     if (categoriesFilter != null) {
       result = result && (categoriesFilter.some((i) => stickyFilterItemsComparer(i, emptyFilter)) ||
         (expense.category == null && categoriesFilter.some((i) => stickyFilterItemsComparer(i, emptyCategoryFilter))) ||
-        (categoriesFilter.some((i) => i.name === expense.category.name)));
+        (categoriesFilter.some((i) => i.value === expense.category.name)));
     }
 
     const namesFilter = stickyFilters[ExpensesStickyFilterType.names]
     if (namesFilter != null) {
       result = result && (namesFilter.some((i) => stickyFilterItemsComparer(i, emptyFilter)) ||
         (expense.category == null && namesFilter.some((i) => stickyFilterItemsComparer(i, emptyCategoryFilter))) ||
-        (namesFilter.some((i) => i.name === expense.category.name)));
+        (namesFilter.some((i) => i.value === expense.name)));
+    }
+
+    const currenciesFilter = stickyFilters[ExpensesStickyFilterType.currencies]
+    if (currenciesFilter != null) {
+      result = result && (currenciesFilter.some((i) => stickyFilterItemsComparer(i, emptyFilter)) ||
+        (expense.category == null && currenciesFilter.some((i) => stickyFilterItemsComparer(i, emptyCategoryFilter))) ||
+        (currenciesFilter.some((i) => i.value === (expense.originalPrice?.currency.id ?? expense.price.currency.id))));
     }
 
     return result;

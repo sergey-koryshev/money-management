@@ -20,7 +20,7 @@ public class CurrenciesRepository
 
     public List<Currency> GetAllCurrencies()
     {
-        return this.GetCurrencyMappingsQuery().Select(m => m.Currency!.ToModel()).ToList();
+        return this.GetCurrencyMappingsQuery().OrderBy(m => m.Currency!.Name).Select(m => m.Currency!.ToModel()).ToList();
     }
 
     public Currency? GetMainCurrency()

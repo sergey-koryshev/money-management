@@ -115,14 +115,14 @@ public class ExpensesRepository
             .Include(c => c.CreatedBy)
             .Include(c => c.PermittedPersons)
             .Where(c => c.PermittedPersons.Any(p => p.Id == this.identity.Id));
-        
+
         if (filter != null)
         {
             if (filter.Month != null && filter.Year != null && !string.IsNullOrWhiteSpace(filter.TimeZone))
             {
                 var startDate = new DateTime(filter.Year.Value, filter.Month.Value, 1);
                 var endDate = startDate.AddMonths(1);
-        
+
                 var timeZone = TimeZoneInfo.FindSystemTimeZoneById(filter.TimeZone);
                 var startDateUtc = TimeZoneInfo.ConvertTimeToUtc(startDate, timeZone);
                 var endDateUtc = TimeZoneInfo.ConvertTimeToUtc(endDate, timeZone);
@@ -162,6 +162,11 @@ public class ExpensesRepository
             if (!filter.Name.IsEmpty())
             {
                 query = query.Where(e => filter.Name!.Contains(e.Name));
+            }
+
+            if (!filter.CurrencyId.IsEmpty())
+            {
+                query = query.Where(e => filter.CurrencyId!.Contains(e.CurrencyId));
             }
         }
 

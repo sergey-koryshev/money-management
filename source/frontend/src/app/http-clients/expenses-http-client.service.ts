@@ -49,6 +49,15 @@ export class ExpensesHttpClientService {
           params = params.append('name', c.value ?? "");
         });
       }
+
+      const currenciesFilter = filters[ExpensesStickyFilterType.currencies];
+      if (currenciesFilter != null && !currenciesFilter.some((c) => stickyFilterItemsComparer(c, emptyFilter))) {
+        currenciesFilter.forEach((c) => {
+          if (c.value != null) {
+            params = params.append('currencyId', c.value);
+          }
+        });
+      }
     }
 
     return this.baseHttpClient.get<Expense[]>('expenses', params);
