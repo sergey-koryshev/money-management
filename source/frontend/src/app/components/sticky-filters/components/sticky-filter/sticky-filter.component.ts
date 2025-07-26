@@ -128,7 +128,9 @@ export class StickyFilterComponent implements OnInit {
     return this.selectedValue.some((v) => stickyFilterItemsComparer(v, item));
   }
 
-  private getVisibleDropdownItems(itemsToFilter: StickyFilterItem<any>[]) {
-    return itemsToFilter.filter((i) => !this.selectedValue.some((x) => stickyFilterItemsComparer(x, i)))
+  private getVisibleDropdownItems(itemsToFilter: StickyFilterItem<any>[] | undefined): StickyFilterItem<any>[] {
+    return itemsToFilter
+      ? itemsToFilter.filter((i) => !this.selectedValue.some((x) => stickyFilterItemsComparer(x, i)))
+      : [];
   }
 }
