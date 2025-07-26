@@ -1303,6 +1303,24 @@ public class ExpensesRepositoryTests : TestsBase
         }, opt => opt.Excluding(o => o.Id));
     }
 
+    [TestCase(null)]
+    [TestCase("")]
+    [TestCase("  ")]
+    public void CreateExpense_EmptyDescription_DescriptionShouldBeNull(string? description)
+    {
+        var createParams = new ChangeExpenseParams
+        {
+            Date = new DateTime(2024, 8, 1, 17, 01, 8),
+            Name = Guid.NewGuid().ToString(),
+            Description = description,
+            PriceAmount = 108,
+            CurrencyId = this.Currencies[0].Id
+        };
+
+        var result = new ExpensesRepository(this.DbContext, this.Daniel).CreateExpense(createParams);
+        result.Description.Should().BeNull();
+    }
+
     [TestCase("")]
     [TestCase("   ")]
     public void UpdateExpense_EmptyName_ErrorThrown(string name)
@@ -1804,6 +1822,41 @@ public class ExpensesRepositoryTests : TestsBase
             CreatedBy = this.Daniel.ToModel(),
             PermittedPersons = { this.Veronika.ToModel(), this.Daniel.ToModel() }
         });
+    }
+
+    [TestCase(null)]
+    [TestCase("")]
+    [TestCase("  ")]
+    public void UpdateExpense_EmptyDescription_DescriptionShouldBeNull(string? description)
+    {
+        this.DbContext.Attach(this.Daniel);
+
+        var expense = new Entities.Expense
+        {
+            Date = new DateTime(2024, 8, 30, 17, 01, 8, DateTimeKind.Utc),
+            Name = Guid.NewGuid().ToString(),
+            PriceAmount = 108,
+            CurrencyId = this.Currencies[0].Id,
+            CreatedById = this.Daniel.Id,
+            PermittedPersons = new List<Entities.Person> { this.Daniel }
+        };
+
+        this.DbContext.Expenses.Add(expense);
+        this.DbContext.SaveChanges();
+
+        this.ClearChangeTracker();
+
+        var changeParams = new ChangeExpenseParams
+        {
+            Date = new DateTime(2024, 8, 1, 17, 01, 8),
+            Name = Guid.NewGuid().ToString(),
+            Description = description,
+            PriceAmount = 108,
+            CurrencyId = this.Currencies[0].Id
+        };
+
+        var result = new ExpensesRepository(this.DbContext, this.Daniel).UpdateExpense(expense.Id, changeParams);
+        result.Description.Should().BeNull();
     }
 
     [Test]
