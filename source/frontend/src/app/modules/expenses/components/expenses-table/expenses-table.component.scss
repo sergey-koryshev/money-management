@@ -14,14 +14,14 @@
 
 .shared-with-container {
   display: flex;
-  flex-direction: row-reverse;
+  justify-content: end;;
 
-  app-user-avatar:not(:first-child) {
+  app-user-avatar:not(:last-of-type) {
     margin-right: -26px;
   }
 
   &:hover {
-    app-user-avatar:not(:first-child) {
+    app-user-avatar:not(:last-of-type) {
       margin-right: -7px;
     }
   }

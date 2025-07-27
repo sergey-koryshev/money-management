@@ -25,29 +25,29 @@
 
 <ng-template #permittedPersons let-row>
   <div class="ms-2 shared-with-container user-avatar">
-    <app-user-avatar
-      [initials]="getUserInitials(row.createdBy)"
-      [tenant]="row.createdBy.tenant"
-      [ngbTooltip]="getUserFullName(row.createdBy)">
-    </app-user-avatar>
     <ng-container *ngIf="row.permittedPersons && row.permittedPersons.length > 0">
       <ng-container *ngIf="row.permittedPersons.length > 3; else noMoreUsers">
-        <app-user-avatar *ngFor="let user of row.permittedPersons.slice(0, 2)" [initials]="getUserInitials(user)"
-          [tenant]="user.tenant" [ngbTooltip]="getUserFullName(user)">
-        </app-user-avatar>
         <app-user-avatar class="more-users"
           [initials]="((row.permittedPersons.length - 2) > 9) ? '9+' : '+' + (row.permittedPersons.length - 2)"
           color="#bdc3c755"
           [ngbTooltip]="((row.permittedPersons.length - 2) > 9) ? '+' + (row.permittedPersons.length - 2) : undefined"
           (click)="editItem(row)">
         </app-user-avatar>
+        <app-user-avatar *ngFor="let user of row.permittedPersons.slice(0, 2).reverse(), let index=index" [initials]="getUserInitials(user)"
+          [tenant]="user.tenant" [ngbTooltip]="getUserFullName(user)">
+        </app-user-avatar>
       </ng-container>
       <ng-template #noMoreUsers>
-        <app-user-avatar *ngFor="let user of row.permittedPersons.slice(0, 3)" [initials]="getUserInitials(user)"
+        <app-user-avatar *ngFor="let user of row.permittedPersons.slice(0, 3).reverse(), let index=index" [initials]="getUserInitials(user)"
           [tenant]="user.tenant" [ngbTooltip]="getUserFullName(user)">
         </app-user-avatar>
       </ng-template>
     </ng-container>
+    <app-user-avatar
+      [initials]="getUserInitials(row.createdBy)"
+      [tenant]="row.createdBy.tenant"
+      [ngbTooltip]="getUserFullName(row.createdBy)">
+    </app-user-avatar>
   </div>
 </ng-template>
 
