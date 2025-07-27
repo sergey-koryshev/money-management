@@ -29,7 +29,7 @@
       <ng-container *ngIf="row.permittedPersons.length > 3; else noMoreUsers">
         <app-user-avatar class="more-users"
           [initials]="((row.permittedPersons.length - 2) > 9) ? '9+' : '+' + (row.permittedPersons.length - 2)"
-          color="#bdc3c755"
+          color="#e1e2e4"
           [ngbTooltip]="((row.permittedPersons.length - 2) > 9) ? '+' + (row.permittedPersons.length - 2) : undefined"
           (click)="editItem(row)">
         </app-user-avatar>
