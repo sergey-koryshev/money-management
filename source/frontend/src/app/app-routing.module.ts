@@ -1,13 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuardService } from './guards/auth-guard.service';
-import { HomePageGuardService } from './guards/home-page-guard.service';
 
 const routes: Routes = [
   {
     path: '',
-    canActivate: [HomePageGuardService],
-    loadChildren: () => import('./modules/home/home.module').then((module) => module.HomeModule)
+    redirectTo: 'expenses',
+    pathMatch: 'full'
   },
   {
     path: 'expenses',
@@ -28,6 +27,6 @@ const routes: Routes = [
 @NgModule({
   imports: [RouterModule.forRoot(routes, { useHash: true })],
   exports: [RouterModule],
-  providers: [AuthGuardService, HomePageGuardService]
+  providers: [AuthGuardService]
 })
 export class AppRoutingModule { }
