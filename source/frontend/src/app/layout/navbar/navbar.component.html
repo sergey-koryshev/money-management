@@ -30,11 +30,11 @@
         </button>
       </div>
     </div>
-    <div ngbDropdown #mainDropdown="ngbDropdown" class="ms-4" display="dynamic">
+    <div *ngIf="user" ngbDropdown #mainDropdown="ngbDropdown" class="ms-4" display="dynamic">
       <a href (click)="(false)" class="nav-link" ngbDropdownToggle>
-        <app-user-tile class="d-inline-block" [user]="user ?? defaultUser"></app-user-tile>
+        <app-user-tile class="d-inline-block" [user]="user"></app-user-tile>
       </a>
-      <div *ngIf="user; else loginForm" ngbDropdownMenu>
+      <div ngbDropdownMenu>
         <h6 class="dropdown-header">
           <span>User ID: #</span>
           <span>{{ user.id }}</span>
@@ -50,11 +50,6 @@
           Logout
         </button>
       </div>
-      <ng-template #loginForm>
-        <div ngbDropdownMenu class="login-form">
-          <app-login-form (signedIn)="mainDropdown.close()"></app-login-form>
-        </div>
-      </ng-template>
     </div>
   </div>
 </nav>

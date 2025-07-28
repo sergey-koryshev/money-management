@@ -28,14 +28,6 @@ export class NavbarComponent {
   searchForm: FormGroup;
   pendingConnectionsCount = 0;
 
-  get defaultUser(): User {
-    return {
-      id: 0,
-      tenant: '8eeb9d4b-d246-4075-a53a-fa31184f71ec',
-      firstName: 'Sign In'
-    };
-  }
-
   constructor(private currencyService: CurrencyService,
     private router: Router,
     fb: FormBuilder,
@@ -83,7 +75,7 @@ export class NavbarComponent {
   onLogout() {
     this.loginHttpClient.logout().subscribe(() => {
       this.userService.removeUser();
-      this.router.navigate(['/']);
+      this.router.navigate(['/signin']);
     });
   }
 }
