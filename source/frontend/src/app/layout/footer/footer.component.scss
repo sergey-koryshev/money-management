@@ -1,0 +1,15 @@
+.footer-container {
+  font-size: small;
+  color: #95a5a6;
+  padding-bottom: 15px;
+  text-align: center;
+
+  & a {
+    color: #3498db;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
