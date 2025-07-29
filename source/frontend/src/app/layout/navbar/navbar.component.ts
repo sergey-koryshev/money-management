@@ -13,6 +13,7 @@ import { NoticesDialogComponent } from '../notice-dialog/notice-dialog.component
 import { AnnouncementType } from '@app/models/enums/announcement-type.enum';
 import { AnnouncementsHttpClient } from '@app/http-clients/announcements-http-client.service';
 import { switchMap } from 'rxjs';
+import { environment } from '@environments/environment';
 
 @Component({
   selector: 'app-navbar',
@@ -27,6 +28,7 @@ export class NavbarComponent {
   emptyMainCurrency = emptyMainCurrency;
   searchForm: FormGroup;
   pendingConnectionsCount = 0;
+  productVersion?: string;
 
   constructor(private currencyService: CurrencyService,
     private router: Router,
@@ -35,6 +37,7 @@ export class NavbarComponent {
     private loginHttpClient: LoginHttpClient,
     modalService: NgbModal,
     announcementsHttpClient: AnnouncementsHttpClient) {
+    this.productVersion = environment.productVersion;
     this.currencyService.currencies$.subscribe((currencies) => this.currencies = currencies);
     this.currencyService.mainCurrency$.subscribe((currency) => this.mainCurrency = currency)
     this.userService.user$
