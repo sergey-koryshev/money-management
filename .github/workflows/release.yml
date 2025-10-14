@@ -3,17 +3,18 @@ name: Release
 run-name: Release @${{ github.sha }}
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - release/*
-  repository_dispatch:
-    types: [release_branch_created]
+  # repository_dispatch:
+  #   types: [release_branch_created]
 
 env:
   REGISTRY: ghcr.io
 
 jobs:
-  release-build:
+  backend-build:
     name: Backend Build
     uses: ./.github/workflows/dotnet-build.yml
     with:
@@ -23,7 +24,7 @@ jobs:
       build-configuration: Release
       test-project-path: Backend.Tests/Backend.Tests.csproj
       build-migrations-bundle: true
-  prod-build:
+  frontend-build:
     name: Frontend Build
     uses: ./.github/workflows/node-build.yml
     with:
@@ -33,6 +34,7 @@ jobs:
   publish-docker-images:
     name: Publishing Docker Images
     runs-on: ubuntu-latest
+    needs: [backend-build, frontend-build]
 
     permissions:
       contents: read
