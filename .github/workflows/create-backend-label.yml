@@ -16,6 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: read
+    env:
+      ROOT_PATH: source/backend
+      PRODUCT_VERSION_FILE: version.json
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -26,7 +29,12 @@ jobs:
         uses: sergey-koryshev/bump-version@v1.0.4
         with:
           app-name: backend
-          root-path: source/backend
+          root-path: ${{ env.ROOT_PATH }}
           project-type: Custom
           posh-custom-module-path: build/WebApiIncrementVersionHelper.psm1
-          version-configuration-path: source/backend/version-configuration.json
+          version-configuration-path: ${{ env.ROOT_PATH }}/version-configuration.json
+
+      - name: Propagate DEV product version to backend
+        shell: pwsh
+        run: |
+          . build/PropagateBackendProductVersion.ps1 -ProjectRootPath $env:ROOT_PATH -ProductVersionFile $env:PRODUCT_VERSION_FILE

@@ -16,6 +16,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: read
+    env:
+      ROOT_PATH: source/frontend
+      PRODUCT_VERSION_FILE: version.json
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -26,6 +29,11 @@ jobs:
         uses: sergey-koryshev/bump-version@v1.0.4
         with:
           app-name: frontend
-          root-path: source/frontend
+          root-path: ${{ env.ROOT_PATH }}
           project-type: Node
-          version-configuration-path: source/frontend/version-configuration.json
+          version-configuration-path: ${{ env.ROOT_PATH }}/version-configuration.json
+
+      - name: Propagate DEV product version to frontend
+        shell: pwsh
+        run: |
+          . build/PropagateFrontendProductVersion.ps1 -ProjectRootPath $env:ROOT_PATH -ProductVersionFile $env:PRODUCT_VERSION_FILE

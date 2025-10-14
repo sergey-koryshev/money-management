@@ -8,10 +8,11 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { LoginModule } from '@app/modules/login/login.module';
 import { NoticesDialogComponent } from './notice-dialog/notice-dialog.component';
 import { AlertComponent } from './alert/alert.component';
+import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
-  declarations: [NavbarComponent, NoticesDialogComponent, AlertComponent],
-  exports: [NavbarComponent, AlertComponent],
+  declarations: [NavbarComponent, NoticesDialogComponent, AlertComponent, FooterComponent],
+  exports: [NavbarComponent, AlertComponent, FooterComponent],
   imports: [
     CommonModule, ReactiveFormsModule, AppRoutingModule, ComponentsModule, NgbModule, LoginModule
   ]

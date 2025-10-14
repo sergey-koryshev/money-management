@@ -3,11 +3,12 @@ name: Release
 run-name: Release @${{ github.sha }}
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - release/*
-  repository_dispatch:
-    types: [release_branch_created]
+  # repository_dispatch:
+  #   types: [release_branch_created]
 
 env:
   REGISTRY: ghcr.io
@@ -33,6 +34,7 @@ jobs:
   publish-docker-images:
     name: Publishing Docker Images
     runs-on: ubuntu-latest
+    needs: [backend-prod-build, frontend-prod-build]
 
     permissions:
       contents: read
