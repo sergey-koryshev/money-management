@@ -10,7 +10,7 @@
         </div>
         <div class="col-6">
             <label for="name">Name:</label>
-            <ng-select id="name" formControlName="name" [items]="names$ | async" [addTag]="addExpenseName.bind(this)" [loading]="loading" [typeahead]="searchEntry$" [hideSelected]="true" [minTermLength]="1" bindLabel="name" bindValue="name" (change)="nameChanged($event)">
+            <ng-select id="name" formControlName="name" [items]="names$ | async" [addTag]="addExpenseName.bind(this)" [loading]="loading" [typeahead]="searchEntry$" [hideSelected]="true" [minTermLength]="1" bindLabel="name" bindValue="name" (change)="nameChanged($event)" (clear)="nameCleared()">
               <ng-template ng-option-tmp let-name="item">
                 <span class="me-1">{{ name.name }}</span>
                 <span class="item-suggestion-category">{{ name.categoryName | parenthesesPipe }}</span>

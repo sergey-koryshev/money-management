@@ -15,7 +15,6 @@ import { getUserFullName } from '@app/helpers/users.helper';
 import { UserService } from '@app/services/user.service';
 import { CategoryHttpClient } from '@app/http-clients/category-http-client.service';
 import { ExpensesService } from "@app/modules/expenses/expenses.service";
-import { formatNumber } from "@angular/common";
 
 interface ExtendedExpenseNameForm extends ExtendedExpenseName {
   isNew: boolean
@@ -178,6 +177,18 @@ export class ExpenseFormComponent implements OnInit, OnChanges {
     this.form.patchValue({
       categoryName: data.categoryName
     });
+
+    // mark category as untouched since it was auto-populated
+    this.form.get('categoryName')?.markAsUntouched();
+  }
+
+  nameCleared() {
+    // if category was auto-populated, we need to clear it when name is cleared
+    if (!this.form.get('categoryName')?.touched) {
+      this.form.patchValue({
+        categoryName: null
+      });
+    }
   }
 
   populateValues(item?: Expense) {
