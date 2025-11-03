@@ -1,0 +1,9 @@
+<div class="row">
+  <div class="input-group">
+    <label for="user-id-field" class="input-group-text">User ID</label>
+    <input id="user-id-field" type="text" class="form-control" [ngClass]="{ 'is-invalid': error }" [disabled]="processing" [(ngModel)]="userId" [ngModelOptions]="{ standalone: true }" data-1p-ignore>
+    <button type="button" class="btn btn-primary" (click)="onAddConnectionButtonClick()" [disabled]="!userId || processing">Add</button>
+  </div>
+  <div *ngIf="error" class="invalid-feedback d-block mt-1">
+    {{ error }}
+</div>
