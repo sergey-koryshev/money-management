@@ -7,8 +7,6 @@ import { ComponentsModule } from '@app/components/components.module';
 import { FormsModule } from '@angular/forms';
 import { UserConnectionCardComponent } from './components/user-connection-card/user-connection-card.component';
 import { UserConnectionsComponent } from './components/user-connections/user-connections.component';
-import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
-
 
 @NgModule({
   declarations: [
@@ -18,7 +16,7 @@ import { NgbTooltipModule } from '@ng-bootstrap/ng-bootstrap';
     UserConnectionsComponent
   ],
   imports: [
-    CommonModule, ComponentsModule, FormsModule, NgbTooltipModule
+    CommonModule, ComponentsModule, FormsModule
   ],
   exports: [UserConnectionsComponent],
   providers: [UserConnectionsResolver]
