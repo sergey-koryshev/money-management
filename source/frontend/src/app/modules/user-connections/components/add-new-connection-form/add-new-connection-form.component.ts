@@ -2,6 +2,7 @@ import { Component, EventEmitter, Output } from '@angular/core';
 import { UserConnectionHttpClient } from '@app/http-clients/user-connections-http-client.service';
 import { UserConnection } from '@app/models/user-connection.model';
 import { UserService } from '@app/services/user.service';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-add-new-connection-form',
@@ -36,7 +37,9 @@ export class AddNewConnectionFormComponent {
     this.processing = true;
 
     this.userConnectionsHttpClient
-      .createUserConnection(Number(this.userId)).subscribe({
+      .createUserConnection(Number(this.userId))
+      .pipe(take(1))
+      .subscribe({
         next: (createdConnection) => {
           this.connectionAdded.emit(createdConnection);
           this.userId = undefined;
