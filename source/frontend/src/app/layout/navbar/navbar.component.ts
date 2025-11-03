@@ -14,6 +14,7 @@ import { AnnouncementType } from '@app/models/enums/announcement-type.enum';
 import { AnnouncementsHttpClient } from '@app/http-clients/announcements-http-client.service';
 import { switchMap } from 'rxjs';
 import { environment } from '@environments/environment';
+import { UserConnectionsDialogComponent } from '../user-connections-dialog/user-connections-dialog.component';
 
 @Component({
   selector: 'app-navbar',
@@ -35,7 +36,7 @@ export class NavbarComponent {
     fb: FormBuilder,
     private userService: UserService,
     private loginHttpClient: LoginHttpClient,
-    modalService: NgbModal,
+    private modalService: NgbModal,
     announcementsHttpClient: AnnouncementsHttpClient) {
     this.productVersion = environment.productVersion;
     this.currencyService.currencies$.subscribe((currencies) => this.currencies = currencies);
@@ -54,7 +55,7 @@ export class NavbarComponent {
     this.userService.announcements$.subscribe((announcements) => {
       const popup = announcements?.find((a) => a.type === AnnouncementType.PopUp);
       if (popup != null) {
-        const modalRef = modalService.open(NoticesDialogComponent);
+        const modalRef = this.modalService.open(NoticesDialogComponent);
         modalRef.componentInstance.announcement = popup;
         modalRef.hidden.pipe(switchMap(() => announcementsHttpClient.dismiss(popup.id))).subscribe();
       }
@@ -80,5 +81,9 @@ export class NavbarComponent {
       this.userService.removeUser();
       this.router.navigate(['/signin']);
     });
+  }
+
+  openUserConnectionsDialog() {
+    this.modalService.open(UserConnectionsDialogComponent);
   }
 }
