@@ -11,6 +11,7 @@ import { Subject, take, takeUntil } from 'rxjs';
 })
 export class UserConnectionsComponent implements OnDestroy {
   connections: UserConnection[];
+  loading = false;
 
   destroy$ = new Subject<void>();
 
@@ -29,7 +30,11 @@ export class UserConnectionsComponent implements OnDestroy {
   }
 
   fetchConnections() {
-    this.userService.updateConnections().pipe(take(1)).subscribe();
+    this.loading = true;
+    this.userService.updateConnections()
+      .pipe(take(1))
+      .subscribe()
+      .add(() => this.loading = false);
   }
 
   sortConnections() {
