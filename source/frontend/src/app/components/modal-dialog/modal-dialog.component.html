@@ -5,7 +5,7 @@
 <div class="modal-body">
   <ng-content></ng-content>
 </div>
-<div class="modal-footer">
+<div *ngIf="!hideFooter" class="modal-footer">
   <div *ngIf="error" class="modal-icon">
     <li class="icon icon-error" [ngbTooltip]="error"></li>
   </div>

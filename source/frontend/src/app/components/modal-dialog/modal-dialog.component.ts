@@ -21,6 +21,9 @@ export class ModalDialogComponent<T> {
   disableSubmitButton: boolean;
 
   @Input()
+  hideFooter = false;
+
+  @Input()
   returnValue = (): T | null => null;
 
   @Input()

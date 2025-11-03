@@ -1,4 +1,4 @@
-<div *ngIf="connections.length > 0" class="d-flex flex-wrap gap-2">
+<div *ngIf="connections.length > 0" class="d-flex flex-column gap-2">
   <app-user-connection-card
     *ngFor="let connection of connections; let first = first"
     [connection]="connection"
@@ -8,6 +8,6 @@
     (connectionRemoved)="onDeleteButtonClick($event)">
   </app-user-connection-card>
 </div>
-<div *ngIf="connections.length == 0" class="d-flex flex-wrap">
+<div *ngIf="connections.length == 0" class="no-connections-container">
   You don't have connections yet
 </div>
