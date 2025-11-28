@@ -6,7 +6,7 @@ import { UserAvatarComponent } from './user-avatar/user-avatar.component';
 import { TableComponent } from './table/table.component';
 import { PriceComponent } from './price/price.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { RoundButtonComponent } from './round-button/round-button.component';
+import { RoundButtonModule } from './round-button/round-button.module';
 import { ModalDialogComponent } from './modal-dialog/modal-dialog.component';
 import { UserTileComponent } from './user-tile/user-tile.component';
 import { PillButtonComponent } from './pill-button/pill-button.component';
@@ -15,13 +15,13 @@ import { StickyFiltersComponent } from "@components/sticky-filters/sticky-filter
 import { NgSelectModule } from "@ng-select/ng-select";
 import { StickyFiltersModule } from "@components/sticky-filters/sticky-filters.module";
 import { PipesModule } from "@app/pipes/pipes.module";
+import { RoundButtonComponent } from './round-button/round-button.component';
 
 @NgModule({
   declarations: [
     CurrencyComponent,
     UserAvatarComponent,
     PriceComponent,
-    RoundButtonComponent,
     ModalDialogComponent,
     UserTileComponent,
     PillButtonComponent,
@@ -34,7 +34,8 @@ import { PipesModule } from "@app/pipes/pipes.module";
     TableModule,
     NgSelectModule,
     StickyFiltersModule,
-    PipesModule
+    PipesModule,
+    RoundButtonModule
   ],
   exports: [
     UserAvatarComponent,
@@ -42,11 +43,11 @@ import { PipesModule } from "@app/pipes/pipes.module";
     CurrencyComponent,
     PriceComponent,
     TableComponent,
-    RoundButtonComponent,
     ModalDialogComponent,
     PillButtonComponent,
     ParenthesesPipe,
-    StickyFiltersComponent
+    StickyFiltersComponent,
+    RoundButtonComponent
   ],
 })
 export class ComponentsModule { }
