@@ -31,6 +31,7 @@
   opacity: 0.8;
   animation-name: example;
   animation-duration: 0.5s;
+  z-index: 1;
 
   &:hover {
     opacity: 1;
