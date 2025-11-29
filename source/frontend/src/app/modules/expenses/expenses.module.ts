@@ -14,6 +14,7 @@ import { EditExpenseDialogComponent } from './components/edit-expense-dialog/edi
 import { SearchResultsComponent } from './pages/search-results/search-results.component';
 import { SearchResultsResolver } from './search-results.resolver';
 import { DirectivesModule } from "@app/directives/directives.module";
+import { DeleteExpenseDialogComponent } from './components/delete-expense-dialog/delete-expense-dialog.component';
 
 const routes: Routes = [
   {
@@ -31,7 +32,7 @@ const routes: Routes = [
 ];
 
 @NgModule({
-  declarations: [ExpensesPageComponent, ExpensesTableComponent, ExpenseFormComponent, AddNewExpenseDialogComponent, EditExpenseDialogComponent, SearchResultsComponent],
+  declarations: [ExpensesPageComponent, ExpensesTableComponent, ExpenseFormComponent, AddNewExpenseDialogComponent, EditExpenseDialogComponent, SearchResultsComponent, DeleteExpenseDialogComponent],
   imports: [CommonModule, NgbModule, RouterModule.forChild(routes), ComponentsModule, ReactiveFormsModule, NgbDatepickerModule, NgSelectModule, FormsModule, DirectivesModule]
 })
 export class ExpensesModule {}

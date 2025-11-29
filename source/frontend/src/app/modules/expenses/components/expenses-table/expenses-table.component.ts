@@ -111,9 +111,6 @@ export class ExpensesTableComponent implements OnInit {
   @ViewChild('permittedPersons', { read: TemplateRef, static: true })
   permittedPersons: TemplateRef<unknown>;
 
-  @ViewChild('confirmationDialog', { read: TemplateRef, static: true })
-  confirmationDialog: TemplateRef<unknown>;
-
   @ViewChild('exchangeResult', { read: TemplateRef, static: true })
   exchangeResult: TemplateRef<unknown>;
 
