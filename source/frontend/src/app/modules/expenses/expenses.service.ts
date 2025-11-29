@@ -8,12 +8,21 @@ import { StoringExpensesStickyFilters } from './pages/expenses-page/expenses-pag
 import { emptyCategoryFilter, emptyFilter } from "@app/constants";
 import { stickyFilterItemsComparer } from "@app/helpers/comparers.helper";
 import { AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { EditExpenseDialogComponent } from './components/edit-expense-dialog/edit-expense-dialog.component';
+import { Month } from '@app/models/month.model';
+import { catchError, map, of, skipWhile, switchMap } from 'rxjs';
+import { ExpensesHttpClientService } from '@app/http-clients/expenses-http-client.service';
+import { ItemChange } from './components/expenses-table/expenses-table.model';
+import { ChangeExpenseParams } from '@app/http-clients/expenses-http-client.model';
+import { AddNewExpenseDialogComponent } from './components/add-new-expense-dialog/add-new-expense-dialog.component';
+import { DeleteExpenseDialogComponent } from './components/delete-expense-dialog/delete-expense-dialog.component';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ExpensesService {
-  constructor(private userService: UserService) {}
+  constructor(private userService: UserService, private modalService: NgbModal, private expensesHttpClient: ExpensesHttpClientService) { }
 
   /**
    * Tests if the expense matches the sticky filters.
@@ -92,7 +101,7 @@ export class ExpensesService {
   }
 
   numberValidator(): ValidatorFn {
-    return (control:AbstractControl) : ValidationErrors | null => {
+    return (control: AbstractControl): ValidationErrors | null => {
       const value = control.value;
 
       if (!value) {
@@ -105,6 +114,121 @@ export class ExpensesService {
       } catch (error: any) {
         return { 'incorrectNumber': true }
       }
+    }
+  }
+
+  openEditExpenseDialog(item: Expense | undefined, currentExpenses: Expense[], selectedMonth?: Month, stickyFilters?: StoringExpensesStickyFilters) {
+    if (item == null) {
+      return of(undefined);
+    }
+
+    const modalRef = this.modalService.open(EditExpenseDialogComponent);
+    const dialogInstance = modalRef.componentInstance as EditExpenseDialogComponent;
+    dialogInstance.item = { ...item, date: new Date(item.date) };
+    return dialogInstance.submitted
+      .pipe(
+        switchMap((params: ChangeExpenseParams) => this.expensesHttpClient.editExpense(item.id, params).pipe(catchError((err) => {
+          dialogInstance.error = err.error.message ?? err.message;
+          return of(undefined);
+        }))),
+        switchMap((updatedItem: Expense | undefined) => {
+          if (updatedItem == null) {
+            return of(undefined);
+          }
+
+          const change = this.adjustCurrentExpensesIfNeeded(item, updatedItem, selectedMonth, currentExpenses, stickyFilters);
+          modalRef.close();
+          return of(change);
+        }));
+  }
+
+  openAddExpenseDialog(item: Expense | undefined, currentExpenses: Expense[], selectedMonth?: Month, stickyFilters?: StoringExpensesStickyFilters) {
+    const modalRef = this.modalService.open(AddNewExpenseDialogComponent);
+    const dialogInstance = modalRef.componentInstance as AddNewExpenseDialogComponent;
+
+    if (item != null) {
+      dialogInstance.item = { ...item, id: 0, date: new Date(item.date) };
+    }
+
+    return dialogInstance.submitted
+      .pipe(
+        switchMap((params: ChangeExpenseParams) => this.expensesHttpClient.addNewExpense(params).pipe(catchError((err) => {
+          dialogInstance.error = err.error.message ?? err.message;
+          return of(undefined);
+        }))),
+        switchMap((addedItem: Expense | undefined) => {
+          if (addedItem == null) {
+            return of(undefined);
+          }
+          const change = this.adjustCurrentExpensesIfNeeded(undefined, addedItem, selectedMonth, currentExpenses, stickyFilters);
+          modalRef.close();
+          return of(change);
+        }));
+  }
+
+  openRemoveExpenseDialog(item: Expense | undefined, currentExpenses: Expense[]) {
+    if (item == null) {
+      return of(undefined);
+    }
+
+    const modalRef = this.modalService.open(DeleteExpenseDialogComponent);
+    const dialogInstance = modalRef.componentInstance as DeleteExpenseDialogComponent;
+
+    return dialogInstance.submitted
+      .pipe(
+        switchMap(() => this.expensesHttpClient.removeExpense(item.id).pipe(map(() => true), catchError((err) => {
+          dialogInstance.error = err.error.message ?? err.message;
+          return of(false);
+        }))),
+        switchMap((result) => {
+          if (!result) {
+            return of(undefined);
+          }
+
+          const indexOfItem = currentExpenses.indexOf(item);
+
+          let change = undefined;
+
+          if (indexOfItem >= 0) {
+            currentExpenses.splice(indexOfItem, 1);
+
+            change = {
+              oldPrice: item.price
+            };
+          }
+
+          modalRef.close();
+          return of(change);
+        }));
+  }
+
+  private adjustCurrentExpensesIfNeeded(originalItem: Expense | undefined, updatedItem: Expense, selectedMonth: Month | undefined, currentExpenses: Expense[], stickyFilters?: StoringExpensesStickyFilters): ItemChange {
+    const indexOfItem = originalItem != null ? currentExpenses.findIndex((e) => e.id === originalItem.id) : -1;
+    const date = new Date(updatedItem.date)
+    const matchedFilters = (selectedMonth == null || ((selectedMonth.month != date.getMonth() + 1 && selectedMonth.year != date.getFullYear()))) ||
+      (stickyFilters == null || this.testExpenseAgainstFilter(stickyFilters, updatedItem));
+
+    if (indexOfItem >= 0 && !matchedFilters) {
+      currentExpenses.splice(indexOfItem, 1);
+    }
+
+    if (matchedFilters) {
+      if (indexOfItem === -1) {
+        currentExpenses.push(updatedItem);
+      } else {
+        currentExpenses[indexOfItem] = updatedItem;
+      }
+    }
+
+    if (originalItem == null) {
+      return {
+        newPrice: updatedItem.price
+      };
+    } else {
+      return {
+        oldPrice: originalItem.price,
+        newPrice: updatedItem.price,
+      };
     }
   }
 }
