@@ -30,7 +30,7 @@
         </td>
         <div class="floating-menu-trigger" *ngIf="floatingMenuItems && floatingMenuItems.length > 0"
           [ngClass]="{ 'active': activeRowForFloatingMenuItem === row }">
-          <app-round-button #ngxContextMenu="ngxContextMenu" backgroundColor="#74b9ff" [enableShadow]="true" [contextMenu]="contextMenu"
+          <app-round-button #ngxContextMenu="ngxContextMenu" backgroundColor="#316df4" [enableShadow]="true" [contextMenu]="contextMenu"
             [contextMenuValue]="row" (click)="ngxContextMenu.open($event)">
             <li class="icon three-dots"></li>
           </app-round-button>
