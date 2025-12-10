@@ -1,12 +1,11 @@
 import { ExpensesHttpClientService } from '@http-clients/expenses-http-client.service';
-import { SortEvent, TableColumn } from '@components/table/table.model';
+import { SortEvent, TableColumn, TableMenuItem } from '@components/table/table.model';
 import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { Expense } from '@app/models/expense.model';
 import { priceComparer } from '@app/helpers/comparers.helper';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { EditExpenseDialogComponent } from '../edit-expense-dialog/edit-expense-dialog.component';
 import { Month } from '@app/models/month.model';
-import { ItemChangedEventArgs } from './expenses-table.model';
+import { ItemChange } from './expenses-table.model';
 import { AmbiguousUser, User } from '@app/models/user.model';
 import { getUserFullName, getUserInitials } from '@app/helpers/users.helper';
 import { UserConnectionStatus } from '@app/models/enums/user-connection-status.enum';
@@ -42,7 +41,7 @@ export class ExpensesTableComponent implements OnInit {
   loading = false;
 
   @Output()
-  itemChanged = new EventEmitter<ItemChangedEventArgs>()
+  itemChanged = new EventEmitter<ItemChange>()
 
   columns: TableColumn<Expense>[] = [
     {
@@ -90,12 +89,22 @@ export class ExpensesTableComponent implements OnInit {
       template: () => this.price,
       sortFunc: priceComparer,
       snapToPrevious: true
+    }
+  ];
+
+  menuItems: TableMenuItem<Expense>[] = [
+    {
+      title: 'Edit',
+      disabled: (row) => !this.canRowBeEdited(row),
+      action: (row) => this.editItem(row)
     },
     {
-      name: 'actions',
-      ignorePadding: true,
-      disableSorting: true,
-      template: () => this.actions
+      title: 'Duplicate',
+      action: (row) => this.duplicateItem(row)
+    },
+    {
+      title: 'Delete',
+      action: (row) => this.removeItem(row)
     }
   ];
 
@@ -110,9 +119,6 @@ export class ExpensesTableComponent implements OnInit {
 
   @ViewChild('permittedPersons', { read: TemplateRef, static: true })
   permittedPersons: TemplateRef<unknown>;
-
-  @ViewChild('confirmationDialog', { read: TemplateRef, static: true })
-  confirmationDialog: TemplateRef<unknown>;
 
   @ViewChild('exchangeResult', { read: TemplateRef, static: true })
   exchangeResult: TemplateRef<unknown>;
@@ -134,52 +140,26 @@ export class ExpensesTableComponent implements OnInit {
     }
   }
 
-  removeItem(item: Expense) {
-    this.modalService.open(this.confirmationDialog).closed.subscribe((res: boolean) => {
-      if (res) {
-        const indexOfItem = this.data.indexOf(item);
-
-        if (item.id != null) {
-          this.expensesHttpClient.removeExpense(item.id).subscribe({
-            complete: () => {
-              this.data.splice(indexOfItem, 1);
-              this.itemChanged.emit({
-                oldPrice: item.price
-              });
-            },
-            error: (ex) => {
-              console.log(`Error has occurred while deleting item: ${ex.message}`)
-            }});
-        } else {
-          this.data.splice(indexOfItem, 1);
-        }
+  editItem(item?: Expense) {
+    this.expensesService.openEditExpenseDialog(item, this.data, this.selectedMonth, this.stickyFilters).subscribe((change) => {
+      if (change != null) {
+        this.itemChanged.emit(change);
       }
     });
   }
 
-  editItem(item: Expense) {
-    const modalRef = this.modalService.open(EditExpenseDialogComponent);
-    modalRef.componentInstance.item = {...item, date: new Date(item.date)};
-    modalRef.closed.subscribe((updatedItem: Expense) => {
-      const date = new Date(updatedItem.date)
-      const indexOfItem = this.data.findIndex((e) => e.id === updatedItem.id);
+  duplicateItem(item?: Expense) {
+    this.expensesService.openAddExpenseDialog(item, this.data, this.selectedMonth, this.stickyFilters).subscribe((change) => {
+      if (change != null) {
+        this.itemChanged.emit(change);
+      }
+    });
+  }
 
-      if (indexOfItem >= 0) {
-        if (this.selectedMonth == null
-          || (this.selectedMonth.month == date.getMonth() + 1
-            && this.selectedMonth.year == date.getFullYear())
-            && (this.expensesService.testExpenseAgainstFilter(this.stickyFilters, updatedItem))) {
-          this.data[indexOfItem] = updatedItem;
-          this.itemChanged.emit({
-            oldPrice: item.price,
-            newPrice: updatedItem.price,
-          })
-        } else {
-          this.data.splice(indexOfItem, 1);
-          this.itemChanged.emit({
-            oldPrice: item.price
-          })
-        }
+  removeItem(item?: Expense) {
+    this.expensesService.openRemoveExpenseDialog(item, this.data).subscribe((change) => {
+      if (change != null) {
+        this.itemChanged.emit(change);
       }
     });
   }
@@ -200,7 +180,11 @@ export class ExpensesTableComponent implements OnInit {
     localStorage.setItem(this.sortingStorageName, JSON.stringify(sortingDescriptor));
   }
 
-  canRowBeEdited(row: Expense) {
+  canRowBeEdited(row?: Expense) {
+    if (row == null) {
+      return false;
+    }
+
     if (this.currentUser == null) {
       return false;
     }

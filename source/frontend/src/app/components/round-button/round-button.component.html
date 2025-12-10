@@ -1,3 +1,5 @@
-<a class="icon-button" [ngStyle]="{ 'background-color': currentBackgroundColor }" (mouseenter)="onMouseOver()" (mouseleave)="onMouseLeave()">
+<a class="icon-button"
+  [ngStyle]="{ 'background-color': currentBackgroundColor, 'box-shadow': enableShadow ? '1px 1px 2px ' + shadowColor : 'none' }"
+  (mouseenter)="onMouseOver()" (mouseleave)="onMouseLeave()">
   <ng-content></ng-content>
 </a>

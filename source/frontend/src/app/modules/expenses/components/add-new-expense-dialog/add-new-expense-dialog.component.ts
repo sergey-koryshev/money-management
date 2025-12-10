@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter } from '@angular/core';
 import { ModalSubmitEvent } from '@app/components/modal-dialog/modal-dialog.model';
-import { ExpensesHttpClientService } from '@app/http-clients/expenses-http-client.service';
 import { ChangeExpenseParams } from '@app/http-clients/expenses-http-client.model';
+import { Expense } from '@app/models/expense.model';
 
 @Component({
   selector: 'app-add-new-expense-dialog',
@@ -9,9 +9,10 @@ import { ChangeExpenseParams } from '@app/http-clients/expenses-http-client.mode
   styleUrls: ['./add-new-expense-dialog.component.scss']
 })
 export class AddNewExpenseDialogComponent {
+  item?: Expense;
   error?: string;
 
-  constructor(private expensesHttpClient: ExpensesHttpClientService) { }
+  submitted = new EventEmitter<ChangeExpenseParams>();
 
   onSubmit(event: ModalSubmitEvent<ChangeExpenseParams | null>) {
     if (!event.value) {
@@ -20,10 +21,6 @@ export class AddNewExpenseDialogComponent {
 
     const params: Omit<ChangeExpenseParams, 'Id'> = event.value;
     this.error = undefined;
-    this.expensesHttpClient.addNewExpense(params)
-      .subscribe({
-        next: (addedExpanse) => event.modalRef.close(addedExpanse),
-        error: (err) => this.error = err.error.message ?? err.message
-      });
+    this.submitted.emit(params);
   }
 }

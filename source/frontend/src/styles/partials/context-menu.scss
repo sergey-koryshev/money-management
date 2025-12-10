@@ -1,0 +1,10 @@
+// Importing styles for ngx-contextmenu
+@import '@angular/cdk/overlay-prebuilt.css';
+@import './node_modules/@perfectmemory/ngx-contextmenu/src/assets/stylesheets/base.scss';
+
+.floating-context-menu {
+  --ngx-contextmenu-border-radius: 5px;
+  --ngx-contextmenu-text-color: #212529;
+  --ngx-contextmenu-item-text-hover-color: #212529;
+  --ngx-contextmenu-font-size: 15px;
+}

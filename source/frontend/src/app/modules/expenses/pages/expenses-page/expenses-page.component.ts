@@ -4,11 +4,10 @@ import { CurrencyService } from '@services/currency.service';
 import { Expense } from '@app/models/expense.model';
 import { AfterViewInit, Component, HostListener, OnInit, ViewChild } from '@angular/core';
 import { switchMap, tap, catchError, map, take, skipWhile } from 'rxjs/operators';
-import { NgbDatepickerNavigateEvent, NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDatepickerNavigateEvent } from '@ng-bootstrap/ng-bootstrap';
 import { Month } from '@app/models/month.model';
-import { AddNewExpenseDialogComponent } from '../../components/add-new-expense-dialog/add-new-expense-dialog.component';
 import { Price } from '@app/models/price.model';
-import { ItemChangedEventArgs } from '../../components/expenses-table/expenses-table.model';
+import { ItemChange } from '../../components/expenses-table/expenses-table.model';
 import { SharedFilterOptions } from '@app/models/enums/shared-filter.enum';
 import { CreatedByFilterOptions } from '@app/models/enums/created-by-filter.enum';
 import { ExpensesService } from '../../expenses.service';
@@ -78,7 +77,6 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
   constructor(
     private currencyService: CurrencyService,
     private expensesHttpClient: ExpensesHttpClientService,
-    private modalService: NgbModal,
     private expensesMonthService: ExpensesMonthService,
     private expensesService: ExpensesService,
     private categoryHttpClient: CategoryHttpClient) {
@@ -157,18 +155,10 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
       .subscribe();
   }
 
-  open() {
-    const modalRef = this.modalService.open(AddNewExpenseDialogComponent);
-    modalRef.closed.subscribe((addedExpanse: Expense) => {
-      const date = new Date(addedExpanse.date);
-
-      if (this.expensesMonthService.month.month == date.getMonth() + 1 &&
-        this.expensesMonthService.month.year == date.getFullYear() &&
-        this.expensesService.testExpenseAgainstFilter(this.stickyFilters$.value, addedExpanse)) {
-        this.expenses.push(addedExpanse);
-        this.onItemChange({
-          newPrice: addedExpanse.price
-        })
+  addItem() {
+    this.expensesService.openAddExpenseDialog(undefined, this.expenses, this.expensesMonthService.month, this.stickyFilters$.value).subscribe((change) => {
+      if (change != null) {
+        this.onItemChange(change);
       }
     });
   }
@@ -181,7 +171,7 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
     this.selectedMonth = this.expensesMonthService.month;
   }
 
-  onItemChange(args: ItemChangedEventArgs) {
+  onItemChange(args: ItemChange) {
     if (!this.totalAmount) {
       return;
     }

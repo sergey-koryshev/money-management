@@ -1,48 +1,63 @@
 <table class="table table-striped">
-    <thead>
-        <tr>
-            <th
-                scope="col"
-                [sortable]="column.name"
-                [direction]="defaultSorting.column === column.name ? defaultSorting.direction : ''"
-                [disableSorting]="column.disableSorting ?? false"
-                (sort)="onSort($event)"
-                *ngFor="let column of getVisibleColumns()"
-                [ngStyle]="{ 'min-width': column.minWidth, 'width': column.stretch ? '100%' : null, 'white-space': 'nowrap' }"
-                [ngClass]="{ 'ps-0': column.snapToPrevious }">
-                <span>{{ column.displayName ?? "" }}</span>
-            </th>
-        </tr>
-    </thead>
-    <tbody>
-      <ng-container *ngIf="!loading">
-        <tr *ngFor="let row of sortedData">
-          <td *ngFor="let column of getVisibleColumns()" [ngSwitch]="getColumnType(column)" [ngClass]="{ 'p-0': column.ignorePadding, 'ps-0': column.snapToPrevious }" [ngStyle]="{ 'vertical-align': 'middle', 'white-space': column.stretch ? 'normal' : 'nowrap' }">
-                  <span *ngSwitchCase="columnTypes.function">
-                      {{ column.function?.(row) ?? emptyTableData}}
-                  </span>
-            <ng-container *ngSwitchCase="columnTypes.template">
-              <ng-container [ngTemplateOutlet]="column.template?.() ?? null" [ngTemplateOutletContext]="{ $implicit: row }"></ng-container>
-            </ng-container>
-            <span *ngSwitchDefault>
-                      {{ extractProperty(row, column.name) ?? emptyTableData }}
-                  </span>
-          </td>
-        </tr>
-        <tr *ngIf="!sortedData || sortedData?.length === 0">
-          <td [attr.colspan]="columns.length"
-              class="no-data-column">
-            <span>No data</span>
-          </td>
-        </tr>
-      </ng-container>
-      <tr *ngIf="loading">
-        <td [attr.colspan]="columns.length"
-            class="no-data-column">
-          <div class="spinner-border spinner-border-sm" role="status">
-            <span class="visually-hidden">Loading...</span>
-          </div>
+  <thead>
+    <tr>
+      <th scope="col" [sortable]="column.name"
+        [direction]="defaultSorting.column === column.name ? defaultSorting.direction : ''"
+        [disableSorting]="column.disableSorting ?? false" (sort)="onSort($event)"
+        *ngFor="let column of getVisibleColumns()"
+        [ngStyle]="{ 'min-width': column.minWidth, 'width': column.stretch ? '100%' : null, 'white-space': 'nowrap' }"
+        [ngClass]="{ 'ps-0': column.snapToPrevious }">
+        <span>{{ column.displayName ?? "" }}</span>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <ng-container *ngIf="!loading">
+      <tr *ngFor="let row of sortedData">
+        <td *ngFor="let column of getVisibleColumns()" [ngSwitch]="getColumnType(column)"
+          [ngClass]="{ 'p-0': column.ignorePadding, 'ps-0': column.snapToPrevious }"
+          [ngStyle]="{ 'vertical-align': 'middle', 'white-space': column.stretch ? 'normal' : 'nowrap' }">
+          <span *ngSwitchCase="columnTypes.function">
+            {{ column.function?.(row) ?? emptyTableData}}
+          </span>
+          <ng-container *ngSwitchCase="columnTypes.template">
+            <ng-container [ngTemplateOutlet]="column.template?.() ?? null"
+              [ngTemplateOutletContext]="{ $implicit: row }"></ng-container>
+          </ng-container>
+          <span *ngSwitchDefault>
+            {{ extractProperty(row, column.name) ?? emptyTableData }}
+          </span>
+        </td>
+        <div class="floating-menu-trigger" *ngIf="floatingMenuItems && floatingMenuItems.length > 0"
+          [ngClass]="{ 'active': activeRowForFloatingMenuItem === row }">
+          <app-round-button #ngxContextMenu="ngxContextMenu" backgroundColor="#316df4" [enableShadow]="true" [contextMenu]="contextMenu"
+            [contextMenuValue]="row" (click)="ngxContextMenu.open($event)">
+            <li class="icon three-dots"></li>
+          </app-round-button>
+        </div>
+      </tr>
+      <tr *ngIf="!sortedData || sortedData.length === 0">
+        <td [attr.colspan]="columns.length" class="no-data-column">
+          <span>No data</span>
         </td>
       </tr>
-    </tbody>
+    </ng-container>
+    <tr *ngIf="loading">
+      <td [attr.colspan]="columns.length" class="no-data-column">
+        <div class="spinner-border spinner-border-sm" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </td>
+    </tr>
+  </tbody>
 </table>
+
+<context-menu #contextMenu menuClass="floating-context-menu" (open)="onFloatingMenuOpen($event)"
+  (close)="onFloatingMenuClose()">
+  <ng-template contextMenuItem *ngFor="let item of floatingMenuItems" (execute)="item.action($event.value)"
+    [visible]="item.visible != null ? item.visible : true" [disabled]="item.disabled != null ? item.disabled : false">
+    <div class="context-menu-item">
+      {{ item.title }}
+    </div>
+  </ng-template>
+</context-menu>

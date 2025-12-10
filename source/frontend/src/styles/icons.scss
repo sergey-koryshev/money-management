@@ -26,4 +26,9 @@
     background-color: gray;
     mask-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxNiIgaGVpZ2h0PSIxNiIgZmlsbD0iY3VycmVudENvbG9yIiBjbGFzcz0iYmkgYmkteC1jaXJjbGUtZmlsbCIgdmlld0JveD0iMCAwIDE2IDE2Ij4KICA8cGF0aCBkPSJNMTYgOEE4IDggMCAxIDEgMCA4YTggOCAwIDAgMSAxNiAwTTUuMzU0IDQuNjQ2YS41LjUgMCAxIDAtLjcwOC43MDhMNy4yOTMgOGwtMi42NDcgMi42NDZhLjUuNSAwIDAgMCAuNzA4LjcwOEw4IDguNzA3bDIuNjQ2IDIuNjQ3YS41LjUgMCAwIDAgLjcwOC0uNzA4TDguNzA3IDhsMi42NDctMi42NDZhLjUuNSAwIDAgMC0uNzA4LS43MDhMOCA3LjI5M3oiLz4KPC9zdmc+");
   }
+
+  &.three-dots {
+    background-color: white;
+    mask-image: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIj8+PHN2ZyB2aWV3Qm94PSIwIDAgMjAgMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PHBhdGggZD0iTTEwIDEyYTIgMiAwIDEgMSAwLTQgMiAyIDAgMCAxIDAgNHptMC02YTIgMiAwIDEgMSAwLTQgMiAyIDAgMCAxIDAgNHptMCAxMmEyIDIgMCAxIDEgMC00IDIgMiAwIDAgMSAwIDR6Ii8+PC9zdmc+");
+  }
 }

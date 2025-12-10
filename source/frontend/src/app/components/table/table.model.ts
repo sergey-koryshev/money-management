@@ -26,3 +26,10 @@ export interface SortEvent {
     column: string;
     direction: SortDirection;
 }
+
+export interface TableMenuItem<T> {
+  title: string;
+  action: (row?: T) => void;
+  disabled?: boolean | ((value?: T | any) => boolean);
+  visible?: boolean | ((value?: T) => boolean);
+}

@@ -11,12 +11,20 @@ export class RoundButtonComponent implements OnInit {
   @Input()
   backgroundColor: string;
 
+  @Input()
+  enableShadow = false;
+
   currentBackgroundColor: string;
   lighterBackgroundColor: string;
+  shadowColor: string;
 
   ngOnInit(): void {
     this.currentBackgroundColor = this.backgroundColor;
     this.lighterBackgroundColor = shade(this.backgroundColor, -20);
+
+    if (this.enableShadow) {
+      this.shadowColor = shade(this.backgroundColor, -80);
+    }
   }
 
   onMouseOver() {

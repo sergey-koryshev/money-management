@@ -1,8 +1,9 @@
-import { SortEvent, TableColumn, TableColumnType } from './table.model';
-import { Component, Input, QueryList, ViewChildren, OnInit, OnChanges, SimpleChanges, DoCheck, Output, EventEmitter } from '@angular/core';
+import { SortEvent, TableColumn, TableColumnType, TableMenuItem } from './table.model';
+import { Component, Input, QueryList, ViewChildren, OnInit, DoCheck, Output, EventEmitter } from '@angular/core';
 import { emptyTableData } from '@app/constants';
 import { ObjectKey } from '@app/models/base.model';
 import { SortableHeaderDirective } from './sortable-header.directive';
+import { ContextMenuOpenEvent } from '@perfectmemory/ngx-contextmenu';
 
 @Component({
   selector: 'app-table',
@@ -10,6 +11,13 @@ import { SortableHeaderDirective } from './sortable-header.directive';
   styleUrls: ['./table.component.scss']
 })
 export class TableComponent<T> implements OnInit, DoCheck {
+onFloatingMenuClose() {
+  this.activeRowForFloatingMenuItem = undefined;
+}
+onFloatingMenuOpen($event: ContextMenuOpenEvent<any>) {
+  this.activeRowForFloatingMenuItem = $event.value;
+}
+
   private lastSorting: SortEvent;
 
   @Input()
@@ -24,17 +32,18 @@ export class TableComponent<T> implements OnInit, DoCheck {
   @Input()
   loading = false;
 
+  @Input()
+  floatingMenuItems: TableMenuItem<T>[];
+
   @Output()
   sortingChanged = new EventEmitter<SortEvent>();
 
   sortedData: T[];
-
   columnTypes = TableColumnType;
-
   emptyTableData = emptyTableData;
+  activeRowForFloatingMenuItem?: T;
 
-  @ViewChildren(SortableHeaderDirective)
-  headers: QueryList<SortableHeaderDirective>;
+  @ViewChildren(SortableHeaderDirective) headers: QueryList<SortableHeaderDirective>;
 
   ngOnInit(): void {
     this.data = this.data ?? [];

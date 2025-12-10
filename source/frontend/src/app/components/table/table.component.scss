@@ -1,3 +1,27 @@
 .no-data-column {
     text-align: center;
 }
+
+tr {
+  position: relative;
+
+  .floating-menu-trigger {
+    position: absolute;
+    display: none;
+    cursor: pointer;
+    top: 50%;
+    right: 0;
+    transform: translate(0, -50%);
+    box-shadow: none;
+
+    &.active {
+      display: block;
+    }
+  }
+
+  &:hover {
+    .floating-menu-trigger {
+      display: block;
+    }
+  }
+}
