@@ -204,9 +204,16 @@ export class ExpensesService {
 
   private adjustCurrentExpensesIfNeeded(originalItem: Expense | undefined, updatedItem: Expense, selectedMonth: Month | undefined, currentExpenses: Expense[], stickyFilters?: StoringExpensesStickyFilters): ItemChange {
     const indexOfItem = originalItem != null ? currentExpenses.findIndex((e) => e.id === originalItem.id) : -1;
-    const date = new Date(updatedItem.date)
-    const matchedFilters = (selectedMonth == null || ((selectedMonth.month != date.getMonth() + 1 && selectedMonth.year != date.getFullYear()))) ||
-      (stickyFilters == null || this.testExpenseAgainstFilter(stickyFilters, updatedItem));
+    let matchedFilters = true;
+
+    if (selectedMonth != null) {
+      const date = new Date(updatedItem.date)
+      matchedFilters = matchedFilters && (selectedMonth.month === date.getMonth() + 1 && selectedMonth.year === date.getFullYear());
+    }
+
+    if (stickyFilters != null) {
+      matchedFilters = matchedFilters && this.testExpenseAgainstFilter(stickyFilters, updatedItem);
+    }
 
     if (indexOfItem >= 0 && !matchedFilters) {
       currentExpenses.splice(indexOfItem, 1);
