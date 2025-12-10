@@ -5,7 +5,7 @@
 export const environment = {
   production: false,
   baseApiUri: process.env['BASE_API_URL'] ?? 'http://localhost:5161',
-  productVersion: '0.1'
+  productVersion: '0.3'
 };
 
 /*
