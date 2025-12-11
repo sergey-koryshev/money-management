@@ -28,13 +28,15 @@
             {{ extractProperty(row, column.name) ?? emptyTableData }}
           </span>
         </td>
-        <div class="floating-menu-trigger" *ngIf="floatingMenuItems && floatingMenuItems.length > 0"
-          [ngClass]="{ 'active': activeRowForFloatingMenuItem === row }">
-          <app-round-button #ngxContextMenu="ngxContextMenu" backgroundColor="#316df4" [enableShadow]="true" [contextMenu]="contextMenu"
-            [contextMenuValue]="row" (click)="ngxContextMenu.open($event)">
-            <li class="icon three-dots"></li>
-          </app-round-button>
-        </div>
+        <td class="floating-menu-column">
+          <div class="floating-menu-trigger" *ngIf="floatingMenuItems && floatingMenuItems.length > 0"
+            [ngClass]="{ 'active': activeRowForFloatingMenuItem === row }">
+            <app-round-button #ngxContextMenu="ngxContextMenu" backgroundColor="#316df4" [enableShadow]="true"
+              [contextMenu]="contextMenu" [contextMenuValue]="row" (click)="ngxContextMenu.open($event)">
+              <li class="icon three-dots"></li>
+            </app-round-button>
+          </div>
+        </td>
       </tr>
       <tr *ngIf="!sortedData || sortedData.length === 0">
         <td [attr.colspan]="columns.length" class="no-data-column">
