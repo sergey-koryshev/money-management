@@ -3,24 +3,29 @@
 }
 
 tr {
-  position: relative;
+  .floating-menu-column {
+    position: relative;
+    width: 0;
+    min-width: 0;
+    padding: 0;
 
-  .floating-menu-trigger {
-    position: absolute;
-    display: none;
-    cursor: pointer;
-    top: 50%;
-    right: 0;
-    transform: translate(0, -50%);
-    box-shadow: none;
+    .floating-menu-trigger {
+      position: absolute;
+      display: none;
+      cursor: pointer;
+      top: 50%;
+      right: 5px;
+      transform: translate(0, -50%);
+      box-shadow: none;
 
-    &.active {
-      display: block;
+      &.active {
+        display: block;
+      }
     }
   }
 
   &:hover {
-    .floating-menu-trigger {
+    .floating-menu-column .floating-menu-trigger {
       display: block;
     }
   }
