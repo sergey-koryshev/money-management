@@ -1,0 +1,8 @@
+.modal-dialog {
+  // This is a workaround for the issue with the busy overlay not having round corners.
+  .modal-content:has(.busy-overlay) {
+    overflow: hidden;
+  }
+}
+
+
