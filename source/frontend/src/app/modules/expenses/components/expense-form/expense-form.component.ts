@@ -29,6 +29,9 @@ export class ExpenseFormComponent implements OnInit, OnChanges {
   @Input()
   item?: Expense;
 
+  @Input()
+  isBusy = false;
+
   private readonly currentUser: User | null;
 
   private defaultCurrencyIdStorageName = 'default-currency';
@@ -125,6 +128,10 @@ export class ExpenseFormComponent implements OnInit, OnChanges {
         });
 
       this.populateValues(this.item);
+    }
+
+    if (changes.isBusy) {
+      changes.isBusy.currentValue ? this.form.disable() : this.form.enable();
     }
   }
 
