@@ -11,7 +11,7 @@ import { AbstractControl, ValidationErrors, ValidatorFn } from "@angular/forms";
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { EditExpenseDialogComponent } from './components/edit-expense-dialog/edit-expense-dialog.component';
 import { Month } from '@app/models/month.model';
-import { catchError, map, of, skipWhile, switchMap } from 'rxjs';
+import { catchError, map, of, switchMap, tap } from 'rxjs';
 import { ExpensesHttpClientService } from '@app/http-clients/expenses-http-client.service';
 import { ItemChange } from './components/expenses-table/expenses-table.model';
 import { ChangeExpenseParams } from '@app/http-clients/expenses-http-client.model';
@@ -122,13 +122,18 @@ export class ExpensesService {
       return of(undefined);
     }
 
-    const modalRef = this.modalService.open(EditExpenseDialogComponent);
-    const dialogInstance = modalRef.componentInstance as EditExpenseDialogComponent;
+    let dialogInstance: EditExpenseDialogComponent;
+    const modalRef = this.modalService.open(EditExpenseDialogComponent, {
+      beforeDismiss: () => !dialogInstance?.isBusy
+    });
+    dialogInstance = modalRef.componentInstance as EditExpenseDialogComponent;
     dialogInstance.item = { ...item, date: new Date(item.date) };
     return dialogInstance.submitted
       .pipe(
+        tap(() => dialogInstance.isBusy = true),
         switchMap((params: ChangeExpenseParams) => this.expensesHttpClient.editExpense(item.id, params).pipe(catchError((err) => {
           dialogInstance.error = err.error.message ?? err.message;
+          dialogInstance.isBusy = false;
           return of(undefined);
         }))),
         switchMap((updatedItem: Expense | undefined) => {
@@ -143,8 +148,13 @@ export class ExpensesService {
   }
 
   openAddExpenseDialog(item: Expense | undefined, currentExpenses: Expense[], selectedMonth?: Month, stickyFilters?: StoringExpensesStickyFilters) {
-    const modalRef = this.modalService.open(AddNewExpenseDialogComponent);
-    const dialogInstance = modalRef.componentInstance as AddNewExpenseDialogComponent;
+    let dialogInstance: AddNewExpenseDialogComponent;
+
+    const modalRef = this.modalService.open(AddNewExpenseDialogComponent, {
+      beforeDismiss: () => !dialogInstance?.isBusy
+    });
+
+    dialogInstance = modalRef.componentInstance as AddNewExpenseDialogComponent;
 
     if (item != null) {
       dialogInstance.item = { ...item, id: 0, date: new Date(item.date) };
@@ -152,8 +162,10 @@ export class ExpensesService {
 
     return dialogInstance.submitted
       .pipe(
+        tap(() => dialogInstance.isBusy = true),
         switchMap((params: ChangeExpenseParams) => this.expensesHttpClient.addNewExpense(params).pipe(catchError((err) => {
           dialogInstance.error = err.error.message ?? err.message;
+          dialogInstance.isBusy = false;
           return of(undefined);
         }))),
         switchMap((addedItem: Expense | undefined) => {
@@ -171,13 +183,18 @@ export class ExpensesService {
       return of(undefined);
     }
 
-    const modalRef = this.modalService.open(DeleteExpenseDialogComponent);
-    const dialogInstance = modalRef.componentInstance as DeleteExpenseDialogComponent;
+    let dialogInstance: DeleteExpenseDialogComponent;
+    const modalRef = this.modalService.open(DeleteExpenseDialogComponent, {
+      beforeDismiss: () => !dialogInstance?.isBusy
+    });
+    dialogInstance = modalRef.componentInstance as DeleteExpenseDialogComponent;
 
     return dialogInstance.submitted
       .pipe(
+        tap(() => dialogInstance.isBusy = true),
         switchMap(() => this.expensesHttpClient.removeExpense(item.id).pipe(map(() => true), catchError((err) => {
           dialogInstance.error = err.error.message ?? err.message;
+          dialogInstance.isBusy = false;
           return of(false);
         }))),
         switchMap((result) => {
