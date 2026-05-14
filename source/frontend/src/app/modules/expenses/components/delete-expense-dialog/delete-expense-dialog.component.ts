@@ -6,6 +6,7 @@ import { Component, EventEmitter } from "@angular/core";
 })
 export class DeleteExpenseDialogComponent {
   error?: string;
+  isBusy = false;
 
   submitted = new EventEmitter<boolean>();
 
