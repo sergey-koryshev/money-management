@@ -1,14 +1,24 @@
+<div *ngIf="isBusy" class="busy-overlay">
+  <div class="busy-spinner">
+    <div class="spinner-border" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+</div>
+
 <div class="modal-header">
   <h4 class="modal-title" id="modal-basic-title">{{ name }}</h4>
-  <button type="button" class="btn-close" aria-label="Close" (click)="modalRef.dismiss()"></button>
+  <button type="button" class="btn-close" aria-label="Close" (click)="modalRef.dismiss()" [disabled]="isBusy"></button>
 </div>
+
 <div class="modal-body">
   <ng-content></ng-content>
 </div>
+
 <div *ngIf="!hideFooter" class="modal-footer">
   <div *ngIf="error" class="modal-icon">
     <li class="icon icon-error" [ngbTooltip]="error"></li>
   </div>
-  <button type="button" class="btn btn-outline-dark" (click)="modalRef.dismiss()">{{ buttonCancelName }}</button>
-  <button type="button" class="btn btn-success" [disabled]="disableSubmitButton" (click)="onSubmitButtonClick()">{{ buttonSaveName }}</button>
+  <button type="button" class="btn btn-outline-dark" (click)="modalRef.dismiss()" [disabled]="isBusy">{{ buttonCancelName }}</button>
+  <button type="button" class="btn btn-success" [disabled]="disableSubmitButton || isBusy" (click)="onSubmitButtonClick()">{{ buttonSaveName }}</button>
 </div>

@@ -24,6 +24,9 @@ export class ModalDialogComponent<T> {
   hideFooter = false;
 
   @Input()
+  isBusy = false;
+
+  @Input()
   returnValue = (): T | null => null;
 
   @Input()
