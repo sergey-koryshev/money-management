@@ -11,6 +11,7 @@ import { Expense } from '@app/models/expense.model';
 export class AddNewExpenseDialogComponent {
   item?: Expense;
   error?: string;
+  isBusy = false;
 
   submitted = new EventEmitter<ChangeExpenseParams>();
 

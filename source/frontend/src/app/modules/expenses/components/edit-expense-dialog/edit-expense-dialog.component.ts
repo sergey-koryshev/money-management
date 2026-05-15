@@ -11,6 +11,7 @@ import { ChangeExpenseParams } from '@app/http-clients/expenses-http-client.mode
 export class EditExpenseDialogComponent {
   item?: Expense;
   error?: string;
+  isBusy = false;
 
   submitted = new EventEmitter<ChangeExpenseParams>();
 
