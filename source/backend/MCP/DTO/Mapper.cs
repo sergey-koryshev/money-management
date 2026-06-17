@@ -16,6 +16,7 @@ public class Mapper : Profile
 
         CreateMap<Price, PriceMcpDto>();
 
+        // TODO: implement logic to hide name if it's restricted to current user
         CreateMap<Person, PersonMcpDto>();
 
         CreateMap<Models.ExpensesFilter, Backend.Domain.Models.ExpensesFilter>();
