@@ -32,7 +32,7 @@ jobs:
         shell: pwsh
         run: |
           $epicBranchName = ${{ github.ref_name }}
-          "suffix=$($epicBranchName -replace '^epic/', '') | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          "suffix=$($epicBranchName -replace '^epic/', '')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 
       - name: Increment Version
         uses: sergey-koryshev/bump-version@v1.2.1
