@@ -4,7 +4,7 @@ public class Connection
 {
     public int Id { get; set; }
 
-    public required Person RequestingPerson { get; set; }
+    public required ConnectionType Type { get; set; }
 
     public required Person TargetPerson { get; set; }
 

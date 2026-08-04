@@ -35,8 +35,8 @@ public class AutoMapperTests
         var connection = new Connection
         {
             Id = 1,
-            RequestingPerson = requestingPerson.ToModel(),
-            TargetPerson = targetPerson.ToModel(),
+            Type = identityContainsRequestingPerson ? ConnectionType.Outgoing : ConnectionType.Incoming,
+            TargetPerson = identityContainsRequestingPerson ? targetPerson.ToModel() : requestingPerson.ToModel(),
             IsAccepted = true,
             RequestedOn = DateTime.UtcNow,
             AcceptedOn = DateTime.UtcNow
@@ -80,7 +80,7 @@ public class AutoMapperTests
         var connection = new Connection
         {
             Id = 1,
-            RequestingPerson = requestingPerson.ToModel(),
+            Type = ConnectionType.Outgoing,
             TargetPerson = targetPerson.ToModel(),
             IsAccepted = false,
             RequestedOn = DateTime.UtcNow
@@ -121,8 +121,8 @@ public class AutoMapperTests
         var connection = new Connection
         {
             Id = 1,
-            RequestingPerson = requestingPerson.ToModel(),
-            TargetPerson = targetPerson.ToModel(),
+            Type = ConnectionType.Incoming,
+            TargetPerson = requestingPerson.ToModel(),
             IsAccepted = false,
             RequestedOn = DateTime.UtcNow
         };

@@ -36,7 +36,7 @@ public static class MapperExtensions
         };
     }
 
-    public static Connection ToModel(this Entities.Connection entity)
+    public static Connection ToModel(this Entities.Connection entity, int currentPersonId)
     {
         if (entity.RequestingPerson == null)
         {
@@ -48,11 +48,14 @@ public static class MapperExtensions
             throw new InvalidOperationException("Property TargetPerson is required to convert Connection entity to model");
         }
 
+        var connectionType = entity.RequestingPersonId == currentPersonId ? ConnectionType.Outgoing : ConnectionType.Incoming;
+        var targetPerson = entity.RequestingPersonId == currentPersonId ? entity.TargetPerson : entity.RequestingPerson;
+
         return new Connection
         {
             Id = entity.Id,
-            RequestingPerson = entity.RequestingPerson.ToModel(),
-            TargetPerson = entity.TargetPerson.ToModel(),
+            Type = connectionType,
+            TargetPerson = targetPerson.ToModel(),
             IsAccepted = entity.IsAccepted,
             RequestedOn = entity.RequestedOn,
             AcceptedOn = entity.AcceptedOn

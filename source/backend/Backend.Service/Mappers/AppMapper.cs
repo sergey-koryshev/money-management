@@ -41,7 +41,7 @@ public class AppMapper : Profile
         {
             return src.IsAccepted
                 ? ConnectionStatus.Accepted
-                : src.TargetPerson.Id == identity.Id
+                : src.Type == ConnectionType.Incoming
                     ? ConnectionStatus.Pending
                     : ConnectionStatus.PendingOnTarget;
         }
@@ -53,11 +53,8 @@ public class AppMapper : Profile
     {
         if (context.TryGetItems(out var items) && items.TryGetValue("Identity", out var item) && item is Entities.Person identity)
         {
-            items["IncludePersonDetails"] = src.IsAccepted || src.TargetPerson.Id == identity.Id;
-
-            return src.RequestingPerson.Id == identity.Id
-                ? src.TargetPerson
-                : src.RequestingPerson;
+            items["IncludePersonDetails"] = src.IsAccepted || (src.Type == ConnectionType.Incoming &&src.TargetPerson.Id != identity.Id);
+            return src.TargetPerson;
         }
 
         throw new AutoMapperMappingException("'Identity' in resolution context is required to map Connection to ConnectionDto");

@@ -20,7 +20,12 @@ public class ConnectionsRepository
 
     public List<Connection> GetAllConnections()
     {
-        return this.GetConnectionsQuery().Select(c => c.ToModel()).ToList();
+        return this.GetConnectionsQuery().Select(c => c.ToModel(this.identity.Id)).ToList();
+    }
+
+    public List<Connection> GetAcceptedConnections()
+    {
+        return this.GetConnectionsQuery().Where(c => c.IsAccepted).Select(c => c.ToModel(this.identity.Id)).ToList();
     }
 
     public int GetPendingConnectionRequestsAmount()
@@ -62,7 +67,7 @@ public class ConnectionsRepository
         entity.Reference(c => c.TargetPerson).Load();
         this.dbContext.SaveChanges();
 
-        return connectionEntity.ToModel();
+        return connectionEntity.ToModel(this.identity.Id);
     }
 
     public void DeleteConnection(int connectionId)
@@ -91,7 +96,7 @@ public class ConnectionsRepository
         acceptingConnection.AcceptedOn = DateTime.UtcNow;
         this.dbContext.SaveChanges();
 
-        return acceptingConnection.ToModel();
+        return acceptingConnection.ToModel(this.identity.Id);
     }
 
     public HashSet<int> GetConnectedPersonsIds(bool onlyAccepted)

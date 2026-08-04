@@ -119,13 +119,7 @@ public class ConnectionsRepositoryTests : TestsBase
         var expectedModel = new Connection
         {
             IsAccepted = false,
-            RequestingPerson = new Person
-            {
-                Id = this.Daniel.Id,
-                FirstName = this.Daniel.FirstName,
-                SecondName = this.Daniel.SecondName,
-                Tenant = this.Daniel.Tenant
-            },
+            Type = ConnectionType.Outgoing,
             TargetPerson = new Person
             {
                 Id = this.Veronika.Id,
@@ -142,7 +136,7 @@ public class ConnectionsRepositoryTests : TestsBase
 
         var createdConnection = this.DbContext.Connections.FirstOrDefault(c => c.RequestingPersonId == this.Daniel.Id && c.TargetPersonId == this.Veronika.Id);
         createdConnection.Should().NotBeNull();
-        createdConnection!.ToModel().Should().BeEquivalentTo(expectedModel, this.connectionModelEquivalencyAssertionOptions);
+        createdConnection!.ToModel(this.Daniel.Id).Should().BeEquivalentTo(expectedModel, this.connectionModelEquivalencyAssertionOptions);
     }
 
     [Test]
@@ -258,19 +252,13 @@ public class ConnectionsRepositoryTests : TestsBase
         var expectedModel = new Connection
         {
             IsAccepted = true,
-            RequestingPerson = new Person
+            Type = ConnectionType.Incoming,
+            TargetPerson = new Person
             {
                 Id = this.Daniel.Id,
                 FirstName = this.Daniel.FirstName,
                 SecondName = this.Daniel.SecondName,
                 Tenant = this.Daniel.Tenant
-            },
-            TargetPerson = new Person
-            {
-                Id = this.Veronika.Id,
-                FirstName = this.Veronika.FirstName,
-                SecondName = this.Veronika.SecondName,
-                Tenant = this.Veronika.Tenant
             },
             RequestedOn = DateTime.UtcNow,
             AcceptedOn = DateTime.UtcNow
@@ -281,6 +269,34 @@ public class ConnectionsRepositoryTests : TestsBase
 
         var acceptedConnection = this.DbContext.Connections.Find(connection.Id);
         acceptedConnection.Should().NotBeNull();
-        acceptedConnection!.ToModel().Should().BeEquivalentTo(expectedModel, this.connectionModelEquivalencyAssertionOptions);
+        acceptedConnection!.ToModel(this.Veronika.Id).Should().BeEquivalentTo(expectedModel, this.connectionModelEquivalencyAssertionOptions);
+    }
+
+    [Test]
+    public void GetAcceptedConnections_UserHasAcceptedAndNotAcceptedConnections_OnlyAcceptedConnectionsReturned()
+    {
+        var connections = new List<Entities.Connection>
+        {
+            new Entities.Connection
+            {
+                RequestingPersonId = this.Daniel.Id,
+                TargetPersonId = this.Veronika.Id,
+                IsAccepted = false,
+                RequestedOn = DateTime.UtcNow
+            },
+            new Entities.Connection
+            {
+                RequestingPersonId = this.Daniel.Id,
+                TargetPersonId = this.Chuck.Id,
+                IsAccepted = true,
+                RequestedOn = DateTime.UtcNow,
+                AcceptedOn = DateTime.UtcNow
+            }
+        };
+        this.DbContext.Connections.AddRange(connections);
+        this.DbContext.SaveChanges();
+
+        var acceptedConnections = new ConnectionsRepository(this.DbContext, this.Daniel).GetAcceptedConnections();
+        acceptedConnections.All(c => c.IsAccepted).Should().BeTrue("all returned connections should be accepted");
     }
 }

@@ -1,7 +1,9 @@
-﻿using System.Text;
+﻿using System.Security.Principal;
+using System.Text;
 using Backend.Domain.Entities;
 using Backend.Infrastructure;
 using Backend.Service;
+using Backend.Service.Actions;
 using Backend.Service.Mappers;
 using Backend.Service.Services;
 using Backend.WebApi;
@@ -72,12 +74,20 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddAutoMapper(typeof(AppMapper));
 
+builder.Services.AddScoped<Person>(sp =>
+{
+    var httpContext = sp.GetRequiredService<IHttpContextAccessor>().HttpContext;
+    return httpContext?.Items["__identity"] as Person;
+});
+
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
 builder.Services.AddScoped<ICategoriesService, CategoriesService>();
 builder.Services.AddScoped<ICurrenciesService, CurrenciesService>();
 builder.Services.AddScoped<IConnectionsService, ConnectionsService>();
 builder.Services.AddScoped<IExpensesService, ExpensesService>();
 builder.Services.AddScoped<IAnnouncementsService, AnnouncementsService>();
+
+builder.Services.AddScoped<IActionFactory, ActionFactory>();
 
 var app = builder.Build();
 
