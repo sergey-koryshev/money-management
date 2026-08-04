@@ -28,7 +28,8 @@ function Get-Version {
     $suffixNode = $versionFile.SelectSingleNode($script:suffixXPath)
 
     if ($null -ne $suffixNode -and -not [string]::IsNullOrWhiteSpace($suffixNode.InnerText)) {
-      Write-Output ("{0}-{1}" -f $versionNode.InnerText, $suffixNode.InnerText)
+      $sanitizedSuffix = $suffixNode.InnerText.Trim() -replace '^-+', ''
+      Write-Output ("{0}-{1}" -f $versionNode.InnerText, $sanitizedSuffix)
     } else {
       Write-Output $versionNode.InnerText
     }
