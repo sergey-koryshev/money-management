@@ -3,7 +3,8 @@ The module contains logic to increment version in .NET Web API project
 #>
 
 $script:webApiVersionFileName = "Directory.Build.props"
-$script:versionXPath = "/Project/PropertyGroup/Version"
+$script:versionXPath = "/Project/PropertyGroup/VersionPrefix"
+$script:suffixXPath = "/Project/PropertyGroup/VersionSuffix"
 
 function Get-Version {
   [CmdletBinding()]
@@ -24,7 +25,13 @@ function Get-Version {
       throw "Version node cannot be found in file '$versionFilePath'"
     }
 
-    Write-Output $versionNode.InnerText
+    $suffixNode = $versionFile.SelectSingleNode($script:suffixXPath)
+
+    if ($null -ne $suffixNode -and -not [string]::IsNullOrWhiteSpace($suffixNode.InnerText)) {
+      Write-Output ("{0}-{1}" -f $versionNode.InnerText, $suffixNode.InnerText)
+    } else {
+      Write-Output $versionNode.InnerText
+    }
   }
 }
 
@@ -35,7 +42,13 @@ function Set-Version {
     $OldVersion,
 
     [string]
-    $NewVersion
+    $OldSuffix,
+
+    [string]
+    $NewVersion,
+
+    [string]
+    $NewSuffix
   )
   
   process {
@@ -52,7 +65,23 @@ function Set-Version {
       throw "Version node cannot be found in file '$versionFilePath'"
     }
 
-    $versionNode.InnerText = $NewVersion
+    $versionNode.InnerText = $NewVersion -replace "$([Regex]::Escape($NewSuffix))`$", ''
+
+    $suffixNode = $versionFile.SelectSingleNode($script:suffixXPath)
+
+    if (-not [string]::IsNullOrWhiteSpace($NewSuffix)) {
+      if ($null -eq $suffixNode) {
+        $suffixNode = $versionFile.CreateElement("VersionSuffix")
+        $versionNode.ParentNode.AppendChild($suffixNode) | Out-Null
+      }
+
+      $suffixNode.InnerText = $NewSuffix.Trim() -replace '^-+', ''
+    } else {
+      if ($null -ne $suffixNode) {
+        $versionNode.ParentNode.RemoveChild($suffixNode) | Out-Null
+      }
+    }
+
     $versionFile.Save($versionFilePath)
   }
 }

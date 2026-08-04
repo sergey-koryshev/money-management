@@ -9,10 +9,12 @@ on:
       - completed
     branches:
       - master
+      - epic/**
   pull_request:
     branches:
       - master
-      - release/*
+      - release/**
+      - epic/**
     paths:
       - source/frontend/**
 
@@ -20,10 +22,10 @@ jobs:
   label_check:
     if: ${{ github.event_name == 'pull_request' }}
     name: Pull Request Label Checker
-    uses: sergey-koryshev/build-system/.github/workflows/pr-label-checker.yml@version-helper-v1.2.0
+    uses: sergey-koryshev/build-system/.github/workflows/pr-label-checker.yml@version-helper-v1.6.0
     with:
       version-configuration-path: source/frontend/version-configuration.json
-      scripts-ref: version-helper-v1.2.0
+      scripts-ref: version-helper-v1.6.0
   dev-build:
     if: ${{ github.event_name == 'pull_request' || github.event.workflow_run.conclusion == 'success' }}
     name: Frontend Dev Build
