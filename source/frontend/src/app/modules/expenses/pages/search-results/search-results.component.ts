@@ -3,17 +3,25 @@ import { ActivatedRoute } from '@angular/router';
 import { ExpensesHttpClientService } from '@app/http-clients/expenses-http-client.service';
 import { Expense } from '@app/models/expense.model';
 import { CurrencyService } from '@app/services/currency.service';
+import { ExpensesMonthService } from '@app/services/expenses-month.service';
 import { skip, switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-search-results',
-  templateUrl: './search-results.component.html'
+  templateUrl: './search-results.component.html',
+  styleUrls: ['./search-results.component.scss']
 })
 export class SearchResultsComponent implements OnInit {
 
   expenses: Expense[];
 
-  constructor(private route: ActivatedRoute, private currencyService: CurrencyService, private expensesHttpClient: ExpensesHttpClientService) { }
+  backLabel?: string;
+
+  constructor(private route: ActivatedRoute, private currencyService: CurrencyService, private expensesHttpClient: ExpensesHttpClientService, expensesMonthService: ExpensesMonthService) {
+    const selectedMonth = expensesMonthService.month;
+    const selectedMonthName = new Date(selectedMonth.year, selectedMonth.month - 1, 1).toLocaleString('default', { month: 'long' });
+    this.backLabel = `${selectedMonthName} ${selectedMonth.year}`;
+  }
 
   ngOnInit(): void {
     this.route.data.subscribe((data) => this.expenses = data.expenses ?? []);
