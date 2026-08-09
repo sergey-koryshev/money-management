@@ -27,7 +27,8 @@ const routes: Routes = [
     component: SearchResultsComponent,
     resolve: {
       expenses: SearchResultsResolver
-    }
+    },
+    data: { isSearchPage: true }
   }
 ];
 
