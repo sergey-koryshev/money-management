@@ -1,10 +1,10 @@
 import { CurrencyService } from '@services/currency.service';
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { Currency } from '@models/currency.model';
 import { User } from '@models/user.model';
 import { emptyMainCurrency } from 'src/app/constants';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute, NavigationEnd, ActivationEnd } from '@angular/router';
 import { UserService } from '@app/services/user.service';
 import { LoginHttpClient } from '@app/http-clients/login-http-client.service';
 import { UserConnectionStatus } from '@app/models/enums/user-connection-status.enum';
@@ -12,7 +12,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { NoticesDialogComponent } from '../notice-dialog/notice-dialog.component';
 import { AnnouncementType } from '@app/models/enums/announcement-type.enum';
 import { AnnouncementsHttpClient } from '@app/http-clients/announcements-http-client.service';
-import { switchMap } from 'rxjs';
+import { filter, map, pipe, Subject, switchMap, takeUntil, tap } from 'rxjs';
 import { environment } from '@environments/environment';
 import { UserConnectionsDialogComponent } from '../user-connections-dialog/user-connections-dialog.component';
 
@@ -21,7 +21,7 @@ import { UserConnectionsDialogComponent } from '../user-connections-dialog/user-
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.scss']
 })
-export class NavbarComponent {
+export class NavbarComponent implements OnDestroy{
 
   currencies: Currency[];
   mainCurrency: Currency | null;
@@ -30,9 +30,13 @@ export class NavbarComponent {
   searchForm: FormGroup;
   pendingConnectionsCount = 0;
   productVersion?: string;
+  searchText?: string;
+
+  private destroy$ = new Subject<void>();
 
   constructor(private currencyService: CurrencyService,
     private router: Router,
+    private activatedRoute: ActivatedRoute,
     fb: FormBuilder,
     private userService: UserService,
     private loginHttpClient: LoginHttpClient,
@@ -60,7 +64,36 @@ export class NavbarComponent {
         modalRef.hidden.pipe(switchMap(() => announcementsHttpClient.dismiss(popup.id))).subscribe();
       }
     });
-   }
+
+    this.router.events
+      .pipe(
+        takeUntil(this.destroy$),
+        filter((event) => event instanceof NavigationEnd),
+        map(() => this.activatedRoute),
+        map(route => {
+          while (route.firstChild) {
+            route = route.firstChild;
+          }
+          return route;
+        }),
+        filter(route => route.outlet === 'primary'))
+      .subscribe((route: ActivatedRoute) => {
+        if (route.snapshot.data['isSearchPage']) {
+          if (this.activatedRoute.snapshot.queryParams['text']) {
+            this.searchForm.get('text')?.patchValue(this.activatedRoute.snapshot.queryParams['text']);
+          }
+        } else {
+          if (this.searchForm.get('text')?.value) {
+            this.searchForm.reset();
+          }
+        }
+      })
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 
   setMainCurrency(currency: Currency) {
     this.currencyService.setMainCurrency(currency.id);
