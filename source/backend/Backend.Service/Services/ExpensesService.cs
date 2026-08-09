@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 public class ExpensesService : ServiseBase, IExpensesService
 {
-    protected ExchangeServerClient? ExchangeServerClient { get; }
+    protected IExchangeServerClient? ExchangeServerClient { get; }
 
     public ExpensesService(IHttpContextAccessor httpContextAccessor, IMapper mapper, IDbContextFactory<AppDbContext> dbContextFactory, IConfiguration config, ILoggerFactory loggerFactory) : base(httpContextAccessor, mapper, dbContextFactory)
     {
@@ -21,7 +21,15 @@ public class ExpensesService : ServiseBase, IExpensesService
 
         if (exchangeServerBaseUrl != null)
         {
-            this.ExchangeServerClient = new ExchangeServerClient(new Uri(exchangeServerBaseUrl), loggerFactory);
+            int exchangeServerVersion = 1; 
+            if (int.TryParse(config["ExchangeServerVersion"], out var parsedServerVersion))
+            {
+                exchangeServerVersion = parsedServerVersion;
+            }
+
+            this.ExchangeServerClient = exchangeServerVersion == 2
+                ? new ExchangeServerClientV2(new Uri(exchangeServerBaseUrl), loggerFactory)
+                : new ExchangeServerClient(new Uri(exchangeServerBaseUrl), loggerFactory);
         }
     }
 

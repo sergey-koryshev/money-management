@@ -48,7 +48,7 @@ public class ExchangeServerClientV2 : IExchangeServerClient
             {
                 using (var reader = new StreamReader(request.Content.ReadAsStream()))
                 {
-                    var response = JsonSerializer.Deserialize<List<ExchangeServerRateResponse>>(reader.ReadToEnd());
+                    var response = JsonSerializer.Deserialize<List<ExchangeServerRateResponseV2>>(reader.ReadToEnd());
                     
                     if (!response.IsEmpty())
                     {
