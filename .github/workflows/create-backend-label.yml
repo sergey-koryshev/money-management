@@ -31,11 +31,11 @@ jobs:
         if: ${{ startsWith(github.ref, 'refs/heads/epic/') }}
         shell: pwsh
         run: |
-          $epicBranchName = ${{ github.ref_name }}
-          "suffix=$($epicBranchName -replace '^epic/', '') | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          $epicBranchName = "${{ github.ref_name }}"
+          "suffix=$($epicBranchName -replace '^epic/', '-')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 
       - name: Increment Version
-        uses: sergey-koryshev/bump-version@v1.2.1
+        uses: sergey-koryshev/bump-version@v1.2.2
         with:
           app-name: backend
           root-path: ${{ env.ROOT_PATH }}
