@@ -10,11 +10,12 @@ on:
     branches:
       - master
       - epic/**
+      - release/**
   pull_request:
     branches:
       - master
-      - release/**
       - epic/**
+      - release/**
     paths:
       - source/backend/**
 
