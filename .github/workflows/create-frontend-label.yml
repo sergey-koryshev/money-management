@@ -40,7 +40,7 @@ jobs:
           $branchName = "${{ github.ref_name }}"
           $suffix = [string]::Empty
 
-          if ($branchName.StartsWith("refs/heads/release/") {
+          if ($branchName.StartsWith("release/") {
             $suffix = "-rc"
           } else {
             $suffix = $branchName -replace "^epic/", "-"
