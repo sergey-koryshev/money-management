@@ -8,8 +8,15 @@ on:
     branches:
       - master
       - epic/**
+      - release/**
     paths:
       - source/backend/**
+  workflow_run:
+    workflows: [Propagate Product Version]
+    types:
+      - completed
+    branches:
+      - release/**
 
 jobs:
   create_label:
@@ -19,7 +26,6 @@ jobs:
       pull-requests: read
     env:
       ROOT_PATH: source/backend
-      PRODUCT_VERSION_FILE: version.json
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -28,11 +34,18 @@ jobs:
 
       - name: Get suffix
         id: suffix
-        if: ${{ startsWith(github.ref, 'refs/heads/epic/') }}
+        if: ${{ startsWith(github.ref, 'refs/heads/epic/') || startsWith(github.ref, 'refs/heads/release/') }}
         shell: pwsh
         run: |
-          $epicBranchName = "${{ github.ref_name }}"
-          "suffix=$($epicBranchName -replace '^epic/', '-')" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
+          $branchName = "${{ github.ref_name }}"
+          $suffix = [string]::Empty
+
+          if ($branchName.StartsWith("refs/heads/release/") {
+            $suffix = "-rc"
+          } else {
+            $suffix = $branchName -replace "^epic/", "-"
+          }
+          "suffix=$suffix" | Out-File -FilePath $env:GITHUB_OUTPUT -Encoding utf8 -Append
 
       - name: Increment Version
         uses: sergey-koryshev/bump-version@v1.2.2
@@ -44,8 +57,3 @@ jobs:
           version-configuration-path: ${{ env.ROOT_PATH }}/${{ case(github.ref == 'refs/heads/master', 'version-configuration.json', 'epic-version-configuration.json') }}
           default-increment-part: ${{ case(github.ref == 'refs/heads/master', 'Patch', 'Suffix') }}
           suffix: ${{ steps.suffix.outputs.suffix }}
-
-      - name: Propagate DEV product version to backend
-        shell: pwsh
-        run: |
-          . build/PropagateBackendProductVersion.ps1 -ProjectRootPath $env:ROOT_PATH -ProductVersionFile $env:PRODUCT_VERSION_FILE
