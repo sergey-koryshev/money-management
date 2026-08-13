@@ -12,7 +12,7 @@ on:
 
 jobs:
   propagate-version:
-    name: Increment version
+    name: Propagate Product Version
     runs-on: ubuntu-latest
     permissions:
       pull-requests: read
