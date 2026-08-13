@@ -4,11 +4,6 @@ run-name: Release @${{ github.sha }}
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - release/*
-  # repository_dispatch:
-  #   types: [release_branch_created]
 
 env:
   REGISTRY: ghcr.io
