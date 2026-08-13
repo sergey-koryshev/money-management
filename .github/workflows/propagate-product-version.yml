@@ -14,8 +14,6 @@ jobs:
   propagate-version:
     name: Propagate Product Version
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: read
     env:
       PRODUCT_VERSION_FILE: version.json
     steps:
