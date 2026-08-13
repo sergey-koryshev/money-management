@@ -1,0 +1,36 @@
+name: Propagate Product Version
+
+concurrency: versioning
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - release/**
+    paths:
+      - version.json
+
+jobs:
+  propagate-version:
+    name: Increment version
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    env:
+      ROOT_PATH: source/frontend
+      PRODUCT_VERSION_FILE: version.json
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ssh-key: ${{ secrets.DEPLOY_KEY }}
+
+      - name: Propagate DEV product version to frontend
+        shell: pwsh
+        run: |
+          . build/PropagateFrontendProductVersion.ps1 -ProjectRootPath "source/frontend" -ProductVersionFile $env:PRODUCT_VERSION_FILE
+
+      - name: Propagate DEV product version to backend
+        shell: pwsh
+        run: |
+          . build/PropagateBackendProductVersion.ps1 -ProjectRootPath "source/backend" -ProductVersionFile $env:PRODUCT_VERSION_FILE
