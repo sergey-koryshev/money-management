@@ -5,6 +5,7 @@ import { SortableHeaderDirective } from './sortable-header.directive';
 import { NgbDropdownModule } from "@ng-bootstrap/ng-bootstrap";
 import { ContextMenuModule } from '@perfectmemory/ngx-contextmenu';
 import { RoundButtonModule } from '../round-button/round-button.module';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [SortableHeaderDirective, TableComponent],
@@ -12,7 +13,8 @@ import { RoundButtonModule } from '../round-button/round-button.module';
     CommonModule,
     NgbDropdownModule,
     ContextMenuModule,
-    RoundButtonModule
+    RoundButtonModule,
+    DragDropModule
   ],
   exports: [TableComponent]
 })
