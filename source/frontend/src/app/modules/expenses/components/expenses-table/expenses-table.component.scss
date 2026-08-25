@@ -14,7 +14,7 @@
 
 .shared-with-container {
   display: flex;
-  justify-content: end;;
+  justify-content: flex-end;
 
   app-user-avatar:not(:last-of-type) {
     margin-right: -26px;

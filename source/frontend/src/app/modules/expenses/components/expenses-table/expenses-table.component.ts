@@ -1,6 +1,6 @@
 import { ExpensesHttpClientService } from '@http-clients/expenses-http-client.service';
-import { SortEvent, TableColumn, TableMenuItem } from '@components/table/table.model';
-import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
+import { SortDescriptor, TableConfig } from '@components/table/table.model';
+import { Component, EventEmitter, Injectable, Input, OnInit, Output, TemplateRef, ViewChild } from '@angular/core';
 import { Expense } from '@app/models/expense.model';
 import { priceComparer } from '@app/helpers/comparers.helper';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
@@ -13,16 +13,30 @@ import { UserService } from '@app/services/user.service';
 import { FailureType } from '@app/models/enums/failure-type.enum';
 import { ExpensesService } from '../../expenses.service';
 import { StoringExpensesStickyFilters } from '../../pages/expenses-page/expenses-page.model';
+import { BehaviorSubject } from 'rxjs';
+import { TABLE_PLUGIN_TOKEN } from '@app/components/table/plugins/plugin.model';
+import { LocalPreferencesPlugin } from '@app/components/table/plugins/local-preferences.plugin';
+
+@Injectable()
+export class ExpensePreferencesPlugin extends LocalPreferencesPlugin<Expense> {
+  tablePreferencesName = 'ExpensesTablePreferences'
+}
 
 @Component({
   selector: 'app-expenses-table',
   templateUrl: './expenses-table.component.html',
-  styleUrls: ['./expenses-table.component.scss']
+  styleUrls: ['./expenses-table.component.scss'],
+  providers: [
+    {
+      provide: TABLE_PLUGIN_TOKEN,
+      useClass: ExpensePreferencesPlugin,
+      multi: true
+    }
+  ]
 })
-export class ExpensesTableComponent implements OnInit {
+export class ExpensesTableComponent {
   readonly failureType = FailureType;
-  private sortingStorageName = 'expenses-table-sorting';
-  private defaultSorting: SortEvent = {
+  private defaultSorting: SortDescriptor = {
     column: 'date',
     direction: 'desc'
   }
@@ -32,7 +46,7 @@ export class ExpensesTableComponent implements OnInit {
   selectedMonth?: Month;
 
   @Input()
-  data: Expense[];
+  data: Expense[]
 
   @Input()
   stickyFilters: StoringExpensesStickyFilters;
@@ -43,56 +57,50 @@ export class ExpensesTableComponent implements OnInit {
   @Output()
   itemChanged = new EventEmitter<ItemChange>()
 
-  columns: TableColumn<Expense>[] = [
-    {
-      name: 'permittedPersons',
-      ignorePadding: true,
-      disableSorting: true,
-      template: () => this.permittedPersons,
-      hide: () => this.isPermittedUsersColumnVisible()
-    },
-    {
-      name: 'date',
-      displayName: 'Date',
-      function: (row) => new Date(row.date).toLocaleDateString()
-    },
-    {
-      name: 'category',
-      displayName: 'Category',
-      function: (row) => row.category ? row.category.name : '-',
-      sortFunc: (f, s) => {
-        return (f.category
-          ? f.category.name
-          : '').localeCompare(s.category
-            ? s.category.name
-            : '');
+  tableConfig: TableConfig<Expense> = {
+    columns: [
+      {
+        name: 'permittedPersons',
+        ignorePadding: true,
+        disableSorting: true,
+        template: () => this.permittedPersons,
+        hide: () => this.isPermittedUsersColumnVisible()
+      },
+      {
+        name: 'date',
+        displayName: 'Date',
+        function: (row) => new Date(row.date).toLocaleDateString()
+      },
+      {
+        name: 'category',
+        displayName: 'Category',
+        function: (row) => row.category ? row.category.name : '-',
+        sortFunc: (f, s) => {
+          return (f.category
+            ? f.category.name
+            : '').localeCompare(s.category
+              ? s.category.name
+              : '');
+        }
+      },
+      {
+        name: 'name',
+        displayName: 'Name'
+      },
+      {
+        name: 'description',
+        displayName: 'Description',
+        stretch: true
+      },
+      {
+        name: 'price',
+        displayName: 'Price',
+        template: () => this.price,
+        sortFunc: priceComparer
       }
-    },
-    {
-      name: 'name',
-      displayName: 'Name'
-    },
-    {
-      name: 'description',
-      displayName: 'Description',
-      stretch: true
-    },
-    {
-      name: 'exchangeResult',
-      template: () => this.exchangeResult,
-      disableSorting: true,
-      ignorePadding: true
-    },
-    {
-      name: 'price',
-      displayName: 'Price',
-      template: () => this.price,
-      sortFunc: priceComparer,
-      snapToPrevious: true
-    }
-  ];
-
-  menuItems: TableMenuItem<Expense>[] = [
+    ],
+    defaultSorting: this.defaultSorting,
+    floatingMenuItems: [
     {
       title: 'Edit',
       disabled: (row) => !this.canRowBeEdited(row),
@@ -106,7 +114,7 @@ export class ExpensesTableComponent implements OnInit {
       title: 'Delete',
       action: (row) => this.removeItem(row)
     }
-  ];
+  ]};
 
   sorting = this.defaultSorting;
   currentUser: User | null;
@@ -130,14 +138,6 @@ export class ExpensesTableComponent implements OnInit {
     private expensesService: ExpensesService) {
     this.currentUser = userService.user;
     userService.connections$.subscribe((connections) => this.friends = connections.filter((c) => c.status === UserConnectionStatus.accepted).map((c) => c.person));
-  }
-
-  ngOnInit(): void {
-    var storedSorting = localStorage.getItem(this.sortingStorageName);
-
-    if (storedSorting != null) {
-      this.sorting = JSON.parse(storedSorting) as SortEvent;
-    }
   }
 
   editItem(item?: Expense) {
@@ -174,10 +174,6 @@ export class ExpensesTableComponent implements OnInit {
     }
 
     return getUserFullName(user);
-  }
-
-  onSortingChanged(sortingDescriptor: SortEvent) {
-    localStorage.setItem(this.sortingStorageName, JSON.stringify(sortingDescriptor));
   }
 
   canRowBeEdited(row?: Expense) {
