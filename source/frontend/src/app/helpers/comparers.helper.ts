@@ -2,14 +2,10 @@ import { Expense } from '@app/models/expense.model';
 import { StickyFilterItem } from "@components/sticky-filters/sticky-filters.model";
 
 export function priceComparer(first: Expense, second: Expense) {
-  const firstPrice = first.originalPrice ?? first.price;
-  const secondPrice = second.originalPrice ?? second.price;
+  const firstPrice = first.price ?? first.originalPrice!;
+  const secondPrice = second.price ?? second.originalPrice!;
 
-  return firstPrice.amount < secondPrice.amount
-    ? -1
-    : firstPrice.amount > secondPrice.amount
-      ? 1
-      : 0;
+  return firstPrice.currency.name.localeCompare(secondPrice.currency.name) || firstPrice.amount - secondPrice.amount;
 }
 
 export function stickyFilterItemsComparer (a: StickyFilterItem<any>, b: StickyFilterItem<any>) {
