@@ -2,6 +2,7 @@
   <thead>
     <tr cdkDropList
         cdkDropListOrientation="horizontal"
+        [cdkDropListDisabled]="!(config.enableColumnsDrag ?? false)"
         (cdkDropListDropped)="onColumnDrop($event)">
       <th cdkDrag scope="col" [sortable]="column.name" [cdkDragData]="column"
         [direction]="currentSorting && currentSorting.column === column.name ? currentSorting.direction : ''"

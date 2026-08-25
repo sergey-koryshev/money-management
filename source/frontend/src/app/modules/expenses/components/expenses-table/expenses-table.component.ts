@@ -101,20 +101,22 @@ export class ExpensesTableComponent {
     ],
     defaultSorting: this.defaultSorting,
     floatingMenuItems: [
-    {
-      title: 'Edit',
-      disabled: (row) => !this.canRowBeEdited(row),
-      action: (row) => this.editItem(row)
-    },
-    {
-      title: 'Duplicate',
-      action: (row) => this.duplicateItem(row)
-    },
-    {
-      title: 'Delete',
-      action: (row) => this.removeItem(row)
-    }
-  ]};
+      {
+        title: 'Edit',
+        disabled: (row) => !this.canRowBeEdited(row),
+        action: (row) => this.editItem(row)
+      },
+      {
+        title: 'Duplicate',
+        action: (row) => this.duplicateItem(row)
+      },
+      {
+        title: 'Delete',
+        action: (row) => this.removeItem(row)
+      },
+    ],
+    enableColumnsDrag: true
+  };
 
   sorting = this.defaultSorting;
   currentUser: User | null;

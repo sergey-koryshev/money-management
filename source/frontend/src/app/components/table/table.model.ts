@@ -38,4 +38,5 @@ export interface TableConfig<T> {
   columns: TableColumn<T>[]
   defaultSorting?: SortDescriptor
   floatingMenuItems?: TableMenuItem<T>[]
+  enableColumnsDrag?: boolean
 }
