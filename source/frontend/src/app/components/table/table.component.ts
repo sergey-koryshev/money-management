@@ -116,8 +116,8 @@ export class TableComponent<T> implements OnDestroy {
   }
 
   compareProperties(a: any, b: any) {
-    if ((typeof a === 'string') || (typeof a === 'number') &&
-      (typeof b === 'string' || typeof b === 'number')) {
+    if ((typeof a === 'string' && typeof b === 'string') ||
+      (typeof a === 'number' && typeof b === 'number')) {
       return a < b ? -1 : a > b ? 1 : 0;
     }
 
