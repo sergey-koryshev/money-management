@@ -61,10 +61,10 @@
   (close)="onFloatingMenuClose()">
   <ng-container *ngIf="config && config.floatingMenuItems">
     <ng-template contextMenuItem *ngFor="let item of config.floatingMenuItems" (execute)="item.action($event.value)"
-    [visible]="item.visible != null ? item.visible : true" [disabled]="item.disabled != null ? item.disabled : false">
-    <div class="context-menu-item">
-      {{ item.title }}
-    </div>
-  </ng-template>
+      [visible]="item.visible != null ? item.visible : true" [disabled]="item.disabled != null ? item.disabled : false">
+      <div class="context-menu-item">
+        {{ item.title }}
+      </div>
+    </ng-template>
   </ng-container>
 </context-menu>
