@@ -134,6 +134,7 @@ export class TableComponent<T> implements OnDestroy {
 
   onColumnDrop($event: CdkDragDrop<TableColumn<T>, TableColumn<T>, TableColumn<T>>) {
     moveItemInArray(this.visibleColumns, $event.previousIndex, $event.currentIndex);
+    this.reorderColumns(this.visibleColumns.map((c) => c.name), true);
     this.pluginsHandler.columnsReordered$.next(this.visibleColumns);
   }
 
