@@ -87,6 +87,10 @@ export class TableComponent<T> implements OnDestroy {
     return object[propertyKey];
   }
 
+  trackByRow(index: number, item: any): any {
+    return this._config?.trackBy ? this._config.trackBy(index, item as T) : item;
+  }
+
   onSortingChanged($event: SortDescriptor | undefined) {
     this.initializeSorting($event);
   }

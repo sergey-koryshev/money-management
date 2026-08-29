@@ -16,7 +16,7 @@
   </thead>
   <tbody>
     <ng-container *ngIf="!loading">
-      <tr *ngFor="let row of sortedData">
+      <tr *ngFor="let row of sortedData; trackBy: trackByRow">
         <td *ngFor="let column of visibleColumns" [ngSwitch]="getColumnType(column)"
           [ngClass]="{ 'p-0': column.ignorePadding, 'ps-0': column.snapToPrevious }"
           [ngStyle]="{ 'vertical-align': 'middle', 'white-space': column.stretch ? 'normal' : 'nowrap' }">

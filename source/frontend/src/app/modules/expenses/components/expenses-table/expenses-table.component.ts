@@ -115,7 +115,8 @@ export class ExpensesTableComponent {
         action: (row) => this.removeItem(row)
       },
     ],
-    enableColumnsDrag: true
+    enableColumnsDrag: true,
+    trackBy: (_, e) => e.id
   };
 
   sorting = this.defaultSorting;

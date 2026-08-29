@@ -39,4 +39,5 @@ export interface TableConfig<T> {
   defaultSorting?: SortDescriptor
   floatingMenuItems?: TableMenuItem<T>[]
   enableColumnsDrag?: boolean
+  trackBy?: (index: number, item: T) => any
 }
