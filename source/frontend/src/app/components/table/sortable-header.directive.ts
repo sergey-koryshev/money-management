@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Directive, ElementRef, EventEmitter, Input, Output, ViewEncapsulation } from '@angular/core';
-import { SortDirection, SortEvent } from './table.model';
+import { SortDirection, SortDescriptor } from './table.model';
 
 @Component({
   selector: 'th[sortable]',
@@ -19,7 +19,7 @@ export class SortableHeaderDirective {
   @Input() sortable: string = '';
   @Input() direction: SortDirection = '';
   @Input() disableSorting: boolean = false;
-  @Output() sort = new EventEmitter<SortEvent>();
+  @Output() sortingChanged = new EventEmitter<SortDescriptor>();
 
   rotateSortDirection: {[key: string]: SortDirection} = { 'asc': 'desc', 'desc': '', '': 'asc' };
 
@@ -28,7 +28,7 @@ export class SortableHeaderDirective {
     this.callSortEvent({column: this.sortable, direction: this.direction});
   }
 
-  callSortEvent(sortEvent: SortEvent) {
-    this.sort.emit(sortEvent);
+  callSortEvent(sortEvent: SortDescriptor) {
+    this.sortingChanged.emit(sortEvent);
   }
 }

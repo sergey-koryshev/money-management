@@ -172,6 +172,9 @@ export class ExpensesPageComponent implements OnInit, AfterViewInit {
   }
 
   onItemChange(args: ItemChange) {
+    // rebuild data array to let table catch changes there.
+    this.expenses = [...this.expenses];
+
     if (!this.totalAmount) {
       return;
     }

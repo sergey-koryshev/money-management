@@ -1,23 +1,34 @@
-<div [ngbPopover]="popoverContent" [disablePopover]="originalPrice == null || originalPrice.currency.id === price.currency.id" triggers="mouseenter:mouseleave" class="price-container">
-    <span>
-        {{ price.amount | number : '1.0-2' }}
-    </span>
-    <app-currency
-        class="currency-name"
-        [currency]="price.currency"
-        appearance="omitFlag">
-    </app-currency>
+<div [ngbPopover]="popoverContent" [disablePopover]="(originalPrice == null || originalPrice.currency.id === price.currency.id) && price.exchangeFailure == null" triggers="mouseenter:mouseleave" class="price-container">
+  <span>
+    {{ price.amount | number : '1.0-2' }}
+  </span>
+  <app-currency
+    class="currency-name"
+    [currency]="price.currency"
+    appearance="omitFlag">
+  </app-currency>
 </div>
 
 <ng-template #popoverContent>
-    <div>
-        <span class="fw-bold">Original price:</span>
-        <span>
-            {{ originalPrice.amount | number : '1.0-2' }}
-        </span>
-        <app-currency
-            [currency]="originalPrice.currency"
-            appearance="omitFlag">
-        </app-currency>
-    </div>
+  <div *ngIf="price.exchangeFailure == null">
+    <span class="fw-bold">Original Price:</span>
+    <span>
+        {{ originalPrice.amount | number : '1.0-2' }}
+    </span>
+    <app-currency
+        [currency]="originalPrice.currency"
+        appearance="omitFlag">
+    </app-currency>
+  </div>
+  <div *ngIf="price.exchangeRate != null">
+    <span class="fw-bold me-1">Exchange Rate:</span>
+    <span>{{ price.exchangeRate | number : '1.0-4' }}</span>
+  </div>
+  <div *ngIf="price.exchangeRateDate != null">
+    <span class="fw-bold me-1">Exchange Date:</span>
+    <span>{{ price.exchangeRateDate | date: 'M/d/yyyy' }}</span>
+  </div>
+  <div *ngIf="price.exchangeFailure != null" [ngClass]="{ 'warning-message': price.exchangeRateDate != null }">
+    <span>{{ price.exchangeFailure.message }}</span>
+  </div>
 </ng-template>

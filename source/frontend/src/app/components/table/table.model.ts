@@ -22,7 +22,7 @@ export enum TableColumnType {
 
 export type SortDirection = 'asc' | 'desc' | '';
 
-export interface SortEvent {
+export interface SortDescriptor {
     column: string;
     direction: SortDirection;
 }
@@ -32,4 +32,12 @@ export interface TableMenuItem<T> {
   action: (row?: T) => void;
   disabled?: boolean | ((value?: T | any) => boolean);
   visible?: boolean | ((value?: T) => boolean);
+}
+
+export interface TableConfig<T> {
+  columns: TableColumn<T>[]
+  defaultSorting?: SortDescriptor
+  floatingMenuItems?: TableMenuItem<T>[]
+  enableColumnsDrag?: boolean
+  trackBy?: (index: number, item: T) => any
 }
