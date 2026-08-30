@@ -24,9 +24,7 @@ export class LocalPreferencesPlugin<T> implements TablePlugin<T> {
     this.savePreferences();
   }
 
-  onVisibleColumnsChanged(_: TableColumn<T>[]) {
-    this.applyPreferences()
-  }
+  onVisibleColumnsChanged(_: TableColumn<T>[]) {}
 
   onSortingChanged(_: SortDescriptor | undefined) {
     this.savePreferences()
@@ -75,7 +73,7 @@ export class LocalPreferencesPlugin<T> implements TablePlugin<T> {
 
     try {
       const preferences = (this.getPreferences() ?? {}) as TableUserPreferences;
-      preferences.columnsOrder = this.table.visibleColumns.map((c) => c.name);
+      preferences.columnsOrder = this.table.allColumns.map((c) => c.name);
       preferences.sorting = this.table.currentSorting;
 
       localStorage.setItem(this.tablePreferencesName, JSON.stringify(preferences));
