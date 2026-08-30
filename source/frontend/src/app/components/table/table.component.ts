@@ -144,8 +144,7 @@ export class TableComponent<T> implements OnDestroy {
 
   onColumnDrop($event: CdkDragDrop<TableColumn<T>, TableColumn<T>, TableColumn<T>>) {
     moveItemInArray(this.visibleColumns, $event.previousIndex, $event.currentIndex);
-    this.reorderColumns(this.visibleColumns.map((c) => c.name), true);
-    this.pluginsHandler.columnsReordered$.next(this.visibleColumns);
+    this.reorderColumns(this.visibleColumns.map((c) => c.name));
   }
 
   reorderColumns(order: string[] | undefined, skipEvent = false) {
@@ -153,20 +152,35 @@ export class TableComponent<T> implements OnDestroy {
       return;
     }
 
-    const rank = (name: string) => {
-      const index = order.indexOf(name);
-      return index === -1 ? order.length : index;
-    };
+    const before = JSON.stringify(this.allColumns.map((c) => c.name));
 
-    this.allColumns.sort((a, b) => rank(a.name) - rank(b.name));
+    const skippedColumns = this.allColumns
+      .map((column, index) => ({ column, index }))
+      .filter(({ column }) => !order.includes(column.name));
 
-    const before = JSON.stringify(this.visibleColumns.map((c) => c.name));
-    this.visibleColumns.sort((a, b) => rank(a.name) - rank(b.name));
-    const after = JSON.stringify(this.visibleColumns.map((c) => c.name));
+    const targetColumns = order.map((name) => this.allColumns.find((c) => c.name == name)).filter((c) => c != null) as TableColumn<T>[];
+
+    const orderedColumns: TableColumn<T>[] = new Array(this.allColumns.length);
+    for (const { column, index } of skippedColumns) {
+      orderedColumns[index] = column;
+    }
+
+    let visibleIndex = 0;
+    for (let i = 0; i < orderedColumns.length; i++) {
+      if (!orderedColumns[i]) {
+        orderedColumns[i] = targetColumns[visibleIndex++];
+      }
+    }
+
+    this.allColumns = orderedColumns;
+
+    const after = JSON.stringify(this.allColumns.map((c) => c.name));
 
     if (this._initialized && !skipEvent && before !== after) {
-      this.pluginsHandler.columnsReordered$.next(this.visibleColumns);
+      this.pluginsHandler.columnsReordered$.next(this.allColumns);
     }
+
+    this.calculateVisibleColumns();
   }
 
   private sort(event: SortDescriptor | undefined) {
