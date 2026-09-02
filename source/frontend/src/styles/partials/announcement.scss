@@ -8,3 +8,99 @@
     z-index: 1;
   }
 }
+
+/*
+The Version Update Card displays a new-version announcement.
+Its purpose is to highlight the main changes in the release.
+*/
+.version-update-card {
+  width: 100%;
+  padding: 4px 12px 4px;
+
+  // new version badge containing the spark icon
+  .version-update-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 28px;
+    padding: 8px 18px;
+    border-radius: 999px;
+    background: #e3e6fd;
+    color: #4551f5;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+
+    img {
+      display: block;
+      width: 11px;
+      height: 11px;
+    }
+  }
+
+  // version heading
+  .version-update-heading {
+    margin: 0 0 26px;
+    color: #14151a;
+    font-size: 46px;
+    font-weight: 800;
+    line-height: 1.12;
+    letter-spacing: -0.01em;
+  }
+
+  // accent color intended for use in the heading
+  .version-update-accent {
+    color: #4551f5;
+  }
+
+  // intro text before the feature list
+  .version-update-intro {
+    margin: 0 0 22px;
+    color: #7a7d85;
+    font-size: 17px;
+  }
+
+  // feature row containing an icon, title, and description
+  .version-update-feature {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 22px;
+
+    .version-update-icon {
+      display: flex;
+      flex: 0 0 56px;
+      align-items: center;
+      justify-content: center;
+      width: 56px;
+      height: 56px;
+
+      img {
+        display: block;
+        width: 56px;
+        height: 56px;
+      }
+    }
+
+    .version-update-feature-title {
+      margin: 0 0 4px;
+      color: #14151a;
+      font-size: 19px;
+      font-weight: 800;
+    }
+
+    .version-update-feature-description {
+      margin: 0;
+      color: #7a7d85;
+      font-size: 16px;
+      line-height: 1.4;
+    }
+  }
+
+  // footer to render additional information
+  .version-update-footer {
+    margin-bottom: 0;
+    color: #7a7d85;
+    font-size: 16px;
+    line-height: 1.4;
+  }
+}
