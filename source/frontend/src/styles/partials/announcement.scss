@@ -1,0 +1,10 @@
+.notice-dialog {
+  position: relative;
+
+  .btn-close {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    z-index: 1;
+  }
+}
