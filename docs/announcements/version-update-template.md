@@ -35,20 +35,18 @@ The version update announcement is a `PopUp` announcement used to present a new 
 
 ## CSS Class reference
 
-| Selector | Purpose | Required |
-| --- | --- | --- |
-| `.version-update-card` | Root wrapper for the announcement card. | Yes |
-| `.version-update-badge` | Small “NEW VERSION” badge at the top of the card. | Yes |
-| `.version-update-heading` | Main heading for the version update. | Yes |
-| `.version-update-accent` | Accent styling for the version number inside the heading. | Yes |
-| `.version-update-intro` | Intro line before the feature list. | Recommended |
-| `.version-update-feature` | One row per major feature. Repeat as needed. | Yes, at least one |
-| `.version-update-icon` | Container for the feature icon. | Yes, per feature |
-| `.version-update-feature-title` | Feature title. | Yes, per feature |
-| `.version-update-feature-description` | Short feature description. | Yes, per feature |
-| `.version-update-footer` | Optional footer for secondary improvements and fixes. | Optional |
-
-The `<div>` between `.version-update-icon` and `.version-update-feature-title` is intentionally classless. It groups the title and description as one flex item next to the icon.
+| Selector | Purpose |
+| --- | --- |
+| `.version-update-card` | Root wrapper for the announcement card. |
+| `.version-update-badge` | Small “NEW VERSION” badge at the top of the card. |
+| `.version-update-heading` | Main heading for the version update. |
+| `.version-update-accent` | Accent styling for the version number inside the heading. |
+| `.version-update-intro` | Intro line before the feature list. |
+| `.version-update-feature` | One row per major feature. Repeat as needed. |
+| `.version-update-icon` | Container for the feature icon. |
+| `.version-update-feature-title` | Feature title. |
+| `.version-update-feature-description` | Short feature description. |
+| `.version-update-footer` | Optional footer for secondary improvements and fixes. |
 
 ## Assets
 
